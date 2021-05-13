@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "637346783080",
+    "project_id": "androidtutorial-9dd4f",
+    "storage_bucket": "androidtutorial-9dd4f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:637346783080:android:027b52c3fb433f305f80dd",
+        "android_client_info": {
+          "package_name": "com.socialgaming.androidtutorial"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "637346783080-3pealeitvpioul68tjp6mdvfoencdak9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPX1ZnQWf85gR-eXKbM_MQVqJ6K3wusqs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "637346783080-3pealeitvpioul68tjp6mdvfoencdak9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

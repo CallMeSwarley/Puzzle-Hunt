@@ -1,0 +1,1 @@
+[0m[[0m[33mwarn[0m] [0m[0minsecure HTTP request is deprecated 'http://repo.typesafe.com/typesafe/simple/maven-releases/'; switch to HTTPS or opt-in as ("Typesafe Simple Repository" at "http://repo.typesafe.com/typesafe/simple/maven-releases/").withAllowInsecureProtocol(true)[0m
