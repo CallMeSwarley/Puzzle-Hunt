@@ -99,4 +99,5 @@ public class HomeController extends Controller {
     public Result remoteTest() {
         return ok("Heroku reached");
     }
+	public Result deployTest(){return ok("Deploy Succesfull");}
 }

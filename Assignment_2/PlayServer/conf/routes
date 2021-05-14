@@ -15,3 +15,4 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 POST    /position/:firebaseId/:latitude/:longitude/update   controllers.HomeController.updateUserLocation(firebaseId: String,latitude:Double,longitude:Double)
 GET     /position/:firebaseId/getAllPositions               controllers.HomeController.getAllLocations(firebaseId: String)
 GET     /remoteTest                                         controllers.HomeController.remoteTest
+GET	/deployTest				controllers.HomeController.deployTest
