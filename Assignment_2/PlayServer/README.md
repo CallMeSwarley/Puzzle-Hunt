@@ -1,3 +1,15 @@
+Heroku Guide:
+Einrichtung:
+1.  Heroku CLI installieren (https://devcenter.heroku.com/articles/heroku-cli#download-and-install)
+2.  heroku login    ausführen
+3.  heroku git:remote -a sgplayserver   ausführen
+Hochladen:
+1.  ins Verzeichnis PlayServer wechseln
+2.  sbt stage deployHeroku  ausführen (dauernd relativ lange)
+3.  (normal auf git pushen, falls noch nicht geschehen)
+
+
+
 # Play Hello World Web Tutorial for Java
 
 To follow the steps in this tutorial, you will need the correct version of Java and a build tool. You can build Play projects with any Java build tool. Since sbt takes advantage of Play features such as auto-reload, the tutorial describes how to build the project with sbt. 
