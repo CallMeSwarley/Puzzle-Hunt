@@ -132,7 +132,7 @@ hs_err_pid*
 
 ### PlayFramework ###
 # Ignore Play! working directory #
-bin/
+
 /db
 .eclipse
 /lib/
