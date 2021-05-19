@@ -6,4 +6,54 @@
     android:layout_height="match_parent"
     tools:context=".FriendsActivity">
 
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/best_friend_textView"
+        app:srcCompat="@drawable/ic_launcher_foreground" />
+
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/friends_textView"
+        app:srcCompat="@drawable/ic_launcher_foreground" />
+
+    <ImageView
+        android:id="@+id/imageView9"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView8"
+        app:srcCompat="@drawable/ic_launcher_foreground" />
+
+    <TextView
+        android:id="@+id/best_friend_textView"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="30dp"
+        android:text="BestFriend"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/friends_textView"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="40dp"
+        android:text="Friends"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView5" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,7 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidTutorial"
         android:usesCleartextTraffic="true">
-        <activity android:name=".EditProfileActivity"></activity>
+        <activity android:name=".PiecesActivity"></activity>
+        <activity android:name=".SetsActivity" />
+        <activity android:name=".EditPreferencesActivity" />
+        <activity android:name=".EditProfileActivity" />
         <activity android:name=".EventsActivity" />
         <activity android:name=".LeaderboardActivity" />
         <activity android:name=".FriendsActivity" />

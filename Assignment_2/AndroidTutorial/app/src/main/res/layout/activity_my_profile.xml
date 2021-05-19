@@ -51,7 +51,7 @@
         android:layout_width="150dp"
         android:layout_height="30dp"
         android:layout_marginStart="25dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:text="Achievements:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/description_text_textView" />
@@ -89,7 +89,7 @@
     <TextView
         android:id="@+id/description_text_textView"
         android:layout_width="340dp"
-        android:layout_height="87dp"
+        android:layout_height="50dp"
         android:layout_marginStart="25dp"
         android:layout_marginTop="10dp"
         android:text="Hello, bla bsdfl lskdf lsjd"
@@ -101,10 +101,10 @@
         android:layout_width="130dp"
         android:layout_height="50dp"
         android:layout_marginStart="140dp"
-        android:layout_marginTop="530dp"
-        android:text="Edit"
+        android:layout_marginTop="20dp"
+        android:text="Edit Profile"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/preferences_recyclerView" />
 
     <ImageView
         android:id="@+id/profile_pic_image"
@@ -115,5 +115,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_camera" />
+
+    <TextView
+        android:id="@+id/preferences_textView"
+        android:layout_width="80dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="20dp"
+        android:text="Preferences:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/achievement1_image" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/preferences_recyclerView"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/preferences_textView" />
+
+    <Button
+        android:id="@+id/edit_preferences_button"
+        android:layout_width="157dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:text="Edit Preferences"
+        app:layout_constraintStart_toEndOf="@+id/preferences_recyclerView"
+        app:layout_constraintTop_toBottomOf="@+id/preferences_textView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,4 +6,23 @@
     android:layout_height="match_parent"
     tools:context=".InventoryActivity">
 
+    <Button
+        android:id="@+id/sets_button"
+        android:layout_width="350dp"
+        android:layout_height="250dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="40dp"
+        android:text="SETS"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/pieces_button"
+        android:layout_width="350dp"
+        android:layout_height="250dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:text="Pieces"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sets_button" />
 </androidx.constraintlayout.widget.ConstraintLayout>
