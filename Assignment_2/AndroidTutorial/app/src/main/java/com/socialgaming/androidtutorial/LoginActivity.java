@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
             });
         } else {
 
-            Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+            Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
             startActivity(intent);
             Log.d(TAG, "signedInUser:\t" + currentUser);
             Toast.makeText(LoginActivity.this, "Signed in", Toast.LENGTH_SHORT).show();
@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "loggedInUser: success");
-                    Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                     startActivity(intent);
                 } else {
                     Log.d(TAG, "loggedInUser: no success");

@@ -51,7 +51,7 @@ public class RegisterActivity extends AppCompatActivity {
                             nicknameText.getText().toString(),
                             "prepare");
                     Log.d(TAG, "createdUser:\tsuccess");
-                    Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);
+                    Intent intent = new Intent(RegisterActivity.this, MainMenuActivity.class);
                     startActivity(intent);
                 } else {
                     Log.d(TAG, "createdUser:\tno success");
