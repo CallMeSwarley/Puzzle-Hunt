@@ -1,14 +1,24 @@
 Heroku Guide:
+Empfehlungen (hat zumindest bei mir funktionert xD):
+    -   JDK 1.8_291
+    -   Powershell
+    -   SBT auf Rechner installieren
+
 Einrichtung:
 1.  Heroku CLI installieren (https://devcenter.heroku.com/articles/heroku-cli#download-and-install)
 2.  heroku login    ausführen
 3.  heroku git:remote -a sgplayserver   ausführen
+
 Hochladen:
 1.  ins Verzeichnis PlayServer wechseln
 2.  sbt stage deployHeroku  ausführen (dauernd relativ lange)
 3.  (normal auf git pushen, falls noch nicht geschehen)
 
-
+Lokales Testen des PlayServers:
+0. Auf euren eigenen "TestAccount" wechseln
+1. In der Android App in der Configuration.java die ServerURL auf eure lokale IP-Adresse einstellen (natürlich vor dem Build)
+2. sbt run      ausführen (Powershell)
+3. App starten
 
 # Play Hello World Web Tutorial for Java
 

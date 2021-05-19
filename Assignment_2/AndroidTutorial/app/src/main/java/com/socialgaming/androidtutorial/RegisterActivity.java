@@ -1,8 +1,6 @@
 package com.socialgaming.androidtutorial;
 
 import android.content.Intent;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,10 +8,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
 public class RegisterActivity extends AppCompatActivity {
     FirebaseAuth myAuth;
@@ -42,6 +44,12 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
+                    final EditText nicknameText = findViewById(R.id.nickNameText);
+                    new HTTPPoster().execute(
+                            "user",
+                            FirebaseAuth.getInstance().getUid(),
+                            nicknameText.getText().toString(),
+                            "prepare");
                     Log.d(TAG, "createdUser:\tsuccess");
                     Intent intent = new Intent(RegisterActivity.this, MapsActivity.class);
                     startActivity(intent);

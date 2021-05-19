@@ -1,0 +1,49 @@
+package models;
+
+import com.mongodb.WriteResult;
+
+import org.jongo.MongoCollection;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import uk.co.panaxiom.playjongo.PlayJongo;
+
+@Singleton
+public class UsersRepository {
+    @Inject
+    private PlayJongo jongo;
+
+    private static UsersRepository instance = null;
+
+    public UsersRepository() {
+        instance = this;
+    }
+
+    public static UsersRepository getInstance() {
+        return instance;
+    }
+
+    public MongoCollection users() {
+        MongoCollection locationCollection = jongo.getCollection("users");
+        return locationCollection;
+    }
+
+    public User getUser(String id) {
+        return users().findOne("{_id: #}", id).as(User.class);
+    }
+
+    public void insert(User user) {
+       WriteResult result= users().save(user);
+       result.getUpsertedId();
+    }
+
+    public void update(User user) {
+        users().update("{_id: #}", user.id).with(copyUser(user));
+    }
+
+    public User copyUser(User user) {
+        User copy = new User();
+        return copy;
+    }
+}

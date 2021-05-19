@@ -37,4 +37,15 @@
         android:ems="10"
         android:hint="your.name@domain.com"
         android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/nickNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="232dp"
+        android:ems="10"
+        android:hint="NickName"
+        android:inputType="textPersonName" />
 </RelativeLayout>

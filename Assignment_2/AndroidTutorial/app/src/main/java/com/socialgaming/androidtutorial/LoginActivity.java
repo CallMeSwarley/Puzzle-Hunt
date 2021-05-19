@@ -1,9 +1,6 @@
 package com.socialgaming.androidtutorial;
 
 import android.content.Intent;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,11 +9,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
 public class LoginActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
@@ -29,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
+
         if (currentUser == null) {
             final Button login = findViewById(R.id.login_button);
             final Button register = findViewById(R.id.register_button);
@@ -51,10 +53,15 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         } else {
+
             Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
             startActivity(intent);
             Log.d(TAG, "signedInUser:\t" + currentUser);
             Toast.makeText(LoginActivity.this, "Signed in", Toast.LENGTH_SHORT).show();
+            new HTTPPoster().execute(
+                    "user",
+                    FirebaseAuth.getInstance().getUid(),
+                    "prepare");
         }
     }
 

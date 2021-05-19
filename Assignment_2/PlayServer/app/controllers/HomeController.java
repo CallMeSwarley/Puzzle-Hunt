@@ -7,6 +7,8 @@ import javax.inject.Inject;
 
 import models.Location;
 import models.LocationsRepository;
+import models.User;
+import models.UsersRepository;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -19,6 +21,8 @@ import play.mvc.Result;
 public class HomeController extends Controller {
     @Inject
     private LocationsRepository locations;
+    @Inject
+    private UsersRepository users;
 
     /**
      * An action that renders an HTML page with a welcome message.
@@ -52,6 +56,23 @@ public class HomeController extends Controller {
         return res;
     }
 
+    public Result prepareUser(String firebaseId) {
+        Logger.info("prepareUser");
+        User user = users.getUser(firebaseId);
+        if (user == null) {
+            user = new User(firebaseId);
+            users.insert(user);
+        }
+        return ok("User prepared");
+    }
+
+    public Result prepareUserWithNickname(String firebaseId, String nickName) {
+        Logger.info("prepareUser with nickname");
+        User user = new User(firebaseId, nickName);
+        users.insert(user);
+        return ok("User prepared");
+    }
+
     public Result updateUserLocation(String firebaseId, Double latitude, Double longitude) {
         Logger.info("updateUserLocation HomeController");
         Location loc = locations.getLocation(firebaseId);
@@ -63,6 +84,22 @@ public class HomeController extends Controller {
             locations.insert(loc);
         }
         return ok("Ok");
+    }
+
+    public Result getUser(String firebaseId) {
+        Result res;
+        User user = users.getUser(firebaseId);
+        ObjectNode searchResult = Json.newObject();
+        searchResult.put("id", user.id);
+        searchResult.put("nickname", user.nickName);
+        searchResult.put("xp", user.xp);
+        ArrayNode friendList = searchResult.arrayNode();
+        for (int idx = 0; idx < user.friends.size(); ++idx) {
+            friendList.add(user.friends.get(idx));
+        }
+        searchResult.put("friends", friendList);
+        res = ok(searchResult);
+        return res;
     }
 
     public Result getAllLocations(String firebaseId) {
@@ -99,5 +136,8 @@ public class HomeController extends Controller {
     public Result remoteTest() {
         return ok("Heroku reached");
     }
-	public Result deployTest(){return ok("Deploy Succesfull");}
+
+    public Result deployTest() {
+        return ok("Deploy Successful");
+    }
 }
