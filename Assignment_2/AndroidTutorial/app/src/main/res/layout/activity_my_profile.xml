@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MyProfileActivity">
+
+    <TextView
+        android:id="@+id/id_textView"
+        android:layout_width="175dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="40dp"
+        android:text="ID: 46546"
+        app:layout_constraintStart_toEndOf="@+id/profile_pic_image"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/name_textView"
+        android:layout_width="175dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="80dp"
+        android:text="Name: Trollololo"
+        app:layout_constraintStart_toEndOf="@+id/profile_pic_image"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/xp_textView"
+        android:layout_width="175dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="120dp"
+        android:text="XP: 12311"
+        app:layout_constraintStart_toEndOf="@+id/profile_pic_image"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/lvl_textView"
+        android:layout_width="175dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="160dp"
+        android:text="Lvl: 6"
+        app:layout_constraintStart_toEndOf="@+id/profile_pic_image"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/achievement_textView"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="30dp"
+        android:text="Achievements:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/description_text_textView" />
+
+    <ImageView
+        android:id="@+id/achievement1_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/achievement_textView"
+        app:srcCompat="@android:drawable/btn_star_big_on" />
+
+    <ImageView
+        android:id="@+id/achievement2_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toEndOf="@+id/achievement1_image"
+        app:layout_constraintTop_toBottomOf="@+id/achievement_textView"
+        app:srcCompat="@android:drawable/ic_notification_overlay" />
+
+    <TextView
+        android:id="@+id/description_textView"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="30dp"
+        android:text="Description: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_pic_image" />
+
+    <TextView
+        android:id="@+id/description_text_textView"
+        android:layout_width="340dp"
+        android:layout_height="87dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        android:text="Hello, bla bsdfl lskdf lsjd"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/description_textView" />
+
+    <Button
+        android:id="@+id/edit_profile_button"
+        android:layout_width="130dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="530dp"
+        android:text="Edit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/profile_pic_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

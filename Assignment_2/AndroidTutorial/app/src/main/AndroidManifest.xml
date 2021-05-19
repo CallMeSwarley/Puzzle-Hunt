@@ -16,7 +16,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidTutorial"
         android:usesCleartextTraffic="true">
-        <activity android:name=".MainMenuActivity"></activity>
+        <activity android:name=".EditProfileActivity"></activity>
+        <activity android:name=".EventsActivity" />
+        <activity android:name=".LeaderboardActivity" />
+        <activity android:name=".FriendsActivity" />
+        <activity android:name=".PuzzleMapActivity" />
+        <activity android:name=".CollectionsActivity" />
+        <activity android:name=".InventoryActivity" />
+        <activity android:name=".MyProfileActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -41,6 +48,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MainMenuActivity" />
 
         <uses-library
             android:name="org.apache.http.legacy"
