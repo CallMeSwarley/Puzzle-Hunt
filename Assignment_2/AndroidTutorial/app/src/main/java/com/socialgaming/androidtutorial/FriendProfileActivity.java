@@ -10,13 +10,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class MyProfileActivity extends AppCompatActivity {
+public class FriendProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_profile);
-
+        setContentView(R.layout.activity_friend_profile);
 
 
         final ImageView profilePic = findViewById(R.id.profile_pic_image);
@@ -26,6 +25,8 @@ public class MyProfileActivity extends AppCompatActivity {
         final TextView xp = findViewById(R.id.xp_textView);
         final TextView lvl = findViewById(R.id.lvl_textView);
 
+        final TextView friendshipLvl = findViewById(R.id.friendship_lvl_textView);
+
         final TextView description = findViewById(R.id.description_textView);
         final TextView descriptionText = findViewById(R.id.description_text_textView);
         final TextView achievement = findViewById(R.id.achievement_textView);
@@ -34,26 +35,33 @@ public class MyProfileActivity extends AppCompatActivity {
         final ImageView achievement1 = findViewById(R.id.achievement1_image);
         final ImageView achievement2 = findViewById(R.id.achievement2_image);
 
-        final TextView preferences = findViewById(R.id.preferences_textView);
-        final RecyclerView preferencesList = findViewById(R.id.preferences_recyclerView);
-        final Button editPreferences = findViewById(R.id.remove_friend_button);
 
-        final Button editProfile = findViewById(R.id.edit_profile_button);
+        final Button sendGift = findViewById(R.id.send_gift_button);
+        final Button trade = findViewById(R.id.trade_button2);
+        final Button removeFriend = findViewById(R.id.remove_friend_button);
 
-        editPreferences.setOnClickListener(new View.OnClickListener() {
+        sendGift.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MyProfileActivity.this, EditPreferencesActivity.class);
+                Intent intent = new Intent(FriendProfileActivity.this, SendGiftActivity.class);
                 startActivity(intent);
             }
         });
 
-        editProfile.setOnClickListener(new View.OnClickListener() {
+        trade.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MyProfileActivity.this, EditProfileActivity.class);
+                Intent intent = new Intent(FriendProfileActivity.this, TradeActivity.class);
                 startActivity(intent);
             }
         });
+        removeFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(FriendProfileActivity.this, RemoveFriendActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 }

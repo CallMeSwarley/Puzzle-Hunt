@@ -2,4 +2,51 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="410dp"
+        android:layout_height="128dp">
+
+        <ImageView
+            android:id="@+id/friend_pic_imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:translationX="10dp"
+            android:translationY="10dp"
+            app:srcCompat="@drawable/ic_launcher_foreground" />
+
+        <TextView
+            android:id="@+id/friend_name_textView"
+            android:layout_width="108dp"
+            android:layout_height="wrap_content"
+            android:text="Name:"
+            android:translationX="130dp"
+            android:translationY="30dp" />
+
+        <TextView
+            android:id="@+id/friend_lvl_textView"
+            android:layout_width="108dp"
+            android:layout_height="wrap_content"
+            android:text="FriendshipLvl: "
+            android:translationX="130dp"
+            android:translationY="80dp" />
+
+        <Button
+            android:id="@+id/view_profile_button"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:text="View Profile"
+            android:translationX="260dp"
+            android:translationY="20dp" />
+
+        <Button
+            android:id="@+id/trade_button"
+            android:layout_width="116dp"
+            android:layout_height="35dp"
+            android:text="Trade"
+            android:translationX="260dp"
+            android:translationY="70dp" />
+    </FrameLayout>
+</LinearLayout>

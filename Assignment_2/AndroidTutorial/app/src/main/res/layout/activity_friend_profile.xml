@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FriendProfileActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MyProfileActivity"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="-65dp">
+
+        <TextView
+            android:id="@+id/id_textView"
+            android:layout_width="175dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="40dp"
+            android:text="ID: 46546"
+            app:layout_constraintStart_toEndOf="@+id/profile_pic_image"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/name_textView"
+            android:layout_width="175dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="80dp"
+            android:text="Name: Trollololo"
+            app:layout_constraintStart_toEndOf="@+id/profile_pic_image"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/xp_textView"
+            android:layout_width="175dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="120dp"
+            android:text="XP: 12311"
+            app:layout_constraintStart_toEndOf="@+id/profile_pic_image"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lvl_textView"
+            android:layout_width="175dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="160dp"
+            android:text="Lvl: 6"
+            app:layout_constraintStart_toEndOf="@+id/profile_pic_image"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/achievement_textView"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="20dp"
+            android:text="Achievements:"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/description_text_textView" />
+
+        <ImageView
+            android:id="@+id/achievement1_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/achievement_textView"
+            app:srcCompat="@android:drawable/btn_star_big_on" />
+
+        <ImageView
+            android:id="@+id/achievement2_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toEndOf="@+id/achievement1_image"
+            app:layout_constraintTop_toBottomOf="@+id/achievement_textView"
+            app:srcCompat="@android:drawable/ic_notification_overlay" />
+
+        <TextView
+            android:id="@+id/description_textView"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="15dp"
+            android:text="Description: "
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/friendship_lvl_textView" />
+
+        <TextView
+            android:id="@+id/description_text_textView"
+            android:layout_width="340dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="10dp"
+            android:text="Hello, bla bsdfl lskdf lsjd"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/description_textView" />
+
+        <ImageView
+            android:id="@+id/profile_pic_image"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="40dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@android:drawable/ic_menu_camera" />
+
+        <Button
+            android:id="@+id/remove_friend_button"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="280dp"
+            android:layout_marginBottom="15dp"
+            android:text="Remove"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/trade_button2"
+            android:layout_width="120dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginBottom="80dp"
+            android:text="Trade"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/send_gift_button" />
+
+        <TextView
+            android:id="@+id/friendship_lvl_textView"
+            android:layout_width="150dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="15dp"
+            android:text="Friendship Level:"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profile_pic_image" />
+
+        <Button
+            android:id="@+id/send_gift_button"
+            android:layout_width="120dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginBottom="80dp"
+            android:text="Send Gift"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
