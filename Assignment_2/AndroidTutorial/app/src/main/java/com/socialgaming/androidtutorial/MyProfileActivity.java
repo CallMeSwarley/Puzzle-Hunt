@@ -1,8 +1,5 @@
 package com.socialgaming.androidtutorial;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,13 +7,23 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
+import com.socialgaming.androidtutorial.Models.User;
+import com.socialgaming.androidtutorial.Util.HTTPGetter;
+
+import java.util.concurrent.ExecutionException;
+
 public class MyProfileActivity extends AppCompatActivity {
+    private Gson gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
-
 
 
         final ImageView profilePic = findViewById(R.id.profile_pic_image);
@@ -39,7 +46,22 @@ public class MyProfileActivity extends AppCompatActivity {
         final Button editPreferences = findViewById(R.id.remove_friend_button);
 
         final Button editProfile = findViewById(R.id.edit_profile_button);
-
+        HTTPGetter get = new HTTPGetter();
+        get.execute("user", FirebaseAuth.getInstance().getUid(), "getUser");
+        try {
+            String getUserResult = get.get();
+            if (!getUserResult.equals("{ }")) {
+                User user = gson.fromJson(getUserResult, User.class);
+                id.setText(user.id);
+                name.setText(user.nickName);
+                xp.setText(user.xp.toString());
+                descriptionText.setText(user.description);
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         editPreferences.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

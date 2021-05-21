@@ -18,5 +18,6 @@ GET     /remoteTest                                         controllers.HomeCont
 GET	    /deployTest				                            controllers.HomeController.deployTest
 # User
 GET     /user/:firebaseId/getUser                           controllers.HomeController.getUser(firebaseId:String)
+
 POST    /user/:firebaseId/prepare                           controllers.HomeController.prepareUser(firebaseId:String)
 POST    /user/:firebaseId/:nickName/prepare                 controllers.HomeController.prepareUserWithNickname(firebaseId:String,nickName:String)

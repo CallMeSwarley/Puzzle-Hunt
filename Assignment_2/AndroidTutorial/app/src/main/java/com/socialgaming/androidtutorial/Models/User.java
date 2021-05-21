@@ -1,12 +1,9 @@
-package models;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+package com.socialgaming.androidtutorial.Models;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class User {
-    @JsonProperty("_id")
     public String id;
     public String nickName;
     public Long xp;
@@ -45,3 +42,4 @@ public class User {
         this.nickName = nickName;
     }
 }
+

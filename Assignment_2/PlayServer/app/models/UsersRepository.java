@@ -1,7 +1,5 @@
 package models;
 
-import com.mongodb.WriteResult;
-
 import org.jongo.MongoCollection;
 
 import javax.inject.Inject;
@@ -34,8 +32,7 @@ public class UsersRepository {
     }
 
     public void insert(User user) {
-       WriteResult result= users().save(user);
-       result.getUpsertedId();
+        users().save(user);
     }
 
     public void update(User user) {
@@ -43,7 +40,10 @@ public class UsersRepository {
     }
 
     public User copyUser(User user) {
-        User copy = new User();
+        User copy = new User(user.id, user.nickName);
+        copy.description = user.description;
+        copy.friends = user.friends;
+        copy.xp = user.xp;
         return copy;
     }
 }

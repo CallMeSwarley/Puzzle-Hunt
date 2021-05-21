@@ -166,5 +166,6 @@
     <orderEntry type="library" scope="TEST" name="sbt: xalan:xalan:2.7.2:jar" level="project" />
     <orderEntry type="library" scope="TEST" name="sbt: xerces:xercesImpl:2.11.0:jar" level="project" />
     <orderEntry type="library" scope="TEST" name="sbt: xml-apis:xml-apis:1.4.01:jar" level="project" />
+    <orderEntry type="library" name="sbt: com.google.code.gson:gson:2.8.0:jar" level="project" />
   </component>
 </module>

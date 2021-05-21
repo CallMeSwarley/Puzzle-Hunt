@@ -18,8 +18,8 @@ libraryDependencies ++= Seq(
 
 // dependency for google cloud message service (push service)
 libraryDependencies += "com.google.android.gcm" % "gcm-server" % "1.0.2"
-
+libraryDependencies += "com.google.code.gson" % "gson" % "2.2.4"
 // dependency for restfb
 libraryDependencies += "com.restfb" % "restfb" % "1.6.14"
 
-resolvers += "GCM Server Repository" at "https://raw.github.com/slorber/gcm-server-repository/master/releases/" 
+resolvers += "GCM Server Repository" at "https://raw.github.com/slorber/gcm-server-repository/master/releases/"

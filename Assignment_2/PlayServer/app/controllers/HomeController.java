@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.Gson;
 
 import javax.inject.Inject;
 
@@ -19,6 +20,7 @@ import play.mvc.Result;
  * to the application's home page.
  */
 public class HomeController extends Controller {
+    Gson gson = new Gson();
     @Inject
     private LocationsRepository locations;
     @Inject
@@ -52,8 +54,9 @@ public class HomeController extends Controller {
         locationsNode.put("loc32", location.loc3[1]);
         locationArray.add(locationsNode);
         searchResults.put("locations", locationArray);
-        res = ok(searchResults);
-        return res;
+        Logger.info(gson.toJson(location));
+
+        return ok("test");
     }
 
     public Result prepareUser(String firebaseId) {
@@ -88,17 +91,7 @@ public class HomeController extends Controller {
 
     public Result getUser(String firebaseId) {
         Result res;
-        User user = users.getUser(firebaseId);
-        ObjectNode searchResult = Json.newObject();
-        searchResult.put("id", user.id);
-        searchResult.put("nickname", user.nickName);
-        searchResult.put("xp", user.xp);
-        ArrayNode friendList = searchResult.arrayNode();
-        for (int idx = 0; idx < user.friends.size(); ++idx) {
-            friendList.add(user.friends.get(idx));
-        }
-        searchResult.put("friends", friendList);
-        res = ok(searchResult);
+        res = ok(gson.toJson(users.getUser(firebaseId)));
         return res;
     }
 
