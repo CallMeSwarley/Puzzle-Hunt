@@ -36,6 +36,13 @@ public class HomeController extends Controller {
         return ok("Ok");
     }
 
+    public Result updateUser(String userString) {
+        Logger.info("Update user");
+        User user = gson.fromJson(userString, User.class);
+        users.update(user);
+        return ok("User updated");
+    }
+
     public Result test(String firebaseId) {
         Result res;
 
