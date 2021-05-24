@@ -28,7 +28,7 @@ public class User {
         this(firebaseId);
         this.nickName = nickName;
     }
-
+//TODO update add/rm fun
     public void addFriend(String firebaseId) {
         if (!friends.contains(firebaseId))
             friends.add(firebaseId);
