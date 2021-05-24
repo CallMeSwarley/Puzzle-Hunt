@@ -8,11 +8,11 @@
 
     <TextView
         android:id="@+id/header_textView"
-        android:layout_width="105dp"
-        android:layout_height="54dp"
-        android:layout_marginStart="16dp"
+        android:layout_width="86dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="SETS"
+        android:text="Sets"
         android:textSize="40sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -37,35 +37,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sets_recyclerview"
         android:layout_width="409dp"
         android:layout_height="468dp"
         android:layout_marginStart="1dp"
         android:layout_marginTop="133dp"
-        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
-
-                <ImageButton
-                    android:id="@+id/imageButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="68dp"
-                    tools:srcCompat="@tools:sample/backgrounds/scenic" />
-
-
-            </androidx.cardview.widget.CardView>
-
-        </LinearLayout>
-
-    </androidx.core.widget.NestedScrollView>
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

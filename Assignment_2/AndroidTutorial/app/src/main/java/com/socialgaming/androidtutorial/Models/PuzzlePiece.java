@@ -11,7 +11,6 @@ public class PuzzlePiece {
     private int positionHorizontal;
     private int positionVertical;
 
-
     public PuzzlePiece(Bitmap image, int positionHorizontal, int positionVertical){
         this.image = image;
         this.positionHorizontal = positionHorizontal;
