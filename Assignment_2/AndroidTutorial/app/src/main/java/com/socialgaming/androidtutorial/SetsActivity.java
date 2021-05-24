@@ -1,6 +1,7 @@
 package com.socialgaming.androidtutorial;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
@@ -18,7 +19,14 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.socialgaming.androidtutorial.Models.RVAdapter;
+
 public class SetsActivity extends AppCompatActivity {
+
+    String[] s1;
+    int[] images = {R.drawable.common_full_open_on_phone, R.drawable.common_google_signin_btn_icon_dark, R.drawable.common_google_signin_btn_icon_dark_normal_background,
+    R.drawable.common_google_signin_btn_icon_light_focused, R.drawable.googleg_standard_color_18, R.drawable.common_google_signin_btn_icon_light_normal_background,
+    R.drawable.common_full_open_on_phone, R.drawable.common_google_signin_btn_icon_disabled, R.drawable.common_google_signin_btn_icon_light_normal };
 
     boolean showCompleted = true;
 
@@ -34,12 +42,18 @@ public class SetsActivity extends AppCompatActivity {
         // RecyclerView
         final RecyclerView setList = findViewById(R.id.sets_recyclerview);
 
-        //TextView textView = new TextView(Context);
-        //final RecyclerView sets = findViewById(R.id.sets_recyclerView);
+        // Recourcen laden
+        s1 = getResources().getStringArray(R.array.puzzle_sets);
+
+        RVAdapter adapter = new RVAdapter(this, s1, images);
+        setList.setAdapter(adapter);
+        setList.setLayoutManager(new LinearLayoutManager(this));
+
 
         //btnSortBy.setText("Sort by: " + sortOptions.toString().replace('_', ' '));
         btnShowCompleted.setText("Show completed: " + (showCompleted ? "Yes" : "No"));
 
+        // Vollständig Puzzles anzeigen
         btnShowCompleted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -48,7 +62,7 @@ public class SetsActivity extends AppCompatActivity {
             }
         });
 
-
+        // Sortierbutton
         btnSortBy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,6 +97,7 @@ public class SetsActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
+
 
 
     }

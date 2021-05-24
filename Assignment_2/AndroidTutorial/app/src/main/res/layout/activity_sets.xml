@@ -21,9 +21,10 @@
         android:id="@+id/showCompleted_button"
         android:layout_width="190dp"
         android:layout_height="45dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="88dp"
         android:text="Show Completed:"
+        app:layout_constraintEnd_toStartOf="@+id/sortBy_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,20 +32,21 @@
         android:id="@+id/sortBy_button"
         android:layout_width="190dp"
         android:layout_height="45dp"
-        android:layout_marginStart="204dp"
         android:layout_marginTop="88dp"
+        android:layout_marginEnd="8dp"
         android:text="Sort by:"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sets_recyclerview"
         android:layout_width="409dp"
         android:layout_height="468dp"
-        android:layout_marginStart="1dp"
         android:layout_marginTop="133dp"
         android:clipToPadding="false"
         android:scrollbars="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
