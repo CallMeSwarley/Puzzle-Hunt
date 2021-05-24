@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 
 import javax.inject.Inject;
 
+import models.FriendshipRepository;
 import models.Location;
 import models.LocationsRepository;
 import models.User;
@@ -25,7 +26,9 @@ public class HomeController extends Controller {
     private LocationsRepository locations;
     @Inject
     private UsersRepository users;
-
+    @Inject
+    private FriendshipRepository friendships;
+//TODO Friendship im homecontroller einbauen (Methoden wie User)
     /**
      * An action that renders an HTML page with a welcome message.
      * The configuration in the <code>routes</code> file means that

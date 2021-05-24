@@ -21,3 +21,5 @@ GET     /user/:firebaseId/getUser                           controllers.HomeCont
 POST    /user/:userString/update                            controllers.HomeController.updateUser(userString: String)
 POST    /user/:firebaseId/prepare                           controllers.HomeController.prepareUser(firebaseId:String)
 POST    /user/:firebaseId/:nickName/prepare                 controllers.HomeController.prepareUserWithNickname(firebaseId:String,nickName:String)
+# Friendship
+#TODO Korrekte routes einbauen

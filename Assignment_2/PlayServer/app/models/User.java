@@ -3,21 +3,24 @@ package models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import controllers.HomeController;
 
 public class User {
     @JsonProperty("_id")
     public String id;
     public String nickName;
     public Long xp;
-    public List<String> friends;
+    public HashMap<String, Friendship> friends;//Key sind die kombinierten ids der Freunde
     public String description;
 
     public User() {
         this.id = "";
         this.nickName = "";
         this.xp = 0L;
-        this.friends = new ArrayList<>();
+        this.friends = new HashMap<>();
         this.description = "";
     }
 
@@ -33,12 +36,15 @@ public class User {
     }
 
     public void addFriend(String firebaseId) {
-        if (!friends.contains(firebaseId))
-            friends.add(firebaseId);
+        String friendshipId=this.id+firebaseId;
+        if (!friends.containsKey(friendshipId)){
+            Friendship fs=new Friendship(this.id, firebaseId);
+            friends.put(friendshipId,fs);
+        }
     }
 
     public void removeFriend(String firebaseId) {
-        friends.remove(firebaseId);
+        friends.remove(this.id+firebaseId);
     }
 
     public void updateNickname(String nickName) {

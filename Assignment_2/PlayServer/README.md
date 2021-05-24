@@ -3,8 +3,8 @@ Empfehlungen (hat zumindest bei mir funktionert xD):
     -   JDK 1.8_291
     -   Powershell
     -   SBT auf Rechner installieren
-
 Einrichtung:
+
 1.  Heroku CLI installieren (https://devcenter.heroku.com/articles/heroku-cli#download-and-install)
 2.  heroku login    ausführen
 3.  heroku git:remote -a sgplayserver   ausführen
