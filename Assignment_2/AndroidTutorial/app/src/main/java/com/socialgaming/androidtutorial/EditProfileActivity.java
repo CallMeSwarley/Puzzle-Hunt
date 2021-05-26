@@ -18,7 +18,7 @@ import com.socialgaming.androidtutorial.Util.HTTPPoster;
 import java.util.concurrent.ExecutionException;
 
 public class EditProfileActivity extends AppCompatActivity {
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
     private User user;
 
     @Override
@@ -54,6 +54,5 @@ public class EditProfileActivity extends AppCompatActivity {
             Intent returnIntent = new Intent(EditProfileActivity.this, MyProfileActivity.class);
             startActivity(returnIntent);
         });
-
     }
 }

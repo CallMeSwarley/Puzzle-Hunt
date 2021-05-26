@@ -41,6 +41,7 @@ public class HomeController extends Controller {
 
     public Result updateUser(String userString) {
         Logger.info("Update user");
+
         User user = gson.fromJson(userString, User.class);
         users.update(user);
         return ok("User updated");

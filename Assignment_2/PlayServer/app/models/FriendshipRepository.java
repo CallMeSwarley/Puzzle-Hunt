@@ -1,5 +1,7 @@
 package models;
 
+import com.mongodb.WriteResult;
+
 import org.jongo.MongoCollection;
 
 import javax.inject.Inject;
@@ -32,7 +34,8 @@ public class FriendshipRepository {
     }
 
     public void insert(Friendship fs) {
-        friendships().save(fs);
+        WriteResult result = friendships().save(fs);
+        result.getUpsertedId().toString();
     }
 
     public void update(Friendship fs) {
@@ -41,9 +44,9 @@ public class FriendshipRepository {
 
     public Friendship copyFriendship(Friendship fs) {
         Friendship copy = new Friendship(fs.friendOne, fs.friendTwo);
-        copy.rank=fs.rank;
-        copy.id=fs.id;
-        copy.friendshipStart=fs.friendshipStart;
+        copy.rank = fs.rank;
+        copy.id = fs.id;
+        copy.friendshipStart = fs.friendshipStart;
         return copy;
     }
 }

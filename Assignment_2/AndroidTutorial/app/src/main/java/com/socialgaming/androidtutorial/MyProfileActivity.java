@@ -2,7 +2,6 @@ package com.socialgaming.androidtutorial;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,10 +14,11 @@ import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 public class MyProfileActivity extends AppCompatActivity {
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,7 @@ public class MyProfileActivity extends AppCompatActivity {
                 User user = gson.fromJson(getUserResult, User.class);
                 id.setText(user.id);
                 name.setText(user.nickName);
-                xp.setText(user.xp.toString());
+                xp.setText(String.format(Locale.GERMANY, "%,d", user.xp));
                 descriptionText.setText(user.description);
             }
         } catch (ExecutionException e) {
@@ -62,20 +62,14 @@ public class MyProfileActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        editPreferences.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MyProfileActivity.this, EditPreferencesActivity.class);
-                startActivity(intent);
-            }
+        editPreferences.setOnClickListener(v -> {
+            Intent intent = new Intent(MyProfileActivity.this, EditPreferencesActivity.class);
+            startActivity(intent);
         });
 
-        editProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MyProfileActivity.this, EditProfileActivity.class);
-                startActivity(intent);
-            }
+        editProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(MyProfileActivity.this, EditProfileActivity.class);
+            startActivity(intent);
         });
     }
 }
