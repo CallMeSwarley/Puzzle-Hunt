@@ -30,14 +30,20 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        final Button login = findViewById(R.id.login_button);
+        final Button register = findViewById(R.id.register_button);
+        final TextView view = findViewById(R.id.text);
 
+        final EditText emailText = findViewById(R.id.editTextTextEmailAddress);
+        final EditText passwordText = findViewById(R.id.editTextTextPassword);
+        register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
         if (currentUser == null) {
-            final Button login = findViewById(R.id.login_button);
-            final Button register = findViewById(R.id.register_button);
-            final TextView view = findViewById(R.id.text);
-
-            final EditText emailText = findViewById(R.id.editTextTextEmailAddress);
-            final EditText passwordText = findViewById(R.id.editTextTextPassword);
 
             login.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -45,13 +51,7 @@ public class LoginActivity extends AppCompatActivity {
                     signIn(emailText.getText().toString(), passwordText.getText().toString());
                 }
             });
-            register.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                    startActivity(intent);
-                }
-            });
+
         } else {
 
             Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);

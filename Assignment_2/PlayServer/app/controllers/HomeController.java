@@ -21,7 +21,7 @@ import play.mvc.Result;
  * to the application's home page.
  */
 public class HomeController extends Controller {
-    Gson gson = new Gson();
+    private final Gson gson = new Gson();
     @Inject
     private LocationsRepository locations;
     @Inject
@@ -29,6 +29,7 @@ public class HomeController extends Controller {
     @Inject
     private FriendshipRepository friendships;
 //TODO Friendship im homecontroller einbauen (Methoden wie User)
+
     /**
      * An action that renders an HTML page with a welcome message.
      * The configuration in the <code>routes</code> file means that
@@ -143,5 +144,11 @@ public class HomeController extends Controller {
 
     public Result deployTest() {
         return ok("Deploy Successful");
+    }
+
+    public Result getNearbyUsers(String firebaseId) {
+        Result res;
+        res=ok(gson.toJson(locations.getNearbyUsers(firebaseId)));
+        return res;
     }
 }

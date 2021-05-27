@@ -17,6 +17,7 @@ GET     /position/:firebaseId/getAllPositions               controllers.HomeCont
 GET     /remoteTest                                         controllers.HomeController.remoteTest
 GET	    /deployTest				                            controllers.HomeController.deployTest
 # User
+GET     /user/:firebaseId/getNearbyUsers                    controllers.HomeController.getNearbyUsers(firebaseId:String)
 GET     /user/:firebaseId/getUser                           controllers.HomeController.getUser(firebaseId:String)
 POST    /user/:userString/update                            controllers.HomeController.updateUser(userString: String)
 POST    /user/:firebaseId/prepare                           controllers.HomeController.prepareUser(firebaseId:String)
