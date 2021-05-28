@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AndroidTutorial</string>
+    <string name="app_name">PuzzleHunt</string>
     <string name="register">Register</string>
     <string name="title_activity_maps">Map</string>
     <string name="google_maps_key" translatable="false">AIzaSyAwy2u2JwsAl927ocUqnV3jt6CWUBYg008</string>
