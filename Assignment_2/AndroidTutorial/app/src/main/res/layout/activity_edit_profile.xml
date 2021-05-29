@@ -65,7 +65,7 @@
         android:layout_alignEnd="@+id/nickNameEdit"
         android:layout_toEndOf="@+id/descriptionLabel"
         android:ems="10"
-        android:gravity="start|center_horizontal|top"
+        android:gravity="center_horizontal"
         android:inputType="textMultiLine" />
 
     <Button

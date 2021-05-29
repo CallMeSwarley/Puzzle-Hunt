@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,8 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,16 +48,23 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        if (currentUser == null) {
 
-            login.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = emailText.getText().toString();
+                String password = passwordText.getText().toString();
+                if (email == null || email.equals("")) {
+                    Toast.makeText(LoginActivity.this, "Please enter your email", Toast.LENGTH_SHORT).show();
+                } else if (password == null || password.equals("")) {
+                    Toast.makeText(LoginActivity.this, "please enter your password", Toast.LENGTH_SHORT).show();
+                } else
                     signIn(emailText.getText().toString(), passwordText.getText().toString());
-                }
-            });
+            }
+        });
 
-        } else {
+        if (currentUser != null) {
             Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
             startActivity(intent);
             Log.d(TAG, "signedInUser:\t" + currentUser);

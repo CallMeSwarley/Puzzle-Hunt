@@ -1,18 +1,17 @@
 package com.socialgaming.androidtutorial;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
 public class MainMenuActivity extends AppCompatActivity {
 
@@ -29,7 +28,6 @@ public class MainMenuActivity extends AppCompatActivity {
         final Button friends = findViewById(R.id.friends_button);
         final Button leaderboard = findViewById(R.id.leaderboard_button);
         final Button events = findViewById(R.id.events_button);
-
 
 
         myProfile.setOnClickListener(new View.OnClickListener() {
@@ -81,5 +79,36 @@ public class MainMenuActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (Integer.parseInt(Build.VERSION.SDK) > 5 && keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            onBackPressed();
+            return true;
+        } else return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog alertDialog = new AlertDialog.Builder(MainMenuActivity.this).create();
+        alertDialog.setTitle("Logout");
+        alertDialog.setMessage("Doing this will log you out");
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "logout", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
+                startActivity(intent);
+                dialog.dismiss();
+            }
+        });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alertDialog.show();
     }
 }
