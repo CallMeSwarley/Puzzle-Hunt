@@ -1,51 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterActivity">
+    android:padding="25dp"
+    tools:context=".InventoryActivity">
 
-    <Button
-        android:id="@+id/register"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="@string/register"
+    <TextView
+        android:id="@+id/inventory_text"
+        android:layout_width="0dp"
+        android:layout_height="113dp"
+        android:layout_marginTop="50dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Inventory"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textSize="40dp"
+        app:layout_constraintBottom_toTopOf="@+id/sets_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="397dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/passwordEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="182dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword" />
+    <Button
+        android:id="@+id/sets_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="SETS"
+        android:textSize="40dp"
+        app:icon="@drawable/ic_sets"
+        app:iconGravity="textStart"
+        app:iconSize="40dp"
+        app:layout_constraintBottom_toTopOf="@+id/pieces_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.32"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inventory_text" />
 
-    <EditText
-        android:id="@+id/emailEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="135dp"
-        android:ems="10"
-        android:hint="your.name@domain.com"
-        android:inputType="textEmailAddress" />
+    <Button
 
-    <EditText
-        android:id="@+id/nickNameText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="232dp"
-        android:ems="10"
-        android:hint="NickName"
-        android:inputType="textPersonName" />
-</RelativeLayout>
+        android:id="@+id/pieces_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="Pieces"
+        android:textSize="40dp"
+        app:icon="@drawable/ic_piece"
+        app:iconGravity="textStart"
+        app:iconSize="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sets_button" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

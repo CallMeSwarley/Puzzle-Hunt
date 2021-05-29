@@ -13,12 +13,14 @@
 
         <item name="materialButtonStyle">@style/AppButton</item>
         <item name="shapeAppearanceSmallComponent">@style/AppShapeAppearance.SmallComponent</item>
+
          </style>
 
     <style name="AppButton" parent="Widget.MaterialComponents.Button">
-        <item name="backgroundTint">@color/turquoise_200</item>
+       <!-- <item name="backgroundTint">@color/turquoise_200</item>-->
         <item name="elevation">20dp</item>
     </style>
+
     <style name="AppShapeAppearance.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerFamily">cut</item>
         <item name="cornerSize">6dp</item>
