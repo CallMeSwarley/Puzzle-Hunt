@@ -38,10 +38,18 @@ class ItemViewHolder extends RecyclerView.ViewHolder
 
     public ItemViewHolder(@NonNull @NotNull View itemView) {
         super(itemView);
-        title = itemView.findViewById(R.id.name_textView);
-        ownedPieces = itemView.findViewById(R.id.owned_pieces_textView);
-        maxPieces = itemView.findViewById(R.id.max_pieces_textView);
-        image = itemView.findViewById(R.id.image_preview_imageView);
+
+        // Card Layout
+        title = itemView.findViewById(R.id.title_textView);
+        ownedPieces = itemView.findViewById(R.id.owned_textView);
+        maxPieces = itemView.findViewById(R.id.max_textView);
+        image = itemView.findViewById(R.id.preview_image_imageView);
+
+        // Altes Layout
+//        title = itemView.findViewById(R.id.name_textView);
+//        ownedPieces = itemView.findViewById(R.id.owned_pieces_textView);
+//        maxPieces = itemView.findViewById(R.id.max_pieces_textView);
+//        image = itemView.findViewById(R.id.image_preview_imageView);
     }
 }
 
@@ -70,6 +78,7 @@ public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     if(loadMore != null)
                         loadMore.onLoadMore();
                 }
+
                 isLoading = true;
             }
         });
@@ -89,7 +98,8 @@ public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         if(viewType == VIEW_TYPE_ITEM){
-            View view = LayoutInflater.from(activity).inflate(R.layout.set_row, parent, false);
+            View view = LayoutInflater.from(activity).inflate(R.layout.set_card_row, parent, false);
+            //View view = LayoutInflater.from(activity).inflate(R.layout.set_row, parent, false);
             return new ItemViewHolder(view);
         }
         else if (viewType == VIEW_TYPE_LOADING) {
@@ -129,6 +139,9 @@ public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         isLoading = loading;
     }
 
+    public void setLoaded() {
+
+    }
 
     /*
     Context context;

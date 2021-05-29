@@ -18,6 +18,8 @@ import com.socialgaming.androidtutorial.Interfaces.ILoadMore;
 import com.socialgaming.androidtutorial.Models.SetViewItem;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -65,7 +67,7 @@ public class SetsActivity extends AppCompatActivity {
                             createRandomData(10);
 
                             adapter.notifyDataSetChanged();
-
+                            //adapter.setLoaded();
                         }
                     }, 5000);
                 }
@@ -103,17 +105,26 @@ public class SetsActivity extends AppCompatActivity {
                         switch (menuItem.getItemId()) {
 
                             case R.id.item_mostPieces:
+                                // Sortieren
+                                Collections.sort(items, SetViewItem.MostPiecesComperator);
+                                adapter.notifyDataSetChanged();
                                 btnSortBy.setText("Sort by: Most Pieces");
-                                // Sortieren
                                 return true;
+
                             case R.id.item_leastPieces:
+                                // Sortieren
+                                Collections.sort(items, SetViewItem.LeastPiecesComperator);
+                                adapter.notifyDataSetChanged();
                                 btnSortBy.setText("Sort by: Least Pieces");
-                                // Sortieren
                                 return true;
+
                             case R.id.item_alphabetical:
-                                btnSortBy.setText("Sort by: Alphabetical");
                                 // Sortieren
+                                Collections.sort(items, SetViewItem.AlphabeticalComperator);
+                                adapter.notifyDataSetChanged();
+                                btnSortBy.setText("Sort by: Alphabetical");
                                 return true;
+
                             default:
                                 return false;
 

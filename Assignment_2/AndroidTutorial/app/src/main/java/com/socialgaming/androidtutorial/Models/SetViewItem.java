@@ -3,6 +3,8 @@ package com.socialgaming.androidtutorial.Models;
 import android.media.Image;
 import android.view.View;
 
+import java.util.Comparator;
+
 public class SetViewItem {
 
     private String name;
@@ -22,6 +24,27 @@ public class SetViewItem {
         this.ownedPieces = ownedPieces;
         this.maxPieces = maxPieces;
     }
+
+    public static Comparator<SetViewItem> AlphabeticalComperator = new Comparator<SetViewItem>() {
+        @Override
+        public int compare(SetViewItem o1, SetViewItem o2) {
+            return o1.getName().compareTo(o2.getName());
+        }
+    };
+
+    public static Comparator<SetViewItem> MostPiecesComperator = new Comparator<SetViewItem>() {
+        @Override
+        public int compare(SetViewItem o1, SetViewItem o2) {
+            return o2.getOwnedPieces() - o1.getOwnedPieces();
+        }
+    };
+
+    public static Comparator<SetViewItem> LeastPiecesComperator = new Comparator<SetViewItem>() {
+        @Override
+        public int compare(SetViewItem o1, SetViewItem o2) {
+            return o1.getOwnedPieces() - o2.getOwnedPieces();
+        }
+    };
 
     public String getName() {
         return name;
