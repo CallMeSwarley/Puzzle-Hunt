@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp">
+    android:layout_margin="6dp"
+    app:cardElevation="10dp">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -20,12 +21,41 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/amt_pieces_textView"
+                android:id="@+id/name_textView"
+                android:layout_width="58dp"
+                android:layout_height="29dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:text="name"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/image_preview_imageView"
+                app:layout_constraintTop_toTopOf="@+id/image_preview_imageView" />
+
+            <TextView
+                android:id="@+id/owned_pieces_textView"
+                android:layout_width="53dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="12dp"
+                android:text="owned"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/max_pieces_textView"
+                app:layout_constraintEnd_toEndOf="@+id/max_pieces_textView" />
+
+            <TextView
+                android:id="@+id/max_pieces_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="36dp"
-                android:text="TextView"
+                android:layout_marginTop="52dp"
+                android:layout_marginEnd="40dp"
+                android:text="max"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@+id/image_preview_imageView"
                 app:layout_constraintTop_toTopOf="@+id/image_preview_imageView" />
 

@@ -4,31 +4,30 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.CompoundButton;
 import android.widget.PopupMenu;
-import android.widget.PopupWindow;
-import android.widget.TextView;
+import android.widget.Switch;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
+import com.socialgaming.androidtutorial.Adapters.SetListAdapter;
+import com.socialgaming.androidtutorial.Interfaces.ILoadMore;
+import com.socialgaming.androidtutorial.Models.SetViewItem;
 
-import com.socialgaming.androidtutorial.Models.RVAdapter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 public class SetsActivity extends AppCompatActivity {
 
-    String[] s1;
-    int[] images = {R.drawable.common_full_open_on_phone, R.drawable.common_google_signin_btn_icon_dark, R.drawable.common_google_signin_btn_icon_dark_normal_background,
-    R.drawable.common_google_signin_btn_icon_light_focused, R.drawable.googleg_standard_color_18, R.drawable.common_google_signin_btn_icon_light_normal_background,
-    R.drawable.common_full_open_on_phone, R.drawable.common_google_signin_btn_icon_disabled, R.drawable.common_google_signin_btn_icon_light_normal };
-
     boolean showCompleted = true;
+
+    List<SetViewItem> items = new ArrayList<>();
+    SetListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,29 +35,57 @@ public class SetsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sets);
 
         // Buttons
-        final Button btnShowCompleted = findViewById(R.id.showCompleted_button);
         final Button btnSortBy = findViewById(R.id.sortBy_button);
 
-        // RecyclerView
+        // Switch
+        final Switch switchShowCompleted = findViewById(R.id.showCompleted_switch);
+
+        createRandomData(10);
+
+        // RecyclerView und Adapter
         final RecyclerView setList = findViewById(R.id.sets_recyclerview);
-
-        // Recourcen laden
-        s1 = getResources().getStringArray(R.array.puzzle_sets);
-
-        RVAdapter adapter = new RVAdapter(this, s1, images);
-        setList.setAdapter(adapter);
         setList.setLayoutManager(new LinearLayoutManager(this));
 
+        adapter = new SetListAdapter(setList, this, items);
+        setList.setAdapter(adapter);
 
-        //btnSortBy.setText("Sort by: " + sortOptions.toString().replace('_', ' '));
-        btnShowCompleted.setText("Show completed: " + (showCompleted ? "Yes" : "No"));
-
-        // Vollständig Puzzles anzeigen
-        btnShowCompleted.setOnClickListener(new View.OnClickListener() {
+        // Mehr items laden event
+        adapter.setLoadMore(new ILoadMore() {
             @Override
-            public void onClick(View view) {
-                showCompleted = !showCompleted;
-                btnShowCompleted.setText("Show completed: " + (showCompleted ? "Yes" : "No"));
+            public void onLoadMore() {
+                if(items.size() <= 50) { // Anstatt einer Konstanten die gesamte Anzahl der vorhandenen Puzzles
+                    items.add(null);
+                    adapter.notifyItemInserted(items.size() - 1);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            items.remove(items.size() - 1);
+                            adapter.notifyItemRemoved(items.size());
+
+                            createRandomData(10);
+
+                            adapter.notifyDataSetChanged();
+
+                        }
+                    }, 5000);
+                }
+            }
+        });
+
+
+        // Vollständige Puzzles anzeigen
+        switchShowCompleted.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                // Vollständige Puzzles aus oder einblenden
+
+                if(b){
+                    // Einblenden
+                }
+                else{
+                    // Ausblenden
+                }
             }
         });
 
@@ -73,7 +100,7 @@ public class SetsActivity extends AppCompatActivity {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
 
-                        switch (menuItem.getItemId()){
+                        switch (menuItem.getItemId()) {
 
                             case R.id.item_mostPieces:
                                 btnSortBy.setText("Sort by: Most Pieces");
@@ -97,8 +124,19 @@ public class SetsActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
+    }
 
 
+    // Random Daten zum Testen
+    private void createRandomData(int count){
 
+        for (int i = 0; i < count; i++){
+
+            Random r = new Random();
+            int pieces = r.nextInt(17);
+
+            SetViewItem item = new SetViewItem("Hallo", pieces, 16);
+            items.add(item);
+        }
     }
 }
