@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.socialgaming.androidtutorial.Util.HTTPPoster;
@@ -28,9 +29,15 @@ public class RegisterActivity extends AppCompatActivity {
 
         myAuth = FirebaseAuth.getInstance();
 
-        final EditText emailText = findViewById(R.id.emailEdit);
-        final EditText passwordText = findViewById(R.id.passwordEdit);
+        //final EditText emailText = findViewById(R.id.emailEdit);
+        //final EditText passwordText = findViewById(R.id.passwordEdit);
         final Button registerButton = findViewById(R.id.register);
+        final TextInputLayout emailView = findViewById(R.id.emailEdit);
+        final TextInputLayout passwordView = findViewById(R.id.passwordEdit);
+        final EditText emailText = emailView.getEditText();
+        final EditText passwordText = passwordView.getEditText();
+
+
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,7 +51,8 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    final EditText nicknameText = findViewById(R.id.nickNameText);
+                    final TextInputLayout nickNameView = findViewById(R.id.nickNameText);
+                    final EditText nicknameText = nickNameView.getEditText();
                     new HTTPPoster().execute(
                             "user",
                             FirebaseAuth.getInstance().getUid(),
