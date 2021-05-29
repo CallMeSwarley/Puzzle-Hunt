@@ -14,6 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,10 +35,15 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         final Button login = findViewById(R.id.login_button);
         final Button register = findViewById(R.id.register_button);
-        final TextView view = findViewById(R.id.text);
+        //final TextView view = findViewById(R.id.text);
+        final TextInputLayout emailView = findViewById(R.id.editTextTextEmailAddress);
+        final TextInputLayout passwordView = findViewById(R.id.editTextTextPassword);
+        //final EditText emailText = findViewById(R.id.editTextTextEmailAddress);
+        //final EditText passwordText = findViewById(R.id.editTextTextPassword);
 
-        final EditText emailText = findViewById(R.id.editTextTextEmailAddress);
-        final EditText passwordText = findViewById(R.id.editTextTextPassword);
+        final EditText emailText = emailView.getEditText();
+        final EditText passwordText = passwordView.getEditText();
+
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,7 +61,6 @@ public class LoginActivity extends AppCompatActivity {
             });
 
         } else {
-
             Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
             startActivity(intent);
             Log.d(TAG, "signedInUser:\t" + currentUser);

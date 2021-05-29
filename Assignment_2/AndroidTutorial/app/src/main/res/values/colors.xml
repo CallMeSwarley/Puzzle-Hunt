@@ -7,4 +7,21 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="turquoise_700">#FF053f43</color>
+    <color name="turquoise_500">#FF006a5c</color>
+    <color name="turquoise_200">#FF02ab82</color>
+    <color name="turquoise_100">#FF61bf9a</color>
+    <color name="beige_200">#FFFff9d6</color>
+
+
+   <!-- <color name="primaryColor">#00897b</color>
+    <color name="primaryLightColor">#4ebaaa</color>
+    <color name="primaryDarkColor">#005b4f</color>
+    <color name="secondaryColor">#4db6ac</color>
+    <color name="secondaryLightColor">#82e9de</color>
+    <color name="secondaryDarkColor">#00867d</color>
+    <color name="primaryTextColor">#fafafa</color>
+    <color name="secondaryTextColor">#fafafa</color>-->
+
 </resources>
