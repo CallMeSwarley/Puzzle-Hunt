@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.PopupMenu;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.socialgaming.androidtutorial.Adapters.SetListAdapter;
 import com.socialgaming.androidtutorial.Interfaces.ILoadMore;
@@ -23,12 +24,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class SetsActivity extends AppCompatActivity {
 
     boolean showCompleted = true;
 
     List<SetViewItem> items = new ArrayList<>();
+    List<SetViewItem> completedItems = new ArrayList<>();
     SetListAdapter adapter;
 
     @Override
@@ -84,9 +87,15 @@ public class SetsActivity extends AppCompatActivity {
 
                 if(b){
                     // Einblenden
+                    items.addAll(completedItems);
+                    completedItems.clear();
+                    adapter.notifyDataSetChanged();
                 }
                 else{
                     // Ausblenden
+                    completedItems = items.stream().filter(x -> x.getOwnedPieces() == x.getMaxPieces()).collect(Collectors.toList());
+                    items.removeIf(x -> x.getOwnedPieces() == x.getMaxPieces());
+                    adapter.notifyDataSetChanged();
                 }
             }
         });
