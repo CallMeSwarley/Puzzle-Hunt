@@ -4,8 +4,8 @@ import android.graphics.Bitmap;
 
 public class Puzzle {
     private Bitmap image;
-    private int piecesCountHorizontal=1;
-    private int piecesCountVertical=1;
+    public int piecesCountHorizontal=1;
+    public int piecesCountVertical=1;
     private PuzzlePiece[][] puzzlePieces;
     public String id;
 
@@ -14,6 +14,14 @@ public class Puzzle {
         this.piecesCountHorizontal = piecesCountHorizontal;
         this.piecesCountVertical = piecesCountVertical;
         this.puzzlePieces = new PuzzlePiece[piecesCountHorizontal][piecesCountVertical];
+    }
+
+    public Puzzle(String id, int piecesCountHorizontal, int piecesCountVertical, Bitmap image){
+        this.id = id;
+        this.piecesCountHorizontal = piecesCountHorizontal;
+        this.piecesCountVertical = piecesCountVertical;
+        this.puzzlePieces = new PuzzlePiece[piecesCountHorizontal][piecesCountVertical];
+        this.image = image;
     }
 
 
@@ -28,6 +36,22 @@ public class Puzzle {
             puzzlePieces[positionHorizontal][positionVertical] = ret;
         }
         return puzzlePieces[positionHorizontal][positionVertical];
+    }
+
+    public PuzzlePiece[][] getAllPuzzlePieces(){
+        for(int i=0; i<piecesCountHorizontal; i++){
+            for(int j=0; j<piecesCountVertical; j++){
+                if(puzzlePieces[i][j]==null) {
+                    Bitmap bmp;
+                    int width = image.getWidth();
+                    int height = image.getHeight();
+                    bmp=Bitmap.createBitmap(image,(width*j)/piecesCountHorizontal,(i*height)/piecesCountVertical,width/piecesCountHorizontal,height/piecesCountVertical);
+                    PuzzlePiece ret = new PuzzlePiece(bmp, i, j, this);
+                    puzzlePieces[i][j] = ret;
+                }
+            }
+        }
+        return this.puzzlePieces;
     }
 
 }
