@@ -6,15 +6,17 @@ import android.graphics.Color;
 public class PuzzlePiece {
     //private Puzzle parent;
     //image is a piece of the whole puzzle
+    private Puzzle puzzleParent;
     private Bitmap image;
     //the position of the piece in an 2d array [horizontal][vertical]
     private int positionHorizontal;
     private int positionVertical;
 
-    public PuzzlePiece(Bitmap image, int positionHorizontal, int positionVertical){
+    public PuzzlePiece(Bitmap image, int positionHorizontal, int positionVertical, Puzzle puzzleParent){
         this.image = image;
         this.positionHorizontal = positionHorizontal;
         this.positionVertical = positionVertical;
+        this.puzzleParent = puzzleParent;
     }
 
     public Bitmap getImage() {
