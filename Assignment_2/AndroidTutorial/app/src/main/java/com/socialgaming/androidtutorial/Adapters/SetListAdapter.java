@@ -1,6 +1,7 @@
 package com.socialgaming.androidtutorial.Adapters;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,15 +20,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/*
+    Adapter Klasse Vorlage
+    https://www.youtube.com/watch?v=PamhELVWYY0&t=1165s
+ */
+
+
 class LoadingViewHolder extends RecyclerView.ViewHolder
 {
     public ProgressBar progressBar;
 
     public LoadingViewHolder(@NonNull @NotNull View itemView, ProgressBar progressBar) {
         super(itemView);
-
-        // Eventuell ladegrafik einfügen
-        this.progressBar = progressBar;
+        this.progressBar = itemView.findViewById(R.id.progressBar);
     }
 }
 
@@ -77,9 +82,9 @@ public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if(!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)){
                     if(loadMore != null)
                         loadMore.onLoadMore();
-                }
 
-                isLoading = true;
+                    isLoading = true;
+                }
             }
         });
     }
@@ -103,10 +108,8 @@ public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return new ItemViewHolder(view);
         }
         else if (viewType == VIEW_TYPE_LOADING) {
-            // TODO Loading View implementieren
-            //View view = LayoutInflater.from(activity).inflate(R.layout.)
-
-            return null;
+            View view = LayoutInflater.from(activity).inflate(R.layout.set_card_loading, parent, false);
+            return new ItemViewHolder(view);
         }
 
         return null;
@@ -116,17 +119,22 @@ public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(@NonNull @NotNull RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof ItemViewHolder){
             SetViewItem item = items.get(position);
+
+            if(item == null)
+                return;
+
             ItemViewHolder viewHolder = (ItemViewHolder) holder;
-            viewHolder.title.setText(items.get(position).getName());
-            viewHolder.ownedPieces.setText(Integer.toString(items.get(position).getOwnedPieces()));
-            viewHolder.maxPieces.setText(Integer.toString(items.get(position).getMaxPieces()));
+            viewHolder.title.setText(item.getName());
+            viewHolder.ownedPieces.setText(Integer.toString(item.getOwnedPieces()));
+            viewHolder.maxPieces.setText(Integer.toString(item.getMaxPieces()));
 
             // TODO hier sollte die image preview geladen werden
             //viewHolder.image.
         }
         else if(holder instanceof  LoadingViewHolder){
 
-            // TODO same loading image stuff
+           LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
+           loadingViewHolder.progressBar.setIndeterminate(true);
         }
     }
 
@@ -135,12 +143,8 @@ public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return items.size();
     }
 
-    public void setLoading(boolean loading) {
-        isLoading = loading;
-    }
-
     public void setLoaded() {
-
+        isLoading = false;
     }
 
     /*

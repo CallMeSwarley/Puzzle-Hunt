@@ -70,13 +70,12 @@ public class SetsActivity extends AppCompatActivity {
                             createRandomData(10);
 
                             adapter.notifyDataSetChanged();
-                            //adapter.setLoaded();
+                            adapter.setLoaded();
                         }
                     }, 5000);
                 }
             }
         });
-
 
         // Vollständige Puzzles anzeigen
         switchShowCompleted.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
