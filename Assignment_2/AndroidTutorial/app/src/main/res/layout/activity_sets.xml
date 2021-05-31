@@ -47,6 +47,7 @@
         android:layout_marginStart="28dp"
         android:layout_marginTop="100dp"
         android:text="Show Completed"
+        android:checked="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.058"
         app:layout_constraintStart_toEndOf="@+id/sortBy_button"
