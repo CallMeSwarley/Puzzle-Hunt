@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.PopupMenu;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import com.socialgaming.androidtutorial.Adapters.SetListAdapter;
 import com.socialgaming.androidtutorial.Interfaces.ILoadMore;
@@ -20,15 +19,11 @@ import com.socialgaming.androidtutorial.Models.SetViewItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class SetsActivity extends AppCompatActivity {
-
-    boolean showCompleted = true;
 
     List<SetViewItem> items = new ArrayList<>();
     List<SetViewItem> completedItems = new ArrayList<>();
@@ -72,7 +67,7 @@ public class SetsActivity extends AppCompatActivity {
                             adapter.notifyDataSetChanged();
                             adapter.setLoaded();
                         }
-                    }, 5000);
+                    }, 2000);
                 }
             }
         });
@@ -114,21 +109,21 @@ public class SetsActivity extends AppCompatActivity {
 
                             case R.id.item_mostPieces:
                                 // Sortieren
-                                Collections.sort(items, SetViewItem.MostPiecesComperator);
+                                Collections.sort(items, SetViewItem.MostPiecesComparator);
                                 adapter.notifyDataSetChanged();
                                 btnSortBy.setText("Sort by: Most Pieces");
                                 return true;
 
                             case R.id.item_leastPieces:
                                 // Sortieren
-                                Collections.sort(items, SetViewItem.LeastPiecesComperator);
+                                Collections.sort(items, SetViewItem.LeastPiecesComparator);
                                 adapter.notifyDataSetChanged();
                                 btnSortBy.setText("Sort by: Least Pieces");
                                 return true;
 
                             case R.id.item_alphabetical:
                                 // Sortieren
-                                Collections.sort(items, SetViewItem.AlphabeticalComperator);
+                                Collections.sort(items, SetViewItem.AlphabeticalComparator);
                                 adapter.notifyDataSetChanged();
                                 btnSortBy.setText("Sort by: Alphabetical");
                                 return true;

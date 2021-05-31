@@ -25,21 +25,21 @@ public class SetViewItem {
         this.maxPieces = maxPieces;
     }
 
-    public static Comparator<SetViewItem> AlphabeticalComperator = new Comparator<SetViewItem>() {
+    public static Comparator<SetViewItem> AlphabeticalComparator = new Comparator<SetViewItem>() {
         @Override
         public int compare(SetViewItem o1, SetViewItem o2) {
             return o1.getName().compareTo(o2.getName());
         }
     };
 
-    public static Comparator<SetViewItem> MostPiecesComperator = new Comparator<SetViewItem>() {
+    public static Comparator<SetViewItem> MostPiecesComparator = new Comparator<SetViewItem>() {
         @Override
         public int compare(SetViewItem o1, SetViewItem o2) {
             return o2.getOwnedPieces() - o1.getOwnedPieces();
         }
     };
 
-    public static Comparator<SetViewItem> LeastPiecesComperator = new Comparator<SetViewItem>() {
+    public static Comparator<SetViewItem> LeastPiecesComparator = new Comparator<SetViewItem>() {
         @Override
         public int compare(SetViewItem o1, SetViewItem o2) {
             return o1.getOwnedPieces() - o2.getOwnedPieces();

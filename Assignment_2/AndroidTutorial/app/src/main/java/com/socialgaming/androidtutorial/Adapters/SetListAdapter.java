@@ -1,7 +1,6 @@
 package com.socialgaming.androidtutorial.Adapters;
 
 import android.app.Activity;
-import android.content.ClipData;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,22 +25,22 @@ import java.util.List;
  */
 
 
-class LoadingViewHolder extends RecyclerView.ViewHolder
+class SetLoadingViewHolder extends RecyclerView.ViewHolder
 {
     public ProgressBar progressBar;
 
-    public LoadingViewHolder(@NonNull @NotNull View itemView, ProgressBar progressBar) {
+    public SetLoadingViewHolder(@NonNull @NotNull View itemView, ProgressBar progressBar) {
         super(itemView);
         this.progressBar = itemView.findViewById(R.id.progressBar);
     }
 }
 
-class ItemViewHolder extends RecyclerView.ViewHolder
+class SetItemViewHolder extends RecyclerView.ViewHolder
 {
     public TextView title, ownedPieces, maxPieces;
     public View image;
 
-    public ItemViewHolder(@NonNull @NotNull View itemView) {
+    public SetItemViewHolder(@NonNull @NotNull View itemView) {
         super(itemView);
 
         // Card Layout
@@ -105,11 +104,11 @@ public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if(viewType == VIEW_TYPE_ITEM){
             View view = LayoutInflater.from(activity).inflate(R.layout.set_card_row, parent, false);
             //View view = LayoutInflater.from(activity).inflate(R.layout.set_row, parent, false);
-            return new ItemViewHolder(view);
+            return new SetItemViewHolder(view);
         }
         else if (viewType == VIEW_TYPE_LOADING) {
             View view = LayoutInflater.from(activity).inflate(R.layout.set_card_loading, parent, false);
-            return new ItemViewHolder(view);
+            return new SetItemViewHolder(view);
         }
 
         return null;
@@ -117,13 +116,13 @@ public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull RecyclerView.ViewHolder holder, int position) {
-        if(holder instanceof ItemViewHolder){
+        if(holder instanceof SetItemViewHolder){
             SetViewItem item = items.get(position);
 
             if(item == null)
                 return;
 
-            ItemViewHolder viewHolder = (ItemViewHolder) holder;
+            SetItemViewHolder viewHolder = (SetItemViewHolder) holder;
             viewHolder.title.setText(item.getName());
             viewHolder.ownedPieces.setText(Integer.toString(item.getOwnedPieces()));
             viewHolder.maxPieces.setText(Integer.toString(item.getMaxPieces()));
@@ -131,9 +130,8 @@ public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             // TODO hier sollte die image preview geladen werden
             //viewHolder.image.
         }
-        else if(holder instanceof  LoadingViewHolder){
-
-           LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
+        else if(holder instanceof SetLoadingViewHolder){
+           SetLoadingViewHolder loadingViewHolder = (SetLoadingViewHolder) holder;
            loadingViewHolder.progressBar.setIndeterminate(true);
         }
     }
