@@ -18,15 +18,15 @@ import com.socialgaming.androidtutorial.Interfaces.ILoadMore;
 import com.socialgaming.androidtutorial.Models.SetViewItem;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class SetsActivity extends AppCompatActivity {
 
-    boolean showCompleted = true;
-
     List<SetViewItem> items = new ArrayList<>();
+    List<SetViewItem> completedItems = new ArrayList<>();
     SetListAdapter adapter;
 
     @Override
@@ -65,13 +65,12 @@ public class SetsActivity extends AppCompatActivity {
                             createRandomData(10);
 
                             adapter.notifyDataSetChanged();
-
+                            adapter.setLoaded();
                         }
-                    }, 5000);
+                    }, 2000);
                 }
             }
         });
-
 
         // Vollständige Puzzles anzeigen
         switchShowCompleted.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -82,9 +81,15 @@ public class SetsActivity extends AppCompatActivity {
 
                 if(b){
                     // Einblenden
+                    items.addAll(completedItems);
+                    completedItems.clear();
+                    adapter.notifyDataSetChanged();
                 }
                 else{
                     // Ausblenden
+                    completedItems = items.stream().filter(x -> x.getOwnedPieces() == x.getMaxPieces()).collect(Collectors.toList());
+                    items.removeIf(x -> x.getOwnedPieces() == x.getMaxPieces());
+                    adapter.notifyDataSetChanged();
                 }
             }
         });
@@ -103,17 +108,26 @@ public class SetsActivity extends AppCompatActivity {
                         switch (menuItem.getItemId()) {
 
                             case R.id.item_mostPieces:
+                                // Sortieren
+                                Collections.sort(items, SetViewItem.MostPiecesComparator);
+                                adapter.notifyDataSetChanged();
                                 btnSortBy.setText("Sort by: Most Pieces");
-                                // Sortieren
                                 return true;
+
                             case R.id.item_leastPieces:
+                                // Sortieren
+                                Collections.sort(items, SetViewItem.LeastPiecesComparator);
+                                adapter.notifyDataSetChanged();
                                 btnSortBy.setText("Sort by: Least Pieces");
-                                // Sortieren
                                 return true;
+
                             case R.id.item_alphabetical:
-                                btnSortBy.setText("Sort by: Alphabetical");
                                 // Sortieren
+                                Collections.sort(items, SetViewItem.AlphabeticalComparator);
+                                adapter.notifyDataSetChanged();
+                                btnSortBy.setText("Sort by: Alphabetical");
                                 return true;
+
                             default:
                                 return false;
 
