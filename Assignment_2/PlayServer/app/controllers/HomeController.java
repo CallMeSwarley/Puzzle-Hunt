@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 
 import javax.inject.Inject;
 
+import models.Friendship;
 import models.FriendshipRepository;
 import models.Location;
 import models.LocationsRepository;
@@ -28,7 +29,6 @@ public class HomeController extends Controller {
     private UsersRepository users;
     @Inject
     private FriendshipRepository friendships;
-//TODO Friendship im homecontroller einbauen (Methoden wie User)
 
     /**
      * An action that renders an HTML page with a welcome message.
@@ -81,6 +81,25 @@ public class HomeController extends Controller {
         return ok("User prepared");
     }
 
+    public Result prepareFriendship(String firebaseIdMe, String firebaseIdFriend) {
+        Logger.info("prepareFriendship");
+        User me = users.getUser(firebaseIdMe);
+        User friend = users.getUser(firebaseIdFriend);
+        if (me == null || friend == null) {
+            return ok("This didn't work");
+        } else {
+            Friendship fs=new Friendship(firebaseIdMe,firebaseIdFriend);
+            String generatedId=friendships.insert(fs);
+            User user=users.getUser(firebaseIdMe);
+            user.addFriend(generatedId);
+            users.update(user);
+            user=users.getUser(firebaseIdFriend);
+            user.addFriend(generatedId);
+            users.update(user);
+            return ok("Friendship prepared");
+        }
+    }
+
     public Result prepareUserWithNickname(String firebaseId, String nickName) {
         Logger.info("prepareUser with nickname");
         User user = new User(firebaseId, nickName);
@@ -104,6 +123,12 @@ public class HomeController extends Controller {
     public Result getUser(String firebaseId) {
         Result res;
         res = ok(gson.toJson(users.getUser(firebaseId)));
+        return res;
+    }
+
+    public Result getUserByNickName(String nickName) {
+        Result res;
+        res = ok(gson.toJson(users.getUserByNickName(nickName)));
         return res;
     }
 
@@ -148,7 +173,7 @@ public class HomeController extends Controller {
 
     public Result getNearbyUsers(String firebaseId) {
         Result res;
-        res=ok(gson.toJson(locations.getNearbyUsers(firebaseId)));
+        res = ok(gson.toJson(locations.getNearbyUsers(firebaseId)));
         return res;
     }
 }

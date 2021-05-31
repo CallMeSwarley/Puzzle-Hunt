@@ -33,11 +33,14 @@ public class FriendshipRepository {
         return friendships().findOne("{_id: #}", id).as(Friendship.class);
     }
 
-    public void insert(Friendship fs) {
+    public String insert(Friendship fs) {
         WriteResult result = friendships().save(fs);
-        result.getUpsertedId().toString();
+        return result.getUpsertedId().toString();
     }
 
+    public void delete(String generatedFsID){
+        friendships().remove(generatedFsID);
+    }
     public void update(Friendship fs) {
         friendships().update("{_id: #}", fs.id).with(copyFriendship(fs));
     }
@@ -45,7 +48,6 @@ public class FriendshipRepository {
     public Friendship copyFriendship(Friendship fs) {
         Friendship copy = new Friendship(fs.friendOne, fs.friendTwo);
         copy.rank = fs.rank;
-        copy.id = fs.id;
         copy.friendshipStart = fs.friendshipStart;
         return copy;
     }

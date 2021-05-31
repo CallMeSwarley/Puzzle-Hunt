@@ -7,15 +7,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class Friendship {
-    @JsonProperty("_id")
-    public String id; //DeineID+FreundID
+    public String id; //MongoID
     public String friendOne;
     public String friendTwo;
     public FriendshipRank rank; //je nach Rank anderen Multiplier beim traden etc.
     public LocalDate friendshipStart;
 
     public Friendship(String du,String freund){
-        id=du+freund;
         friendOne=du;
         friendTwo=freund;
         rank=FriendshipRank.FRIENDLY_GREETINGS;//Default startwert, soll immer dann aktualisiert werden wenn freundesliste geöffnet wird
