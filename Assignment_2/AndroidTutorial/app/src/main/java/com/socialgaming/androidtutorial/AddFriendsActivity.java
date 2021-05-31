@@ -60,7 +60,10 @@ public class AddFriendsActivity extends AppCompatActivity {
                                     String erg = get.get();
                                     if (!erg.equals("{ }")) {
                                         User me = gson.fromJson(erg, User.class);
-                                        new HTTPPoster().execute("user",me.id,user.id,"prepareFriend");
+                                        new HTTPPoster().execute("user",
+                                                me.id,
+                                                user.id,
+                                                "prepareFriend");
                                     }
                                 } catch (ExecutionException | InterruptedException e) {
                                     e.printStackTrace();
