@@ -1,7 +1,6 @@
 package models;
 
-import com.mongodb.WriteResult;
-
+import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
 
 import javax.inject.Inject;
@@ -34,13 +33,15 @@ public class FriendshipRepository {
     }
 
     public String insert(Friendship fs) {
-        WriteResult result = friendships().save(fs);
-        return result.getUpsertedId().toString();
+        fs.id = new ObjectId().toString();
+        friendships().save(fs);
+        return fs.id;
     }
 
-    public void delete(String generatedFsID){
+    public void delete(String generatedFsID) {
         friendships().remove(generatedFsID);
     }
+
     public void update(Friendship fs) {
         friendships().update("{_id: #}", fs.id).with(copyFriendship(fs));
     }

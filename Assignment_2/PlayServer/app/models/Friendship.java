@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class Friendship {
+    @JsonProperty("_id")
     public String id; //MongoID
     public String friendOne;
     public String friendTwo;
