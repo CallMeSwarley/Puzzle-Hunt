@@ -24,7 +24,7 @@
         android:layout_marginTop="136dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Enter Nickname"
+        android:text="Enter UserID"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"

@@ -49,18 +49,21 @@ public class AddFriendsActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         //Schauen obs den anderen gibt falls ja neues Freundschaftsobjekt erstellen, falls nein abbruch
                         HTTPGetter get = new HTTPGetter();
-                        get.execute("user", nicknameFreund, "getUserByNickName");
+                        get.execute("user", nicknameFreund, "getUser");
                         try {
                             String getUserResult = get.get();
                             if (!getUserResult.equals("{ }")) {
                                 User user = gson.fromJson(getUserResult, User.class);
                                 //Meine Daten aus der DB holen
-                                get.execute("user", FirebaseAuth.getInstance().getUid(), "getUser");
+                                System.out.println(getUserResult);
+                                HTTPGetter getMe = new HTTPGetter();
+                                getMe.execute("user", FirebaseAuth.getInstance().getUid(), "getUser");
                                 try {
-                                    String erg = get.get();
+                                    String erg = getMe.get();
+                                    System.out.println(erg);
                                     if (!erg.equals("{ }")) {
                                         User me = gson.fromJson(erg, User.class);
-                                        new HTTPPoster().execute("user",
+                                        new HTTPGetter().execute("user",
                                                 me.id,
                                                 user.id,
                                                 "prepareFriend");
