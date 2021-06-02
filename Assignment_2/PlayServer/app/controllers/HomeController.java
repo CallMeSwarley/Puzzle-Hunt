@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import models.Friendship;
@@ -98,6 +101,16 @@ public class HomeController extends Controller {
             users.update(user);
             return ok("Friendship prepared");
         }
+    }
+//Freundesliste des users xy
+    public Result getFriendList(String firebaseId){
+        User user=users.getUser(firebaseId);
+        List fsIDs=user.friends;
+        List friendShipList=new ArrayList<>();
+        fsIDs.forEach(x->{
+            friendShipList.add(friendships.getFriendship(x.toString()));
+        });
+        return ok(gson.toJson(friendShipList));
     }
 
     public Result prepareUserWithNickname(String firebaseId, String nickName) {
