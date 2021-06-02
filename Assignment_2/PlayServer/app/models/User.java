@@ -9,7 +9,6 @@ import java.util.List;
 public class User {
     @JsonProperty("_id")
     public String id;
-    @JsonProperty("_nickName")
     public String nickName;
     public Long xp;
     public List<String> friends;//Key sind die MongoIds
