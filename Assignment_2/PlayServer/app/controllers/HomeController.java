@@ -15,6 +15,7 @@ import models.Friendship;
 import models.FriendshipRepository;
 import models.Location;
 import models.LocationsRepository;
+import models.PuzzleRepository;
 import models.User;
 import models.UsersRepository;
 import play.Logger;
@@ -34,6 +35,8 @@ public class HomeController extends Controller {
     private UsersRepository users;
     @Inject
     private FriendshipRepository friendships;
+    @Inject
+    private PuzzleRepository puzzles;
 
     /**
      * An action that renders an HTML page with a welcome message.
@@ -99,23 +102,23 @@ public class HomeController extends Controller {
                     return ok("Already Friends");
                 }
             }
-            Friendship fs=new Friendship(firebaseIdMe,firebaseIdFriend,new ObjectId().toString());
+            Friendship fs = new Friendship(firebaseIdMe, firebaseIdFriend, new ObjectId().toString());
             friendships.insert(fs);
-            User user=users.getUser(firebaseIdMe);
+            User user = users.getUser(firebaseIdMe);
             user.addFriend(fs.id);
             users.update(user);
-            user=users.getUser(firebaseIdFriend);
+            user = users.getUser(firebaseIdFriend);
             user.addFriend(fs.id);
             users.update(user);
             return ok("Friendship prepared");
         }
     }
 
-    public Result getFriendList(String firebaseId){
-        User user=users.getUser(firebaseId);
-        List fsIDs=user.friends;
-        List friendshipList=new ArrayList<>();
-        fsIDs.forEach(x->{
+    public Result getFriendList(String firebaseId) {
+        User user = users.getUser(firebaseId);
+        List fsIDs = user.friends;
+        List friendshipList = new ArrayList<>();
+        fsIDs.forEach(x -> {
             friendshipList.add(friendships.getFriendship((String) x));
         });
         Result res = ok(gson.toJson(friendshipList));
@@ -155,7 +158,7 @@ public class HomeController extends Controller {
         return res;
     }
 
-    public Result getFriendship(String friendshipID){
+    public Result getFriendship(String friendshipID) {
         Result res;
         res = ok(gson.toJson(friendships.getFriendship(friendshipID)));
         return res;
@@ -182,6 +185,11 @@ public class HomeController extends Controller {
         searchResults.put("locations", locationArray);
         res = ok(searchResults);
         return res;
+    }
+
+    public Result getPuzzle(String puzzleId) {
+        Logger.info("getPuzzle " + puzzleId);
+        return ok(gson.toJson((puzzles.getPuzzle(puzzleId))));
     }
 
     public Result explore() {
