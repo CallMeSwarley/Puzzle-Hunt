@@ -1,32 +1,21 @@
 package models;
 
-import java.awt.Image;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Puzzle {
-    private byte[] image;
-    public int piecesCountHorizontal=1;
-    public int piecesCountVertical=1;
-    public String id;
+    @JsonProperty("_id")
+    String id;
+    public int piecesCountHorizontal = 1;
+    public int piecesCountVertical = 1;
 
-    public Puzzle(String id, int piecesCountHorizontal, int piecesCountVertical,byte[] image){
+
+    public Puzzle() {
+    }
+
+
+    public Puzzle(String id, int piecesCountHorizontal, int piecesCountVertical) {
         this.id = id;
         this.piecesCountHorizontal = piecesCountHorizontal;
         this.piecesCountVertical = piecesCountVertical;
-        this.image = image;
     }
-
-    public Puzzle(int piecesCountHorizontal, int piecesCountVertical,byte[] image){
-        this.piecesCountHorizontal = piecesCountHorizontal;
-        this.piecesCountVertical = piecesCountVertical;
-        this.image = image;
-    }
-
-    public Puzzle(String id, int piecesCountHorizontal, int piecesCountVertical){
-        this.piecesCountHorizontal = piecesCountHorizontal;
-        this.piecesCountVertical = piecesCountVertical;
-    }
-
-
-
-
 }
