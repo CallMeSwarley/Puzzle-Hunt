@@ -11,13 +11,14 @@ public class Friendship {
     public String id; //MongoID
     public String friendOne;
     public String friendTwo;
-    public FriendshipRank rank; //je nach Rank anderen Multiplier beim traden etc.
+    public int rank; //je nach Rank anderen Multiplier beim traden etc.
     public int dayOfYear,year;
 
+    public Friendship() {}
     public Friendship(String du,String freund){
         friendOne=du;
         friendTwo=freund;
-        rank=FriendshipRank.FRIENDLY_GREETINGS;//Default startwert, soll immer dann aktualisiert werden wenn freundesliste geöffnet wird
+        rank=0;//Default startwert, soll immer dann aktualisiert werden wenn freundesliste geöffnet wird
         LocalDate friendshipStart=java.time.LocalDate.now();
         dayOfYear=friendshipStart.getDayOfYear();
         year=friendshipStart.getYear();
@@ -28,14 +29,14 @@ public class Friendship {
         long daysOfFriendship= ChronoUnit.DAYS.between(LocalDate.ofYearDay(year,dayOfYear),today);
         //TODO Tage-Rang Verhältnis anpassen
         if(daysOfFriendship<=2)
-            rank=FriendshipRank.FRIENDLY_GREETINGS;
+            rank=0;
         if (2<daysOfFriendship&&daysOfFriendship<=4)
-            rank=FriendshipRank.CO_PUZZLERS;
+            rank=1;
         if (4<daysOfFriendship&&daysOfFriendship<=6)
-            rank=FriendshipRank.PUZZLE_BUDDIES;
+            rank=2;
         if (6<daysOfFriendship&&daysOfFriendship<=8)
-            rank=FriendshipRank.PUZZLE_BFF;
+            rank=3;
         if (8<daysOfFriendship)
-            rank=FriendshipRank.PUZZLE_SOULMATES;
+            rank=4;
     }
 }
