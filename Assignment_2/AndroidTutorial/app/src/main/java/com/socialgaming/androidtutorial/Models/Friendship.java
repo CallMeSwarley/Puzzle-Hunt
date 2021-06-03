@@ -16,10 +16,11 @@ public class Friendship {
     public int dayOfYear,year;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Friendship(String du, String freund){
+    public Friendship(String du,String freund, String ID){
+        id=ID;
         friendOne=du;
         friendTwo=freund;
-        rank=0;//Default startwert, soll immer dann aktualisiert werden wenn freundesliste geöffnet wird, passiert im Server!
+        rank=0;//Default startwert, soll immer dann aktualisiert werden wenn freundesliste geöffnet wird
         LocalDate friendshipStart=java.time.LocalDate.now();
         dayOfYear=friendshipStart.getDayOfYear();
         year=friendshipStart.getYear();

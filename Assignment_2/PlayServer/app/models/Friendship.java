@@ -15,7 +15,8 @@ public class Friendship {
     public int dayOfYear,year;
 
     public Friendship() {}
-    public Friendship(String du,String freund){
+    public Friendship(String du,String freund, String ID){
+        id=ID;
         friendOne=du;
         friendTwo=freund;
         rank=0;//Default startwert, soll immer dann aktualisiert werden wenn freundesliste geöffnet wird
