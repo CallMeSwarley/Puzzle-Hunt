@@ -14,15 +14,19 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Models.Friendship;
+import com.socialgaming.androidtutorial.Models.FriendshipRank;
 import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 public class FriendsActivity extends AppCompatActivity {
     private final Gson gson = new Gson();
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +77,17 @@ public class FriendsActivity extends AppCompatActivity {
                 if(friendlist!=null){
                     friendlist.forEach(x->{
                         Friendship fs= (Friendship) x;
+                        String fsLvlStr="";
+                        if(fs.rank==0)
+                            fsLvlStr= FriendshipRank.FRIENDLY_GREETINGS.toString();
+                        if(fs.rank==1)
+                            fsLvlStr= FriendshipRank.CO_PUZZLERS.toString();
+                        if(fs.rank==2)
+                            fsLvlStr= FriendshipRank.PUZZLE_BUDDIES.toString();
+                        if(fs.rank==3)
+                            fsLvlStr= FriendshipRank.PUZZLE_BFF.toString();
+                        if(fs.rank==4)
+                            fsLvlStr= FriendshipRank.PUZZLE_SOULMATES.toString();
                         String myID=FirebaseAuth.getInstance().getUid();
                         //Freund holen
                         if(fs.friendOne!=myID){
@@ -82,7 +97,7 @@ public class FriendsActivity extends AppCompatActivity {
                                 String getFriendResult = getFriend.get();
                                 if (!getFriendResult.equals("{ }")) {
                                     User friend = gson.fromJson(getFriendResult, User.class);
-                                    freundeListe.append(friend.id+"\n");
+                                    freundeListe.append("ID: "+friend.id+"Fs-Rank: "+fsLvlStr+"\n");
                                 }
                             } catch (ExecutionException | InterruptedException e) {
                                 e.printStackTrace();
@@ -94,13 +109,14 @@ public class FriendsActivity extends AppCompatActivity {
                                 String getFriendResult = getFriend.get();
                                 if (!getFriendResult.equals("{ }")) {
                                     User friend = gson.fromJson(getFriendResult, User.class);
-                                    freundeListe.append(friend.id+"\n");
+                                    freundeListe.append("ID: "+friend.id+"Fs-Rank: "+fsLvlStr+"\n");
                                 }
                             } catch (ExecutionException | InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }
                     });//ende friendlist.forEach-Loop
+
                 }else{
                     System.out.println("Get Friendslist didn't work!");
                 }
@@ -112,4 +128,5 @@ public class FriendsActivity extends AppCompatActivity {
         }
 
     }
+
 }

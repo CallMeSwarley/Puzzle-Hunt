@@ -91,6 +91,12 @@ public class HomeController extends Controller {
         if (me == null || friend == null) {
             return ok("This didn't work");
         } else {
+            for (String id : me.friends) {
+                Friendship friendship = friendships.getFriendship(id);
+                if (friendship.friendOne==firebaseIdFriend || friendship.friendTwo==firebaseIdFriend) {
+                    return ok("Already Friends");
+                }
+            }
             Friendship fs=new Friendship(firebaseIdMe,firebaseIdFriend);
             String generatedId=friendships.insert(fs);
             User user=users.getUser(firebaseIdMe);
@@ -108,7 +114,10 @@ public class HomeController extends Controller {
         List fsIDs=user.friends;
         List friendShipList=new ArrayList<>();
         fsIDs.forEach(x->{
-            friendShipList.add(friendships.getFriendship(x.toString()));
+            Friendship fs=friendships.getFriendship(x.toString());
+            fs.updateRank();
+            friendships.update(fs);
+            friendShipList.add(fs);
         });
         return ok(gson.toJson(friendShipList));
     }
