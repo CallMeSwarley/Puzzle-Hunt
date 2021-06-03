@@ -26,12 +26,12 @@ public class PiecesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pieces);
 
         // Recyclerview
-        final RecyclerView piecesList = findViewById(R.id.pieces_recyclerview);
-        piecesList.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
+        final RecyclerView pieceView = findViewById(R.id.pieces_recyclerview);
+        pieceView.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
 
         // Adapter
-        adapter = new PieceListAdapter(piecesList, this, pieces);
-        piecesList.setAdapter(adapter);
+        adapter = new PieceListAdapter(pieceView, this, pieces);
+        pieceView.setAdapter(adapter);
 
         for(int i = 0; i < 20; i++){
             PieceViewItem piece = new PieceViewItem();

@@ -24,7 +24,6 @@ public class Puzzle {
         this.image = image;
     }
 
-
     public PuzzlePiece getPuzzlePiece(int positionHorizontal, int positionVertical){
         if(puzzlePieces[positionHorizontal][positionVertical]==null) {
             Bitmap bmp;

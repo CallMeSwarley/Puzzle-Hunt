@@ -60,12 +60,12 @@ class SetItemViewHolder extends RecyclerView.ViewHolder
 public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final int VIEW_TYPE_ITEM = 0,  VIEW_TYPE_LOADING = 1;
-    ILoadMore loadMore;
-    boolean isLoading;
-    Activity activity;
-    List<SetViewItem> items;
     int visibleThreshold = 5;
     int lastVisibleItem, totalItemCount;
+    boolean isLoading;
+    ILoadMore loadMore;
+    Activity activity;
+    List<SetViewItem> items;
 
     public SetListAdapter(RecyclerView recyclerView, Activity activity, List<SetViewItem> items) {
         this.activity = activity;
@@ -145,48 +145,4 @@ public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         isLoading = false;
     }
 
-    /*
-    Context context;
-    String[] data;
-    int[] images;
-
-    public RVAdapter(Context context, String[] s, int[] images){
-        this.context = context;
-        this.data = s;
-        this.images = images;
-    }
-
-    @NonNull
-    @org.jetbrains.annotations.NotNull
-    @Override
-    public MyViewHolder onCreateViewHolder(@NonNull @org.jetbrains.annotations.NotNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.set_row, parent, false);
-        return new MyViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull @org.jetbrains.annotations.NotNull RVAdapter.MyViewHolder holder, int position) {
-        holder.text.setText(data[position]);
-        holder.image.setImageResource(images[position]);
-    }
-
-    @Override
-    public int getItemCount() {
-        return data.length;
-    }
-
-    public class MyViewHolder extends RecyclerView.ViewHolder {
-
-        TextView text;
-        ImageView image;
-
-        public MyViewHolder(@NonNull @org.jetbrains.annotations.NotNull View itemView) {
-            super(itemView);
-            //text = itemView.findViewById(R.id.amt_pieces_textView);
-            image = itemView.findViewById(R.id.image_preview_imageView);
-        }
-    }
-
- */
 }

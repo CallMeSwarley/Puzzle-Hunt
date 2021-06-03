@@ -13,9 +13,14 @@ import android.widget.CompoundButton;
 import android.widget.PopupMenu;
 import android.widget.Switch;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Adapters.SetListAdapter;
 import com.socialgaming.androidtutorial.Interfaces.ILoadMore;
+import com.socialgaming.androidtutorial.Models.Puzzle;
 import com.socialgaming.androidtutorial.Models.SetViewItem;
+import com.socialgaming.androidtutorial.Models.User;
+import com.socialgaming.androidtutorial.Util.HTTPGetter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +34,9 @@ public class SetsActivity extends AppCompatActivity {
     List<SetViewItem> completedItems = new ArrayList<>();
     SetListAdapter adapter;
 
+    private Puzzle puzzle;
+    private final Gson gson = new Gson();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,14 +48,16 @@ public class SetsActivity extends AppCompatActivity {
         // Switch
         final Switch switchShowCompleted = findViewById(R.id.showCompleted_switch);
 
+        loadDataFromDatabase();
+
         createRandomData(10);
 
         // RecyclerView und Adapter
-        final RecyclerView setList = findViewById(R.id.sets_recyclerview);
-        setList.setLayoutManager(new LinearLayoutManager(this));
+        final RecyclerView setView = findViewById(R.id.sets_recyclerview);
+        setView.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new SetListAdapter(setList, this, items);
-        setList.setAdapter(adapter);
+        adapter = new SetListAdapter(setView, this, items);
+        setView.setAdapter(adapter);
 
         // Mehr items laden event
         adapter.setLoadMore(new ILoadMore() {
@@ -141,11 +151,27 @@ public class SetsActivity extends AppCompatActivity {
     }
 
 
+    // Daten aus Datenbank laden
+    private void loadDataFromDatabase(){
+
+        HTTPGetter getter = new HTTPGetter();
+        getter.execute("puzzle", FirebaseAuth.getInstance().getUid(), "getPuzzle");
+
+        try {
+            String getPuzzleResult = getter.get();
+            if (!getPuzzleResult.equals("{ }")) {
+                puzzle = gson.fromJson(getPuzzleResult, Puzzle.class);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     // Random Daten zum Testen
     private void createRandomData(int count){
 
         for (int i = 0; i < count; i++){
-
             Random r = new Random();
             int pieces = r.nextInt(17);
 
