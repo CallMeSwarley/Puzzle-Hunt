@@ -65,7 +65,8 @@ public class CollectionsActivity extends AppCompatActivity {
     }
 
     private Puzzle getPuzzle(String id){
-        PuzzleModel puzzle;
+        //Get PuzzleModel from MongoDB
+        PuzzleModel puzzle = new PuzzleModel();
         Gson gson = new Gson();
         HTTPGetter get = new HTTPGetter();
         get.execute("puzzle", id, "getPuzzle");
@@ -80,13 +81,16 @@ public class CollectionsActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
+        //Convert PuzzleModel to Puzzle
         int idOfImage = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + puzzle.id, null, null);
         Drawable image = getResources().getDrawable(idOfImage);
         Bitmap returnedBitmap = ((BitmapDrawable)image).getBitmap();
         Puzzle ret = new Puzzle(puzzle.id,puzzle.piecesCountHorizontal,puzzle.piecesCountVertical,returnedBitmap);
         return ret;
     }
+
+
+
 
 
 }
