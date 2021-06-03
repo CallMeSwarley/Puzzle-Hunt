@@ -1,14 +1,19 @@
 package com.socialgaming.androidtutorial;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
@@ -17,7 +22,14 @@ import com.socialgaming.androidtutorial.Models.FriendshipRank;
 import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 
+import org.w3c.dom.Text;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+import java.util.zip.Inflater;
 
 public class FriendsActivity extends AppCompatActivity {
     private final Gson gson = new Gson();
@@ -28,49 +40,20 @@ public class FriendsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
 
-        //in friend_row.xml ist ein freundes eintrag enthalten, dieser sollte dann einfach aufgerufen
-        // und angezeigt werden (mehrfach, um ne freundesliste anzuzeigen)
-        //im activity_friends sind nur platzhalter für ein ca. layout
-
-        final Button addFriends = findViewById(R.id.add_friends_button);
-        addFriends.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(FriendsActivity.this, AddFriendsActivity.class);
-                startActivity(intent);
-            }
-        });
-        //nur zum testen sollte durch referenzen auf buttons aus friend_row.xml ersetzt werden
-        final Button testViewProfile = findViewById(R.id.test_view_profile_button);
-        final Button testTrade = findViewById(R.id.test_trade_button);
-
-        //nur zum testen sollte durch referenzen auf buttons aus friend_row.xml ersetzt werden
-        testViewProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(FriendsActivity.this, FriendProfileActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        testTrade.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(FriendsActivity.this, TradeActivity.class);
-                startActivity(intent);
-            }
-        });
         //Freundesliste holen
-        TextView freundeListe = findViewById(R.id.freundesListe);
-        freundeListe.setText("");
         HTTPGetter get = new HTTPGetter();
         get.execute("user", FirebaseAuth.getInstance().getUid(), "getFriendList");
         try {
             String getUserResult = get.get();
             if (!getUserResult.equals("{ }")) {
-                Friendship[] friendlist = gson.fromJson(getUserResult, Friendship[].class);
-                if (friendlist != null) {
-                    for (Friendship fs : friendlist) {
+                Friendship[] friendshipArr = gson.fromJson(getUserResult, Friendship[].class);
+                if (friendshipArr != null) {
+                    LinearLayout friends_layout = findViewById(R.id.friendsActivity);
+                    int counter = 0;
+                    for (Friendship fs : friendshipArr) {
+                        View child = getLayoutInflater().inflate(R.layout.friend_row, null);
+                        TextView text = child.findViewById(R.id.friend_name_textView);
+                        TextView text2 = child.findViewById(R.id.friend_lvl_textView);
                         String fsLvlStr = "";
                         if (fs.rank == 0)
                             fsLvlStr = FriendshipRank.FRIENDLY_GREETINGS.toString();
@@ -84,43 +67,79 @@ public class FriendsActivity extends AppCompatActivity {
                             fsLvlStr = FriendshipRank.PUZZLE_SOULMATES.toString();
                         String myID = FirebaseAuth.getInstance().getUid();
                         //Freund holen
-                        if (fs.friendOne != myID) {
+                        if (!fs.friendOne.equals(myID)) {
                             HTTPGetter getFriend = new HTTPGetter();
                             getFriend.execute("user", fs.friendOne, "getUser");
                             try {
                                 String getFriendResult = getFriend.get();
                                 if (!getFriendResult.equals("{ }")) {
                                     User friend = gson.fromJson(getFriendResult, User.class);
-                                    freundeListe.append("ID: " + friend.id + "Fs-Rank: " + fsLvlStr + "\n");
+                                    text.append(friend.id);
+                                    text2.append(fsLvlStr);
+                                    child.setId(counter);
+                                    //RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                                    if (counter == 0) {
+                                        //params.addRule(RelativeLayout.ALIGN_TOP,friends_layout.getId());
+                                        friends_layout.addView(child);
+                                        System.out.println("Created Row: " + counter);
+
+                                    } else {
+                                        //params.addRule(RelativeLayout.BELOW, counter - 1);
+                                        //params.addRule(RelativeLayout.ABOVE, R.id.addFriendButton);
+                                        friends_layout.addView(child);
+                                        System.out.println("Created Row: " + counter);
+                                    }
                                 }
                             } catch (ExecutionException | InterruptedException e) {
                                 e.printStackTrace();
                             }
-                        } else if (fs.friendTwo != myID) {
+                        } else if (!fs.friendTwo.equals(myID)) {
                             HTTPGetter getFriend = new HTTPGetter();
                             getFriend.execute("user", fs.friendTwo, "getUser");
                             try {
                                 String getFriendResult = getFriend.get();
                                 if (!getFriendResult.equals("{ }")) {
                                     User friend = gson.fromJson(getFriendResult, User.class);
-                                    freundeListe.append("ID: " + friend.id + "Fs-Rank: " + fsLvlStr + "\n");
+                                    text.append(friend.id);
+                                    text2.append(fsLvlStr);
+                                    child.setId(counter);
+                                    //RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                                    if (counter == 0) {
+                                        //params.addRule(RelativeLayout.ALIGN_TOP,friends_layout.getId());
+                                        friends_layout.addView(child);
+                                        System.out.println("Created Row: " + counter);
+                                    } else {
+                                        //params.addRule(RelativeLayout.BELOW, counter - 1);
+                                        //params.addRule(RelativeLayout.ABOVE, R.id.addFriendButton);
+                                        friends_layout.addView(child);
+                                        System.out.println("Created Row: " + counter);
+                                    }
                                 }
                             } catch (ExecutionException | InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }
-                    };//ende friendlist.forEach-Loop
+                        counter++;
+                    }//ende for (Friendship fs : friendlist) -Loop
+                    View button = getLayoutInflater().inflate(R.layout.add_friend_button, null);
+                    friends_layout.addView(button);
 
                 } else {
                     System.out.println("Get Friendslist didn't work!");
                 }
             }
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-
+        final Button addFriends = findViewById(R.id.add_friends_button);
+        addFriends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(FriendsActivity.this, AddFriendsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
+
 
 }

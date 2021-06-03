@@ -10,14 +10,11 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Models.Puzzle;
 import com.socialgaming.androidtutorial.Models.PuzzleModel;
 import com.socialgaming.androidtutorial.Models.PuzzlePiece;
-import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
-
 
 import java.util.concurrent.ExecutionException;
 
@@ -29,8 +26,8 @@ public class CollectionsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_collections);
         int id = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + "img_1", null, null);
         Drawable image = getResources().getDrawable(id);
-        Bitmap returnedBitmap = ((BitmapDrawable)image).getBitmap();
-        Puzzle puzzle = new Puzzle("1",3,3,returnedBitmap);
+        Bitmap returnedBitmap = ((BitmapDrawable) image).getBitmap();
+        Puzzle puzzle = new Puzzle("1", 3, 3, returnedBitmap);
         PuzzlePiece[][] pieces = puzzle.getAllPuzzlePieces();
 
         ImageView[][] view = new ImageView[puzzle.piecesCountHorizontal][puzzle.piecesCountVertical];
@@ -60,12 +57,11 @@ public class CollectionsActivity extends AppCompatActivity {
         }
 
 
-
-
     }
 
-    private Puzzle getPuzzle(String id){
-        PuzzleModel puzzle=new PuzzleModel();
+    private Puzzle getPuzzle(String id) {
+
+        PuzzleModel puzzle = new PuzzleModel();
         Gson gson = new Gson();
         HTTPGetter get = new HTTPGetter();
         get.execute("puzzle", id, "getPuzzle");
@@ -80,11 +76,11 @@ public class CollectionsActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
+        //Convert PuzzleModel to Puzzle
         int idOfImage = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + puzzle.id, null, null);
         Drawable image = getResources().getDrawable(idOfImage);
-        Bitmap returnedBitmap = ((BitmapDrawable)image).getBitmap();
-        Puzzle ret = new Puzzle(puzzle.id,puzzle.piecesCountHorizontal,puzzle.piecesCountVertical,returnedBitmap);
+        Bitmap returnedBitmap = ((BitmapDrawable) image).getBitmap();
+        Puzzle ret = new Puzzle(puzzle.id, puzzle.piecesCountHorizontal, puzzle.piecesCountVertical, returnedBitmap);
         return ret;
     }
 
