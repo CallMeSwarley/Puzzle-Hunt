@@ -8,23 +8,24 @@ import java.util.Date;
 
 public class Friendship {
     @JsonProperty("_id")
-    public String id; //DeineID+FreundID
+    public String id; //MongoID
     public String friendOne;
     public String friendTwo;
     public FriendshipRank rank; //je nach Rank anderen Multiplier beim traden etc.
-    public LocalDate friendshipStart;
+    public int dayOfYear,year;
 
     public Friendship(String du,String freund){
-        id=du+freund;
         friendOne=du;
         friendTwo=freund;
         rank=FriendshipRank.FRIENDLY_GREETINGS;//Default startwert, soll immer dann aktualisiert werden wenn freundesliste geöffnet wird
-        friendshipStart=java.time.LocalDate.now();
+        LocalDate friendshipStart=java.time.LocalDate.now();
+        dayOfYear=friendshipStart.getDayOfYear();
+        year=friendshipStart.getYear();
     }
 
     public void updateRank(){
         LocalDate today=java.time.LocalDate.now();
-        long daysOfFriendship= ChronoUnit.DAYS.between(friendshipStart,today);
+        long daysOfFriendship= ChronoUnit.DAYS.between(LocalDate.ofYearDay(year,dayOfYear),today);
         //TODO Tage-Rang Verhältnis anpassen
         if(daysOfFriendship<=2)
             rank=FriendshipRank.FRIENDLY_GREETINGS;

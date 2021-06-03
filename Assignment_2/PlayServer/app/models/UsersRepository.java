@@ -31,6 +31,8 @@ public class UsersRepository {
         return users().findOne("{_id: #}", id).as(User.class);
     }
 
+    public User getUserByNickName(String nickName){return users().findOne("{_nickName: #}", nickName).as(User.class);}
+
     public void insert(User user) {
         users().save(user);
     }
