@@ -32,10 +32,8 @@ public class FriendshipRepository {
         return friendships().findOne("{_id: #}", id).as(Friendship.class);
     }
 
-    public String insert(Friendship fs) {
-        fs.id = new ObjectId().toString();
+    public void insert(Friendship fs) {
         friendships().save(fs);
-        return fs.id;
     }
 
     public void delete(String generatedFsID) {
@@ -47,7 +45,7 @@ public class FriendshipRepository {
     }
 
     public Friendship copyFriendship(Friendship fs) {
-        Friendship copy = new Friendship(fs.friendOne, fs.friendTwo);
+        Friendship copy = new Friendship(fs.friendOne, fs.friendTwo,fs.id);
         copy.id = fs.id;
         copy.rank = fs.rank;
         copy.year = fs.year;

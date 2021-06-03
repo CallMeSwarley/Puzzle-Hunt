@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 
+import org.bson.types.ObjectId;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,13 +99,13 @@ public class HomeController extends Controller {
                     return ok("Already Friends");
                 }
             }
-            Friendship fs=new Friendship(firebaseIdMe,firebaseIdFriend);
-            String generatedId=friendships.insert(fs);
+            Friendship fs=new Friendship(firebaseIdMe,firebaseIdFriend,new ObjectId().toString());
+            friendships.insert(fs);
             User user=users.getUser(firebaseIdMe);
-            user.addFriend(generatedId);
+            user.addFriend(fs.id);
             users.update(user);
             user=users.getUser(firebaseIdFriend);
-            user.addFriend(generatedId);
+            user.addFriend(fs.id);
             users.update(user);
             return ok("Friendship prepared");
         }
