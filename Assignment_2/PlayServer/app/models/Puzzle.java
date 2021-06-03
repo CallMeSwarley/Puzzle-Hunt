@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Puzzle {
     @JsonProperty("_id")
-    String id;
+    public String id;
     public int piecesCountHorizontal = 1;
     public int piecesCountVertical = 1;
 
