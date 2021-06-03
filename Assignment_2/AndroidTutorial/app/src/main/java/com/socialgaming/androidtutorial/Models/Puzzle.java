@@ -2,7 +2,6 @@ package com.socialgaming.androidtutorial.Models;
 
 import android.graphics.Bitmap;
 import android.util.Log;
-
 import com.google.android.gms.common.api.ApiException;
 
 import java.util.Collections;

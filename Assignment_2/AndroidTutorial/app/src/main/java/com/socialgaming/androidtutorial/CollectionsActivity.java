@@ -10,8 +10,16 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Models.Puzzle;
+import com.socialgaming.androidtutorial.Models.PuzzleModel;
 import com.socialgaming.androidtutorial.Models.PuzzlePiece;
+import com.socialgaming.androidtutorial.Models.User;
+import com.socialgaming.androidtutorial.Util.HTTPGetter;
+
+
+import java.util.concurrent.ExecutionException;
 
 public class CollectionsActivity extends AppCompatActivity {
 
@@ -19,9 +27,10 @@ public class CollectionsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_collections);
-        Drawable image = getResources().getDrawable(R.drawable.meme);
-        Bitmap returnedBitmap = ((BitmapDrawable) image).getBitmap();
-        Puzzle puzzle = new Puzzle("1", 3, 3, returnedBitmap);
+        int id = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + "img_1", null, null);
+        Drawable image = getResources().getDrawable(id);
+        Bitmap returnedBitmap = ((BitmapDrawable)image).getBitmap();
+        Puzzle puzzle = new Puzzle("1",3,3,returnedBitmap);
         PuzzlePiece[][] pieces = puzzle.getAllPuzzlePieces();
 
         ImageView[][] view = new ImageView[puzzle.piecesCountHorizontal][puzzle.piecesCountVertical];
@@ -35,7 +44,6 @@ public class CollectionsActivity extends AppCompatActivity {
         view[1][2] = findViewById(R.id.imageView8);
         view[2][2] = findViewById(R.id.imageView9);
 
-        ImageView imageView = findViewById(R.id.imageView9);
         ColorMatrix matrix = new ColorMatrix();
         matrix.setSaturation(0);
 
@@ -52,9 +60,33 @@ public class CollectionsActivity extends AppCompatActivity {
         }
 
 
-    }
 
-    public void Test() {
 
     }
+
+    private Puzzle getPuzzle(String id){
+        PuzzleModel puzzle;
+        Gson gson = new Gson();
+        HTTPGetter get = new HTTPGetter();
+        get.execute("puzzle", id, "getPuzzle");
+        try {
+            String getUserResult = get.get();
+            if (!getUserResult.equals("{ }")) {
+                puzzle = gson.fromJson(getUserResult, PuzzleModel.class);
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        int idOfImage = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + puzzle.id, null, null);
+        Drawable image = getResources().getDrawable(idOfImage);
+        Bitmap returnedBitmap = ((BitmapDrawable)image).getBitmap();
+        Puzzle ret = new Puzzle(puzzle.id,puzzle.piecesCountHorizontal,puzzle.piecesCountVertical,returnedBitmap);
+        return ret;
+    }
+
+
 }
