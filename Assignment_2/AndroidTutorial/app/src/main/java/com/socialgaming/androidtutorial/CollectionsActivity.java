@@ -65,7 +65,7 @@ public class CollectionsActivity extends AppCompatActivity {
     }
 
     private Puzzle getPuzzle(String id){
-        PuzzleModel puzzle;
+        PuzzleModel puzzle=new PuzzleModel();
         Gson gson = new Gson();
         HTTPGetter get = new HTTPGetter();
         get.execute("puzzle", id, "getPuzzle");
