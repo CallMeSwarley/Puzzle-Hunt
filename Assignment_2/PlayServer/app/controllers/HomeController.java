@@ -95,7 +95,7 @@ public class HomeController extends Controller {
         } else {
             for (String id : me.friends) {
                 Friendship friendship = friendships.getFriendship(id);
-                if (friendship.friendOne==firebaseIdFriend || friendship.friendTwo==firebaseIdFriend) {
+                if (friendship.friendOne.equals(firebaseIdFriend) || friendship.friendTwo.equals(firebaseIdFriend)) {
                     return ok("Already Friends");
                 }
             }
