@@ -111,6 +111,17 @@ public class HomeController extends Controller {
         }
     }
 
+    public Result getFriendList(String firebaseId){
+        User user=users.getUser(firebaseId);
+        List fsIDs=user.friends;
+        List friendshipList=new ArrayList<>();
+        fsIDs.forEach(x->{
+            friendshipList.add(friendships.getFriendship((String) x));
+        });
+        Result res = ok(gson.toJson(friendshipList));
+        return res;
+    }
+
 
     public Result prepareUserWithNickname(String firebaseId, String nickName) {
         Logger.info("prepareUser with nickname");
@@ -143,6 +154,7 @@ public class HomeController extends Controller {
         res = ok(gson.toJson(users.getUserByNickName(nickName)));
         return res;
     }
+
     public Result getFriendship(String friendshipID){
         Result res;
         res = ok(gson.toJson(friendships.getFriendship(friendshipID)));
