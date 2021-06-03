@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidTutorial"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SendGiftActivity"></activity>
+        <activity android:name=".SendGiftActivity" />
         <activity android:name=".RemoveFriendActivity" />
         <activity android:name=".TradeActivity" />
         <activity android:name=".FriendProfileActivity" />
