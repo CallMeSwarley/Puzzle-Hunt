@@ -3,16 +3,4 @@
     <string name="register">Register</string>
     <string name="title_activity_maps">Map</string>
     <string name="google_maps_key" translatable="false">AIzaSyAwy2u2JwsAl927ocUqnV3jt6CWUBYg008</string>
-    
-    <string-array name="puzzle_sets">
-        <item>Puzzle1</item>
-        <item>Puzzle2</item>
-        <item>Puzzle3</item>
-        <item>Puzzle4</item>
-        <item>Puzzle5</item>
-        <item>Puzzle6</item>
-        <item>Puzzle7</item>
-        <item>Puzzle8</item>
-        <item>Puzzle9</item>
-    </string-array>
 </resources>

@@ -150,8 +150,7 @@ public class SetsActivity extends AppCompatActivity {
         });
     }
 
-
-    // Daten aus Datenbank laden
+    // TODO Daten aus Datenbank laden
     private void loadDataFromDatabase(){
 
         HTTPGetter getter = new HTTPGetter();
