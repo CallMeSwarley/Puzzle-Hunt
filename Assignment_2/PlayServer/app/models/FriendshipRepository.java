@@ -48,10 +48,10 @@ public class FriendshipRepository {
 
     public Friendship copyFriendship(Friendship fs) {
         Friendship copy = new Friendship(fs.friendOne, fs.friendTwo);
-        copy.id=fs.id;
+        copy.id = fs.id;
         copy.rank = fs.rank;
-        copy.year=fs.year;
-        copy.dayOfYear=fs.dayOfYear;
+        copy.year = fs.year;
+        copy.dayOfYear = fs.dayOfYear;
         return copy;
     }
 }

@@ -14,15 +14,19 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Models.Friendship;
+import com.socialgaming.androidtutorial.Models.FriendshipRank;
 import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 public class FriendsActivity extends AppCompatActivity {
     private final Gson gson = new Gson();
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,42 +69,62 @@ public class FriendsActivity extends AppCompatActivity {
         TextView freundeListe = findViewById(R.id.freundesListe);
         freundeListe.setText("");
         HTTPGetter get = new HTTPGetter();
-        get.execute("user", FirebaseAuth.getInstance().getUid(), "getFriendList");
+        get.execute("user", FirebaseAuth.getInstance().getUid(), "getUser");
         try {
             String getUserResult = get.get();
             if (!getUserResult.equals("{ }")) {
-                List friendlist = gson.fromJson(getUserResult, List.class);
-                if(friendlist!=null){
-                    friendlist.forEach(x->{
-                        Friendship fs= (Friendship) x;
-                        String myID=FirebaseAuth.getInstance().getUid();
-                        //Freund holen
-                        if(fs.friendOne!=myID){
-                            HTTPGetter getFriend = new HTTPGetter();
-                            getFriend.execute("user", fs.friendOne, "getUser");
-                            try {
-                                String getFriendResult = getFriend.get();
-                                if (!getFriendResult.equals("{ }")) {
-                                    User friend = gson.fromJson(getFriendResult, User.class);
-                                    freundeListe.append(friend.id+"\n");
+                User me=gson.fromJson(getUserResult, User.class);
+                List fsIdlist = me.friends;
+                if(fsIdlist!=null){
+                    fsIdlist.forEach(x->{
+                        HTTPGetter getFriendship = new HTTPGetter();
+                        getFriendship.execute("user", (String) x, "getFriendship");
+                        try {
+                            String getFsResult=getFriendship.get();
+                            Friendship fs = gson.fromJson(getFsResult, Friendship.class);;
+                            String fsLvlStr = "";
+                            if (fs.rank == 0)
+                                fsLvlStr = FriendshipRank.FRIENDLY_GREETINGS.toString();
+                            if (fs.rank == 1)
+                                fsLvlStr = FriendshipRank.CO_PUZZLERS.toString();
+                            if (fs.rank == 2)
+                                fsLvlStr = FriendshipRank.PUZZLE_BUDDIES.toString();
+                            if (fs.rank == 3)
+                                fsLvlStr = FriendshipRank.PUZZLE_BFF.toString();
+                            if (fs.rank == 4)
+                                fsLvlStr = FriendshipRank.PUZZLE_SOULMATES.toString();
+                            String myID = FirebaseAuth.getInstance().getUid();
+                            //Freund holen
+                            if (fs.friendOne != myID) {
+                                HTTPGetter getFriend = new HTTPGetter();
+                                getFriend.execute("user", fs.friendOne, "getUser");
+                                try {
+                                    String getFriendResult = getFriend.get();
+                                    if (!getFriendResult.equals("{ }")) {
+                                        User friend = gson.fromJson(getFriendResult, User.class);
+                                        freundeListe.append("ID: " + friend.id + "Fs-Rank: " + fsLvlStr + "\n");
+                                    }
+                                } catch (ExecutionException | InterruptedException e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (ExecutionException | InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }else if(fs.friendTwo!=myID){
-                            HTTPGetter getFriend = new HTTPGetter();
-                            getFriend.execute("user", fs.friendTwo, "getUser");
-                            try {
-                                String getFriendResult = getFriend.get();
-                                if (!getFriendResult.equals("{ }")) {
-                                    User friend = gson.fromJson(getFriendResult, User.class);
-                                    freundeListe.append(friend.id+"\n");
+                            } else if (fs.friendTwo != myID) {
+                                HTTPGetter getFriend = new HTTPGetter();
+                                getFriend.execute("user", fs.friendTwo, "getUser");
+                                try {
+                                    String getFriendResult = getFriend.get();
+                                    if (!getFriendResult.equals("{ }")) {
+                                        User friend = gson.fromJson(getFriendResult, User.class);
+                                        freundeListe.append("ID: " + friend.id + "Fs-Rank: " + fsLvlStr + "\n");
+                                    }
+                                } catch (ExecutionException | InterruptedException e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (ExecutionException | InterruptedException e) {
-                                e.printStackTrace();
                             }
+                        } catch (InterruptedException | ExecutionException e) {
+                            e.printStackTrace();
                         }
                     });//ende friendlist.forEach-Loop
+
                 }else{
                     System.out.println("Get Friendslist didn't work!");
                 }
@@ -112,4 +136,5 @@ public class FriendsActivity extends AppCompatActivity {
         }
 
     }
+
 }
