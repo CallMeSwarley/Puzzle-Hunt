@@ -14,6 +14,7 @@ public class Friendship {
     public int rank; //je nach Rank anderen Multiplier beim traden etc.
     public int dayOfYear,year;
 
+    public Friendship() {}
     public Friendship(String du,String freund){
         friendOne=du;
         friendTwo=freund;
