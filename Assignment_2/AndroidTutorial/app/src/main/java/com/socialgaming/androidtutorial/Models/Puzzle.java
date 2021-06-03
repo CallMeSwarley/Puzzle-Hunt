@@ -1,6 +1,18 @@
 package com.socialgaming.androidtutorial.Models;
 
 import android.graphics.Bitmap;
+import android.util.Log;
+
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
+
+import java.util.Collections;
+import java.util.List;
 
 public class Puzzle {
     private Bitmap image;
@@ -53,5 +65,9 @@ public class Puzzle {
         }
         return this.puzzlePieces;
     }
+
+
+
+
 
 }
