@@ -7,9 +7,9 @@ import java.util.Map;
 
 public class Inventory {
 
-    private String id;
-    private List<String> titles;
-    private Map<String, int[][]> sets;
+    public String id;
+    public List<String> titles;
+    public Map<String, int[][]> sets;
 
     public Inventory() {
         this.id = "";

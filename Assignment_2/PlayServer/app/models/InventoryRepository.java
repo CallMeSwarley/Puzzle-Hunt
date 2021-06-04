@@ -23,8 +23,29 @@ public class InventoryRepository {
         return instance;
     }
 
-    public MongoCollection inventory() {
-        MongoCollection inventoryCollection = jongo.getCollection("inventory");
+    public MongoCollection inventories() {
+        MongoCollection inventoryCollection = jongo.getCollection("inventories");
         return inventoryCollection;
+    }
+
+    public Inventory getInventory(String id) {
+        return inventories().findOne("{_id: #}", id).as(Inventory.class);
+    }
+
+    public void insert(Inventory inventory) {
+        inventories().save(inventory);
+    }
+
+    public void update(Inventory inventory) {
+        inventories().update("{_id: #}", inventory.id).with(this.copyInventory(inventory));
+    }
+
+    public Inventory copyInventory(Inventory inventory) {
+        Inventory copy = new Inventory();
+        copy.id = inventory.id;
+        copy.sets = inventory.sets;
+        copy.titles = inventory.titles;
+
+        return copy;
     }
 }

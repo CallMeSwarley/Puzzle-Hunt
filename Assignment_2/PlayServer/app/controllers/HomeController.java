@@ -13,8 +13,11 @@ import javax.inject.Inject;
 
 import models.Friendship;
 import models.FriendshipRepository;
+import models.Inventory;
+import models.InventoryRepository;
 import models.Location;
 import models.LocationsRepository;
+import models.Puzzle;
 import models.PuzzleRepository;
 import models.User;
 import models.UsersRepository;
@@ -37,6 +40,8 @@ public class HomeController extends Controller {
     private FriendshipRepository friendships;
     @Inject
     private PuzzleRepository puzzles;
+    @Inject
+    private InventoryRepository inventories;
 
     /**
      * An action that renders an HTML page with a welcome message.
@@ -212,5 +217,31 @@ public class HomeController extends Controller {
         Result res;
         res = ok(gson.toJson(locations.getNearbyUsers(firebaseId)));
         return res;
+    }
+
+    public Result getInventory(String firebaseId) {
+        Inventory result = inventories.getInventory(firebaseId);
+        if (result == null) {
+            Inventory newInventory = new Inventory();
+            newInventory.id = firebaseId;
+            inventories.insert(newInventory);
+            return ok(gson.toJson(newInventory));
+        } else {
+            return ok(gson.toJson(result));
+        }
+    }
+
+    public Result addPiece(String firebaseId, String puzzleId, Integer x, Integer y, Integer counter) {
+        Inventory saved = inventories.getInventory(firebaseId);
+        if (saved.sets.containsKey(puzzleId)) {
+            saved.sets.get(puzzleId)[x][y] += counter;
+        } else {
+            Puzzle puzzle = puzzles.getPuzzle(puzzleId);
+            int[][] set = new int[puzzle.piecesCountHorizontal][puzzle.piecesCountVertical];
+            set[x][y] = counter;
+            saved.sets.put(puzzleId, set);
+        }
+        inventories.update(saved);
+        return ok(gson.toJson(saved));
     }
 }
