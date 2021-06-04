@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Adapters.SetListAdapter;
 import com.socialgaming.androidtutorial.Interfaces.ILoadMore;
+import com.socialgaming.androidtutorial.Models.Inventory;
 import com.socialgaming.androidtutorial.Models.Puzzle;
 import com.socialgaming.androidtutorial.Models.SetViewItem;
 import com.socialgaming.androidtutorial.Models.User;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class SetsActivity extends AppCompatActivity {
@@ -38,7 +40,8 @@ public class SetsActivity extends AppCompatActivity {
     SetListAdapter adapter;
 
     // Eventuell Name des Puzzles
-
+    Inventory inventory = new Inventory();
+    List<String> setTitles = new ArrayList<>();
     Map<String, int[][]> sets = new HashMap<>();
 
     private Puzzle puzzle;
@@ -160,8 +163,20 @@ public class SetsActivity extends AppCompatActivity {
 
     private void fetchSetInformation() {
 
-
-
+        HTTPGetter get = new HTTPGetter();
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), "getInventory");
+        try {
+            String getUserResult = get.get();
+            if (!getUserResult.equals("{ }")) {
+                this.inventory = gson.fromJson(getUserResult, Inventory.class);
+                this.setTitles = inventory.getTitles();
+                this.sets = inventory.getSets();
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
