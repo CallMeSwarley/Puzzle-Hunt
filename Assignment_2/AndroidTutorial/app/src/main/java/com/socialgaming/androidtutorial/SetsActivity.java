@@ -22,9 +22,12 @@ import com.socialgaming.androidtutorial.Models.SetViewItem;
 import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -33,6 +36,10 @@ public class SetsActivity extends AppCompatActivity {
     List<SetViewItem> items = new ArrayList<>();
     List<SetViewItem> completedItems = new ArrayList<>();
     SetListAdapter adapter;
+
+    // Eventuell Name des Puzzles
+
+    Map<String, int[][]> sets = new HashMap<>();
 
     private Puzzle puzzle;
     private final Gson gson = new Gson();
@@ -63,7 +70,7 @@ public class SetsActivity extends AppCompatActivity {
         adapter.setLoadMore(new ILoadMore() {
             @Override
             public void onLoadMore() {
-                if(items.size() <= 50) { // Anstatt einer Konstanten die gesamte Anzahl der vorhandenen Puzzles
+                if(items.size() <= sets.size()) {
                     items.add(null);
                     adapter.notifyItemInserted(items.size() - 1);
                     new Handler().postDelayed(new Runnable() {

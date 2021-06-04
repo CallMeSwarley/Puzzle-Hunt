@@ -13,12 +13,16 @@ import com.socialgaming.androidtutorial.Models.PuzzlePiece;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PiecesActivity extends AppCompatActivity {
 
     List<PieceViewItem> pieces = new ArrayList<>();
     PieceListAdapter adapter;
+
+    Map<String, int[][]> sets = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
