@@ -18,16 +18,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-class PieceLoadingViewHolder extends RecyclerView.ViewHolder
-{
-    public ProgressBar progressBar;
-
-    public PieceLoadingViewHolder(@NonNull @NotNull View itemView, ProgressBar progressBar) {
-        super(itemView);
-        this.progressBar = itemView.findViewById(R.id.progressBar);
-    }
-}
-
 class PieceItemViewHolder extends RecyclerView.ViewHolder{
 
     public View image;

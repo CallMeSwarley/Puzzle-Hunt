@@ -48,7 +48,7 @@ public class SetsActivity extends AppCompatActivity {
         // Switch
         final Switch switchShowCompleted = findViewById(R.id.showCompleted_switch);
 
-        loadDataFromDatabase();
+        fetchSetInformation();
 
         createRandomData(10);
 
@@ -150,22 +150,13 @@ public class SetsActivity extends AppCompatActivity {
         });
     }
 
-    // TODO Daten aus Datenbank laden
-    private void loadDataFromDatabase(){
 
-        HTTPGetter getter = new HTTPGetter();
-        getter.execute("puzzle", FirebaseAuth.getInstance().getUid(), "getPuzzle");
+    private void fetchSetInformation() {
 
-        try {
-            String getPuzzleResult = getter.get();
-            if (!getPuzzleResult.equals("{ }")) {
-                puzzle = gson.fromJson(getPuzzleResult, Puzzle.class);
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+
+
     }
+
 
     // Random Daten zum Testen
     private void createRandomData(int count){
