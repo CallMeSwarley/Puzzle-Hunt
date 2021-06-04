@@ -1,96 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".FriendsActivity">
+    android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/imageView5"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="15dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/best_friend_textView"
-        app:srcCompat="@drawable/ic_launcher_foreground" />
+    <LinearLayout
+        android:id="@+id/friendsActivity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/imageView8"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="15dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/friends_textView"
-        app:srcCompat="@drawable/ic_launcher_foreground" />
 
-    <ImageView
-        android:id="@+id/imageView9"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView8"
-        app:srcCompat="@drawable/ic_launcher_foreground" />
-
-    <TextView
-        android:id="@+id/best_friend_textView"
-        android:layout_width="100dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="30dp"
-        android:text="BestFriend"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/friends_textView"
-        android:layout_width="100dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="40dp"
-        android:text="Friends"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView5" />
-
-    <Button
-        android:id="@+id/add_friends_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="150dp"
-        android:layout_marginTop="510dp"
-        android:text="Add Friends"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/test_trade_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pseudo Trade Button"
-        tools:layout_editor_absoluteX="175dp"
-        tools:layout_editor_absoluteY="132dp" />
-
-    <Button
-        android:id="@+id/test_view_profile_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pseudo View Profile Button"
-        tools:layout_editor_absoluteX="150dp"
-        tools:layout_editor_absoluteY="75dp" />
-
-    <TextView
-        android:id="@+id/freundesListe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Temporäre Freundesliste (Test)"
-        app:layout_constraintBottom_toTopOf="@+id/add_friends_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/imageView8"
-        app:layout_constraintTop_toBottomOf="@+id/test_trade_button" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</ScrollView>
