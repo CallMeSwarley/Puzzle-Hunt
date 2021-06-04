@@ -1,5 +1,6 @@
 package com.socialgaming.androidtutorial.Models;
 
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.view.View;
 
@@ -8,7 +9,7 @@ import java.util.Comparator;
 public class SetViewItem {
 
     private String name;
-    private View image;
+    private int imageId;
     private int ownedPieces;
     private int maxPieces;
 
@@ -18,9 +19,9 @@ public class SetViewItem {
         this.maxPieces = maxPieces;
     }
 
-    public SetViewItem(String name, View image, int ownedPieces, int maxPieces) {
+    public SetViewItem(String name, int imageId, int ownedPieces, int maxPieces) {
         this.name = name;
-        this.image = image;
+        this.imageId = imageId;
         this.ownedPieces = ownedPieces;
         this.maxPieces = maxPieces;
     }
@@ -50,8 +51,8 @@ public class SetViewItem {
         return name;
     }
 
-    public View getImage() {
-        return image;
+    public int getImage() {
+        return imageId;
     }
 
     public int getOwnedPieces() {
