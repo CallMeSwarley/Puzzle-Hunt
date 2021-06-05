@@ -1,6 +1,10 @@
 package models;
 
 import org.jongo.MongoCollection;
+import org.jongo.MongoCursor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -31,7 +35,9 @@ public class UsersRepository {
         return users().findOne("{_id: #}", id).as(User.class);
     }
 
-    public User getUserByNickName(String nickName){return users().findOne("{_nickName: #}", nickName).as(User.class);}
+    public User getUserByNickName(String nickName) {
+        return users().findOne("{_nickName: #}", nickName).as(User.class);
+    }
 
     public void insert(User user) {
         users().save(user);
@@ -47,5 +53,16 @@ public class UsersRepository {
         copy.friends = user.friends;
         copy.xp = user.xp;
         return copy;
+    }
+
+    public String[] getNicknames() {
+        MongoCursor<User> users = users().find().as(User.class);
+        List<User> userObjects = new ArrayList();
+        for (User u : users) {
+            userObjects.add(u);
+        }
+        return userObjects.stream()
+                .map(x -> x.nickName)
+                .toArray(String[]::new);
     }
 }

@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -55,7 +56,6 @@ public class HomeController extends Controller {
 
     public Result updateUser(String userString) {
         Logger.info("Update user");
-
         User user = gson.fromJson(userString, User.class);
         users.update(user);
         return ok("User updated");
@@ -96,11 +96,14 @@ public class HomeController extends Controller {
 
     public Result prepareFriendship(String firebaseIdMe, String firebaseIdFriend) {
         Logger.info("prepareFriendship");
+
         User me = users.getUser(firebaseIdMe);
         User friend = users.getUser(firebaseIdFriend);
         if (me == null || friend == null) {
             return ok("This didn't work");
-        } else {
+        } else if (firebaseIdFriend.equals(firebaseIdMe))
+            return ok("That's kinda sad :(");
+        else {
             for (String id : me.friends) {
                 Friendship friendship = friendships.getFriendship(id);
                 if (friendship.friendOne.equals(firebaseIdFriend) || friendship.friendTwo.equals(firebaseIdFriend)) {
@@ -243,5 +246,15 @@ public class HomeController extends Controller {
         }
         inventories.update(saved);
         return ok(gson.toJson(saved));
+    }
+
+    public Result getNicknames() {
+        return ok(gson.toJson(users.getNicknames()));
+    }
+
+    public Result checkNickname(String nickName) {
+        return ok(gson.toJson(
+                !Arrays.stream(users.getNicknames())
+                        .anyMatch(s -> s.equals(nickName))));
     }
 }
