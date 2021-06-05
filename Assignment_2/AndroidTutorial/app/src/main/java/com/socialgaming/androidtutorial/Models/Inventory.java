@@ -8,22 +8,25 @@ import java.util.Map;
 public class Inventory {
 
     public String id;
-    public List<String> titles;
+    public Map<String, String> titles;
+    //public List<String> titles;
     public Map<String, int[][]> sets;
 
     public Inventory() {
         this.id = "";
-        this.titles = new ArrayList();
+        this.titles = new HashMap<>();
+        //this.titles = new ArrayList();
         this.sets = new HashMap<>();
     }
 
     public Inventory(String firebaseId) {
         this.id = firebaseId;
-        this.titles = new ArrayList();
+        this.titles = new HashMap<>();
+        //this.titles = new ArrayList();
         this.sets = new HashMap<>();
     }
 
-    public void setTitles(List<String> titles) {
+    public void setTitles(Map<String, String> titles) {
         this.titles = titles;
     }
 
@@ -35,7 +38,7 @@ public class Inventory {
         return id;
     }
 
-    public List<String> getTitles() {
+    public Map<String, String> getTitles() {
         return titles;
     }
 

@@ -1,10 +1,12 @@
 package com.socialgaming.androidtutorial;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -68,62 +70,13 @@ public class FriendsActivity extends AppCompatActivity {
                         String myID = FirebaseAuth.getInstance().getUid();
                         //Freund holen
                         if (!fs.friendOne.equals(myID)) {
-                            HTTPGetter getFriend = new HTTPGetter();
-                            getFriend.execute("user", fs.friendOne, "getUser");
-                            try {
-                                String getFriendResult = getFriend.get();
-                                if (!getFriendResult.equals("{ }")) {
-                                    User friend = gson.fromJson(getFriendResult, User.class);
-                                    text.append(friend.id);
-                                    text2.append(fsLvlStr);
-                                    child.setId(counter);
-                                    //RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                                    if (counter == 0) {
-                                        //params.addRule(RelativeLayout.ALIGN_TOP,friends_layout.getId());
-                                        friends_layout.addView(child);
-                                        System.out.println("Created Row: " + counter);
-
-                                    } else {
-                                        //params.addRule(RelativeLayout.BELOW, counter - 1);
-                                        //params.addRule(RelativeLayout.ABOVE, R.id.addFriendButton);
-                                        friends_layout.addView(child);
-                                        System.out.println("Created Row: " + counter);
-                                    }
-                                }
-                            } catch (ExecutionException | InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                            createXMLRow(fs.friendOne, fsLvlStr);
                         } else if (!fs.friendTwo.equals(myID)) {
-                            HTTPGetter getFriend = new HTTPGetter();
-                            getFriend.execute("user", fs.friendTwo, "getUser");
-                            try {
-                                String getFriendResult = getFriend.get();
-                                if (!getFriendResult.equals("{ }")) {
-                                    User friend = gson.fromJson(getFriendResult, User.class);
-                                    text.append(friend.id);
-                                    text2.append(fsLvlStr);
-                                    child.setId(counter);
-                                    //RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                                    if (counter == 0) {
-                                        //params.addRule(RelativeLayout.ALIGN_TOP,friends_layout.getId());
-                                        friends_layout.addView(child);
-                                        System.out.println("Created Row: " + counter);
-                                    } else {
-                                        //params.addRule(RelativeLayout.BELOW, counter - 1);
-                                        //params.addRule(RelativeLayout.ABOVE, R.id.addFriendButton);
-                                        friends_layout.addView(child);
-                                        System.out.println("Created Row: " + counter);
-                                    }
-                                }
-                            } catch (ExecutionException | InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                            createXMLRow(fs.friendTwo, fsLvlStr);
                         }
-                        counter++;
                     }//ende for (Friendship fs : friendlist) -Loop
                     View button = getLayoutInflater().inflate(R.layout.add_friend_button, null);
                     friends_layout.addView(button);
-
                 } else {
                     System.out.println("Get Friendslist didn't work!");
                 }
@@ -141,5 +94,32 @@ public class FriendsActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+                Intent intent = new Intent(FriendsActivity.this, MainMenuActivity.class);
+                startActivity(intent);
+    }
 
+    private void createXMLRow(String friendID, String fsLvlStr) {
+        LinearLayout friends_layout = findViewById(R.id.friendsActivity);
+        View child = getLayoutInflater().inflate(R.layout.friend_row, null);
+        TextView text = child.findViewById(R.id.friend_name_textView);
+        TextView text2 = child.findViewById(R.id.friend_lvl_textView);
+        HTTPGetter getFriend = new HTTPGetter();
+        getFriend.execute("user", friendID, "getUser");
+        try {
+            String getFriendResult = getFriend.get();
+            if (!getFriendResult.equals("{ }")) {
+                User friend = gson.fromJson(getFriendResult, User.class);
+                if (friend.nickName != "")
+                    text.append(friend.nickName);
+                else
+                    text.append(friend.id);
+                text2.append(fsLvlStr);
+                friends_layout.addView(child);
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }

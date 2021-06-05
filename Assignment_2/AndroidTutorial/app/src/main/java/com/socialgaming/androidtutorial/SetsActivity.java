@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -20,11 +21,11 @@ import com.socialgaming.androidtutorial.Interfaces.ILoadMore;
 import com.socialgaming.androidtutorial.Models.Inventory;
 import com.socialgaming.androidtutorial.Models.Puzzle;
 import com.socialgaming.androidtutorial.Models.SetViewItem;
-import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +42,8 @@ public class SetsActivity extends AppCompatActivity {
 
     // Eventuell Name des Puzzles
     Inventory inventory = new Inventory();
-    List<String> setTitles = new ArrayList<>();
+    Map<String, String> titles = new HashMap<>();
+    //List<String> titles = new ArrayList<>();
     Map<String, int[][]> sets = new HashMap<>();
 
     private Puzzle puzzle;
@@ -60,7 +62,7 @@ public class SetsActivity extends AppCompatActivity {
 
         fetchSetInformation();
 
-        createRandomData(10);
+        //createRandomData(10);
 
         // RecyclerView und Adapter
         final RecyclerView setView = findViewById(R.id.sets_recyclerview);
@@ -70,27 +72,27 @@ public class SetsActivity extends AppCompatActivity {
         setView.setAdapter(adapter);
 
         // Mehr items laden event
-        adapter.setLoadMore(new ILoadMore() {
-            @Override
-            public void onLoadMore() {
-                if(items.size() <= sets.size()) {
-                    items.add(null);
-                    adapter.notifyItemInserted(items.size() - 1);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            items.remove(items.size() - 1);
-                            adapter.notifyItemRemoved(items.size());
-
-                            createRandomData(10);
-
-                            adapter.notifyDataSetChanged();
-                            adapter.setLoaded();
-                        }
-                    }, 2000);
-                }
-            }
-        });
+//        adapter.setLoadMore(new ILoadMore() {
+//            @Override
+//            public void onLoadMore() {
+//                if(items.size() <= sets.size()) {
+//                    items.add(null);
+//                    adapter.notifyItemInserted(items.size() - 1);
+//                    new Handler().postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            items.remove(items.size() - 1);
+//                            adapter.notifyItemRemoved(items.size());
+//
+//                            createRandomData(10);
+//
+//                            adapter.notifyDataSetChanged();
+//                            adapter.setLoaded();
+//                        }
+//                    }, 2000);
+//                }
+//            }
+//        });
 
         // Vollständige Puzzles anzeigen
         switchShowCompleted.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -169,7 +171,7 @@ public class SetsActivity extends AppCompatActivity {
             String getUserResult = get.get();
             if (!getUserResult.equals("{ }")) {
                 this.inventory = gson.fromJson(getUserResult, Inventory.class);
-                this.setTitles = inventory.getTitles();
+                this.titles = inventory.getTitles();
                 this.sets = inventory.getSets();
             }
         } catch (ExecutionException e) {
@@ -177,6 +179,27 @@ public class SetsActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+//        sets.put("meme", new int[][]{ {1, 2, 1}, {2, 0, 1}, {1, 0, 0}});
+//        sets.put("img_1", new int[][]{{0, 1, 2, 0}, {3, 1, 2, 1}, {1, 0, 0, 2}, {1, 3, 2, 1}});
+//
+//        titles.put("meme", "Meme");
+//        titles.put("img_1", "Surfer");
+
+        // Aus den Datenbankeinträgen werden hier ViewItems erstellt
+        sets.entrySet().stream().map(x -> {
+
+            int[][] arr = x.getValue();
+            int maxPieces = arr.length * arr.length;
+            int ownedPieces = (int) Arrays.stream(arr).flatMap(i -> Arrays.stream(i).boxed()).filter(i -> i > 0).count();
+
+            int id = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + x.getKey(), null, null);
+
+            items.add(new SetViewItem(titles.get(x.getKey()), id, ownedPieces, maxPieces));
+
+            return x;
+
+        }).count();
     }
 
 

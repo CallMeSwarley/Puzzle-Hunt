@@ -1,9 +1,11 @@
 package com.socialgaming.androidtutorial.Adapters;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -38,7 +40,7 @@ class SetLoadingViewHolder extends RecyclerView.ViewHolder
 class SetItemViewHolder extends RecyclerView.ViewHolder
 {
     public TextView title, ownedPieces, maxPieces;
-    public View image;
+    public ImageView image;
 
     public SetItemViewHolder(@NonNull @NotNull View itemView) {
         super(itemView);
@@ -48,12 +50,6 @@ class SetItemViewHolder extends RecyclerView.ViewHolder
         ownedPieces = itemView.findViewById(R.id.owned_textView);
         maxPieces = itemView.findViewById(R.id.max_textView);
         image = itemView.findViewById(R.id.preview_image_imageView);
-
-        // Altes Layout
-//        title = itemView.findViewById(R.id.name_textView);
-//        ownedPieces = itemView.findViewById(R.id.owned_pieces_textView);
-//        maxPieces = itemView.findViewById(R.id.max_pieces_textView);
-//        image = itemView.findViewById(R.id.image_preview_imageView);
     }
 }
 
@@ -126,9 +122,7 @@ public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             viewHolder.title.setText(item.getName());
             viewHolder.ownedPieces.setText(Integer.toString(item.getOwnedPieces()));
             viewHolder.maxPieces.setText(Integer.toString(item.getMaxPieces()));
-
-            // TODO hier sollte die image preview geladen werden
-            //viewHolder.image.
+            viewHolder.image.setImageResource(item.getImage());
         }
         else if(holder instanceof SetLoadingViewHolder){
            SetLoadingViewHolder loadingViewHolder = (SetLoadingViewHolder) holder;
