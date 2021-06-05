@@ -165,41 +165,38 @@ public class SetsActivity extends AppCompatActivity {
 
     private void fetchSetInformation() {
 
-        HTTPGetter get = new HTTPGetter();
-        get.execute("inventory", FirebaseAuth.getInstance().getUid(), "getInventory");
-        try {
-            String getUserResult = get.get();
-            if (!getUserResult.equals("{ }")) {
-                this.inventory = gson.fromJson(getUserResult, Inventory.class);
-                this.titles = inventory.getTitles();
-                this.sets = inventory.getSets();
-            }
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        HTTPGetter get = new HTTPGetter();
+//        get.execute("inventory", FirebaseAuth.getInstance().getUid(), "getInventory");
+//        try {
+//            String getUserResult = get.get();
+//            if (!getUserResult.equals("{ }")) {
+//                this.inventory = gson.fromJson(getUserResult, Inventory.class);
+//                this.titles = inventory.getTitles();
+//                this.sets = inventory.getSets();
+//            }
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
-//        sets.put("meme", new int[][]{ {1, 2, 1}, {2, 0, 1}, {1, 0, 0}});
-//        sets.put("img_1", new int[][]{{0, 1, 2, 0}, {3, 1, 2, 1}, {1, 0, 0, 2}, {1, 3, 2, 1}});
-//
-//        titles.put("meme", "Meme");
-//        titles.put("img_1", "Surfer");
+        sets.put("meme", new int[][]{ {1, 2, 1}, {2, 0, 1}, {1, 0, 0}});
+        sets.put("img_1", new int[][]{{0, 1, 2, 0}, {3, 1, 2, 1}, {1, 0, 0, 2}, {1, 3, 2, 1}});
+
+        titles.put("meme", "Meme");
+        titles.put("img_1", "Surfer");
 
         // Aus den Datenbankeinträgen werden hier ViewItems erstellt
-        sets.entrySet().stream().map(x -> {
+        sets.entrySet().stream().forEach(x -> {
 
             int[][] arr = x.getValue();
             int maxPieces = arr.length * arr.length;
             int ownedPieces = (int) Arrays.stream(arr).flatMap(i -> Arrays.stream(i).boxed()).filter(i -> i > 0).count();
 
-            int id = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + x.getKey(), null, null);
+            int imageId = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + x.getKey(), null, null);
 
-            items.add(new SetViewItem(titles.get(x.getKey()), id, ownedPieces, maxPieces));
-
-            return x;
-
-        }).count();
+            items.add(new SetViewItem(titles.get(x.getKey()), imageId, ownedPieces, maxPieces));
+        });
     }
 
 

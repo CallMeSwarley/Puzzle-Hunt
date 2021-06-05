@@ -1,10 +1,13 @@
 package com.socialgaming.androidtutorial.Adapters;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,12 +23,14 @@ import java.util.List;
 
 class PieceItemViewHolder extends RecyclerView.ViewHolder{
 
-    public View image;
+    public ImageView image;
+    public TextView amount;
 
     public PieceItemViewHolder(@NonNull @NotNull View itemView) {
         super(itemView);
 
-        // TODO Bild laden
+        image = itemView.findViewById(R.id.pieces_imageView);
+        amount = itemView.findViewById(R.id.amount_textView);
     }
 }
 
@@ -94,8 +99,8 @@ public class PieceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return;
 
             PieceItemViewHolder viewHolder = (PieceItemViewHolder) holder;
-            // TODO hier sollte die image preview geladen werden
-            //viewHolder.image.
+            viewHolder.image.setImageBitmap(item.getImage());
+            viewHolder.amount.setText(Integer.toString(item.getAmount()));
         }
         else if(holder instanceof SetLoadingViewHolder){
             SetLoadingViewHolder loadingViewHolder = (SetLoadingViewHolder) holder;

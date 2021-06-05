@@ -35,7 +35,12 @@ public class Puzzle {
             int k = 0;
             int width = image.getWidth();
             int height = image.getHeight();
-            bmp = Bitmap.createBitmap(image, (width * positionHorizontal) / piecesCountHorizontal, (positionVertical * height) / positionVertical, width / positionHorizontal, height / piecesCountVertical);
+
+            int pieceWidth = image.getWidth() / piecesCountHorizontal;
+            int pieceHeight = image.getHeight() / piecesCountVertical;
+
+            bmp = Bitmap.createBitmap(image, pieceWidth * positionHorizontal, pieceHeight * positionVertical, pieceWidth, pieceHeight);
+            //bmp = Bitmap.createBitmap(image, (width * positionHorizontal) / piecesCountHorizontal, (positionVertical * height) / positionVertical, width / positionHorizontal, height / piecesCountVertical);
             PuzzlePiece ret = new PuzzlePiece(bmp, positionHorizontal, positionVertical, this);
             puzzlePieces[positionHorizontal][positionVertical] = ret;
         }
