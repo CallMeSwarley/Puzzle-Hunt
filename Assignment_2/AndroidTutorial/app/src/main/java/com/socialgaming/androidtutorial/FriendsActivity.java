@@ -96,8 +96,8 @@ public class FriendsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-                Intent intent = new Intent(FriendsActivity.this, MainMenuActivity.class);
-                startActivity(intent);
+        Intent intent = new Intent(FriendsActivity.this, MainMenuActivity.class);
+        startActivity(intent);
     }
 
     private void createXMLRow(String friendID, String fsLvlStr) {
@@ -105,6 +105,7 @@ public class FriendsActivity extends AppCompatActivity {
         View child = getLayoutInflater().inflate(R.layout.friend_row, null);
         TextView text = child.findViewById(R.id.friend_name_textView);
         TextView text2 = child.findViewById(R.id.friend_lvl_textView);
+        Button viewFriendProfile = child.findViewById(R.id.view_profile_button);
         HTTPGetter getFriend = new HTTPGetter();
         getFriend.execute("user", friendID, "getUser");
         try {
@@ -116,6 +117,17 @@ public class FriendsActivity extends AppCompatActivity {
                 else
                     text.append(friend.id);
                 text2.append(fsLvlStr);
+                viewFriendProfile.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        FriendProfileActivity.id = friendID;
+                        FriendProfileActivity.friendshipLvl=fsLvlStr;
+                        FriendProfileActivity.xp=friend.xp;
+                        FriendProfileActivity.name=friend.nickName;
+                        Intent intent = new Intent(FriendsActivity.this, FriendProfileActivity.class);
+                        startActivity(intent);
+                    }
+                });
                 friends_layout.addView(child);
             }
         } catch (ExecutionException | InterruptedException e) {
