@@ -6,9 +6,18 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.gridlayout.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Models.Puzzle;
@@ -27,36 +36,68 @@ public class CollectionsActivity extends AppCompatActivity {
         int id = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + "img_1", null, null);
         Drawable image = getResources().getDrawable(id);
         Bitmap returnedBitmap = ((BitmapDrawable) image).getBitmap();
-        Puzzle puzzle = new Puzzle("1", 3, 3, returnedBitmap);
+        Puzzle puzzle = new Puzzle("1", 9, 9, returnedBitmap);
         PuzzlePiece[][] pieces = puzzle.getAllPuzzlePieces();
-
-        ImageView[][] view = new ImageView[puzzle.piecesCountHorizontal][puzzle.piecesCountVertical];
-        view[0][0] = findViewById(R.id.imageView1);
-        view[1][0] = findViewById(R.id.imageView2);
-        view[2][0] = findViewById(R.id.imageView3);
-        view[0][1] = findViewById(R.id.imageView4);
-        view[1][1] = findViewById(R.id.imageView5);
-        view[2][1] = findViewById(R.id.imageView6);
-        view[0][2] = findViewById(R.id.imageView7);
-        view[1][2] = findViewById(R.id.imageView8);
-        view[2][2] = findViewById(R.id.imageView9);
-
+        GridLayout grid = (GridLayout) findViewById(R.id.gridlayout);
+        CardView card = findViewById(R.id.cardView3x3);
         ColorMatrix matrix = new ColorMatrix();
         matrix.setSaturation(0);
 
+
+        Log.println(Log.INFO,"CountChild",grid.getChildCount()+"");
         ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels-300;
+        int size = width/(puzzle.piecesCountHorizontal);
+
+
+        grid = setGridSize(puzzle.piecesCountHorizontal,puzzle.piecesCountVertical,grid);
 
         for (int i = 0; i < puzzle.piecesCountHorizontal; i++) {
             for (int j = 0; j < puzzle.piecesCountVertical; j++) {
-                view[j][i].setImageBitmap(pieces[i][j].getImage());
-                if ((i == 1 || i == 2) && j == 1) {
-                    view[j][i].setColorFilter(filter);
+                //view[j][i].setImageBitmap(pieces[i][j].getImage());
+                ImageView view = ((ImageView)grid.getChildAt((j+1)+((puzzle.piecesCountVertical)*(i))-1));
+                view.getLayoutParams().width=size;
+                view.getLayoutParams().height=size;
+                view.requestLayout();
+                view.setImageBitmap(pieces[i][j].getImage());
+                if (((j+1)+((puzzle.piecesCountVertical)*(i))-1)%2==0) {
+                    view.setColorFilter(filter);
                 }
                 // view[i][j].setBackground(view[i][j].getDrawable());
             }
         }
 
+    }
 
+    private GridLayout setGridSize(int column, int row, GridLayout gridLayout){
+        gridLayout.removeAllViews();
+
+        gridLayout.setColumnCount(column);
+        gridLayout.setRowCount(row +1);
+        for (int i = 0, c = 0, r = 0; i < row*column; i++, c++) {
+            if (c == column) {
+                c = 0;
+                r++;
+            }
+            ImageView oImageView = new ImageView(this);
+            oImageView.setImageResource(R.drawable.meme);
+
+            GridLayout.Spec rowSpan = GridLayout.spec(GridLayout.UNDEFINED, 1);
+            GridLayout.Spec colspan = GridLayout.spec(GridLayout.UNDEFINED, 1);
+            GridLayout.LayoutParams gridParam = new GridLayout.LayoutParams(
+                    rowSpan, colspan);
+            int margin = 5;
+            gridParam.setMargins(margin,margin,margin,margin);
+            gridLayout.addView(oImageView, gridParam);
+
+
+
+        }
+        return gridLayout;
     }
 
     private Puzzle getPuzzle(String id) {
