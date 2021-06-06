@@ -8,17 +8,20 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Adapters.PieceListAdapter;
 import com.socialgaming.androidtutorial.Models.Inventory;
 import com.socialgaming.androidtutorial.Models.PieceViewItem;
 import com.socialgaming.androidtutorial.Models.Puzzle;
 import com.socialgaming.androidtutorial.Models.PuzzlePiece;
+import com.socialgaming.androidtutorial.Util.HTTPGetter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class PiecesActivity extends AppCompatActivity {
 
@@ -44,32 +47,26 @@ public class PiecesActivity extends AppCompatActivity {
 
         // Fetch Data
         fetchDataFromDatabase();
-
-
-//        for(int i = 0; i < 20; i++){
-//            PieceViewItem piece = new PieceViewItem();
-//            pieces.add(piece);
-//        }
     }
 
     private void fetchDataFromDatabase() {
 
-//        HTTPGetter get = new HTTPGetter();
-//        get.execute("inventory", FirebaseAuth.getInstance().getUid(), "getInventory");
-//        try {
-//            String getUserResult = get.get();
-//            if (!getUserResult.equals("{ }")) {
-//                this.inventory = gson.fromJson(getUserResult, Inventory.class);
-//                this.sets = inventory.getSets();
-//            }
-//        } catch (ExecutionException e) {
-//            e.printStackTrace();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        HTTPGetter get = new HTTPGetter();
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), "getInventory");
+        try {
+            String getUserResult = get.get();
+            if (!getUserResult.equals("{ }")) {
+                this.inventory = gson.fromJson(getUserResult, Inventory.class);
+                this.sets = inventory.getSets();
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        sets.put("meme", new int[][]{ {1, 2, 1}, {2, 0, 1}, {1, 0, 0}});
-        sets.put("img_1", new int[][]{{0, 1, 2, 0}, {3, 1, 2, 1}, {1, 0, 0, 2}, {1, 3, 2, 1}});
+//        sets.put("meme", new int[][]{ {1, 2, 1}, {2, 0, 1}, {1, 0, 0}});
+//        sets.put("img_1", new int[][]{{0, 1, 2, 0}, {3, 1, 2, 1}, {1, 0, 0, 2}, {1, 3, 2, 1}});
 
         // Aus den Datenbankeinträgen werden hier ViewItems erstellt
         sets.entrySet().stream().forEach(x -> {
