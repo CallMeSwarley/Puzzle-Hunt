@@ -5,15 +5,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,7 +28,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -47,7 +43,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private static String imgUrl = "http://openweathermap.org/img/wn/";
     private static String appid = "858fcdc021157c5dd2e1cd35925ae125";
 
-    private TextView cityText;
+    private TextView infoText;
     private TextView condDescr;
     private ImageView imgView;
 
@@ -63,7 +59,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         //kann mit city oder lat,lon aufgerufen werden (LIMIT 60 mal/h
         //String city = "Munich,DE";
-        cityText = findViewById(R.id.cityText);
+        infoText = findViewById(R.id.infoText);
         condDescr = findViewById(R.id.condDescr);
         imgView =  findViewById(R.id.condIcon);
         String lat = "48.13743";
@@ -225,8 +221,34 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         protected void onPostExecute(Weather weather) {
             super.onPostExecute(weather);
             imgView.setImageBitmap(weather.iconData);
-            cityText.setText(weather.location.getCity() + "," + weather.location.getCountry());
-            condDescr.setText(weather.currentCondition.getCondition() + "(" + weather.currentCondition.getDescr() + ")");
+            String info = getInfoText(weather.currentCondition.getCondition());
+            //infoText.setText(weather.location.getCity() + "," + weather.location.getCountry());
+            //condDescr.setText(weather.currentCondition.getCondition() + "(" + weather.currentCondition.getDescr() + ")");
+            infoText.setText(info);
+            condDescr.setText(weather.currentCondition.getCondition());
+        }
+
+        //customized text for each weather condition
+        private String getInfoText(String condition) {
+            if(condition.equals("Clear")){
+                return "Enjoy the beautiful day outside!";
+            }
+            else if(condition.equals("Rain")||condition.equals("Drizzle")){
+                return "Don't get wet, stay inside!";
+            }
+            else if(condition.equals("Clouds")){
+                return "Get your border together now!";
+            }
+            else if(condition.equals("Snow")){
+                return "Where did all the color go?";
+            }
+            else if(condition.equals("Thunderstorm")){
+                return "Stay safe and puzzle at home!";
+            }
+            else {
+                return "Keep your eyes open!";
+            }
+            //TODO change spawn of puzzles based on weather conditions
         }
 
         protected Weather getWeather(String data) throws JSONException  {

@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.socialgaming.androidtutorial.Models.Friendship;
 import com.socialgaming.androidtutorial.Models.User;
@@ -32,7 +33,11 @@ public class AddFriendsActivity extends AppCompatActivity {
 
 
         final Button addFriendToList = findViewById(R.id.addFriendButton);
-        EditText nicknameFeld = findViewById(R.id.nickNameTextFeld);
+        //EditText nicknameFeld = findViewById(R.id.nickNameTextFeld);
+
+        final TextInputLayout nickName = findViewById(R.id.nickNameTextFeld);
+        final EditText nicknameFeld = nickName.getEditText();
+
         addFriendToList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
