@@ -36,7 +36,6 @@ import java.util.zip.Inflater;
 public class FriendsActivity extends AppCompatActivity {
     private final Gson gson = new Gson();
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +56,9 @@ public class FriendsActivity extends AppCompatActivity {
                         TextView text = child.findViewById(R.id.friend_name_textView);
                         TextView text2 = child.findViewById(R.id.friend_lvl_textView);
                         String fsLvlStr = "";
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            fs.updateRank();
+                        }
                         if (fs.rank == 0)
                             fsLvlStr = FriendshipRank.FRIENDLY_GREETINGS.toString();
                         if (fs.rank == 1)

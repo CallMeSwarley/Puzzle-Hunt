@@ -26,7 +26,7 @@ public class Friendship {
         year=friendshipStart.getYear();
     }
 
-    /*@RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void updateRank(){
         LocalDate today=java.time.LocalDate.now();
         long daysOfFriendship= ChronoUnit.DAYS.between(LocalDate.ofYearDay(year,dayOfYear),today);
@@ -40,5 +40,5 @@ public class Friendship {
             rank=3;
         if (8<daysOfFriendship)
             rank=4;
-    }*/
+    }
 }
