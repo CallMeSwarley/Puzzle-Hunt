@@ -108,6 +108,7 @@ public class FriendsActivity extends AppCompatActivity {
         TextView text = child.findViewById(R.id.friend_name_textView);
         TextView text2 = child.findViewById(R.id.friend_lvl_textView);
         Button viewFriendProfile = child.findViewById(R.id.view_profile_button);
+        Button tradeWithFriend = child.findViewById(R.id.trade_button);
         HTTPGetter getFriend = new HTTPGetter();
         getFriend.execute("user", friendID, "getUser");
         try {
@@ -127,6 +128,17 @@ public class FriendsActivity extends AppCompatActivity {
                         FriendProfileActivity.xp=friend.xp;
                         FriendProfileActivity.name=friend.nickName;
                         Intent intent = new Intent(FriendsActivity.this, FriendProfileActivity.class);
+                        startActivity(intent);
+                    }
+                });
+                tradeWithFriend.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TradeActivity.id = friendID;
+                        TradeActivity.friendshipLvl=fsLvlStr;
+                        TradeActivity.xp=friend.xp;
+                        TradeActivity.name=friend.nickName;
+                        Intent intent = new Intent(FriendsActivity.this, TradeActivity.class);
                         startActivity(intent);
                     }
                 });

@@ -59,6 +59,10 @@ public class FriendProfileActivity extends AppCompatActivity {
         trade.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                TradeActivity.id = FriendProfileActivity.id;
+                TradeActivity.friendshipLvl=FriendProfileActivity.friendshipLvl;
+                TradeActivity.xp=FriendProfileActivity.xp;
+                TradeActivity.name=FriendProfileActivity.name;
                 Intent intent = new Intent(FriendProfileActivity.this, TradeActivity.class);
                 startActivity(intent);
             }
