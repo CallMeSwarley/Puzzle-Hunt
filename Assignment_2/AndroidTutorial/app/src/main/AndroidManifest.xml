@@ -16,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidTutorial"
         android:usesCleartextTraffic="true">
+        <activity android:name=".PuzzleShopActivity"></activity>
         <activity android:name=".SendGiftActivity" />
         <activity android:name=".RemoveFriendActivity" />
         <activity android:name=".TradeActivity" />

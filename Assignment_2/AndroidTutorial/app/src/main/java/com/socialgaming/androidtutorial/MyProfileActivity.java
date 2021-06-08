@@ -3,12 +3,14 @@ package com.socialgaming.androidtutorial;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Models.User;
@@ -28,22 +30,22 @@ public class MyProfileActivity extends AppCompatActivity {
 
         final ImageView profilePic = findViewById(R.id.profile_pic_image);
 
-        final TextView id = findViewById(R.id.id_textView);
-        final TextView name = findViewById(R.id.name_textView);
-        final TextView xp = findViewById(R.id.xp_textView);
-        final TextView lvl = findViewById(R.id.lvl_textView);
 
-        final TextView description = findViewById(R.id.description_textView);
-        final TextView descriptionText = findViewById(R.id.description_text_textView);
-        final TextView achievement = findViewById(R.id.achievement_textView);
+        final TextInputLayout idView = findViewById(R.id.id_textView);
+        final EditText id = idView.getEditText();
 
-        //können in ne liste umgewandelt werden oder so, je nach geschmack, ist nur als platzhalter da
-        final ImageView achievement1 = findViewById(R.id.achievement1_image);
-        final ImageView achievement2 = findViewById(R.id.achievement2_image);
+        final TextInputLayout nameView = findViewById(R.id.name_textView);
+        final EditText name = nameView.getEditText();
 
-        final TextView preferences = findViewById(R.id.preferences_textView);
-        final RecyclerView preferencesList = findViewById(R.id.preferences_recyclerView);
-        final Button editPreferences = findViewById(R.id.remove_friend_button);
+        final TextInputLayout xpView = findViewById(R.id.xp_textView);
+        final EditText xp = xpView.getEditText();
+
+        final TextInputLayout lvlView = findViewById(R.id.lvl_textView);
+        final EditText lvl = lvlView.getEditText();
+
+        final TextInputLayout descriptionView = findViewById(R.id.description_textView);
+        final EditText description = descriptionView.getEditText();
+
 
         final Button editProfile = findViewById(R.id.edit_profile_button);
         HTTPGetter get = new HTTPGetter();
@@ -55,17 +57,15 @@ public class MyProfileActivity extends AppCompatActivity {
                 id.setText(user.id);
                 name.setText(user.nickName);
                 xp.setText(String.format(Locale.GERMANY, "%,d", user.xp));
-                descriptionText.setText(user.description);
+                description.setText(user.description);
+                lvl.setText(String.format(Locale.GERMANY, "%,d", user.xp));//todo xp in lvl umwandeln
             }
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        editPreferences.setOnClickListener(v -> {
-            Intent intent = new Intent(MyProfileActivity.this, EditPreferencesActivity.class);
-            startActivity(intent);
-        });
+
 
         editProfile.setOnClickListener(v -> {
             Intent intent = new Intent(MyProfileActivity.this, EditProfileActivity.class);

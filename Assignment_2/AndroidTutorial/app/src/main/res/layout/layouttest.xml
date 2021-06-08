@@ -4,29 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddFriendsActivity">
+    android:padding="10dp"
+    tools:context=".SetsActivity">
+
+    <TextView
+        android:id="@+id/sets_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="100dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Friends"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textSize="40dp"
+        app:layout_constraintBottom_toTopOf="@+id/friendsActivity"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></TextView>
+
+
+    <LinearLayout
+        android:id="@+id/friendsActivity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/add_friends_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sets_text"
+        android:orientation="vertical"/>
 
     <Button
-        android:id="@+id/addFriendButton"
+        android:id="@+id/add_friends_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Send Friendrequest"
+        android:textSize="20dp"
+        android:text="Add Friends"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/friendsActivity" />
 
-    <EditText
-        android:id="@+id/nickNameTextFeld"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="136dp"
-        android:ems="10"
-        android:hint="Enter UserID"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

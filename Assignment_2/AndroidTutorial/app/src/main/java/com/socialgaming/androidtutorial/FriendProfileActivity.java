@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 public class FriendProfileActivity extends AppCompatActivity {
     public static String id = "";
@@ -25,24 +28,39 @@ public class FriendProfileActivity extends AppCompatActivity {
 
         final ImageView profilePic = findViewById(R.id.profile_pic_image);
 
-        final TextView id = findViewById(R.id.id_textView);
-        id.setText(FriendProfileActivity.id);
-        final TextView name = findViewById(R.id.name_textView);
+
+        //final TextInputLayout idView = findViewById(R.id.id_textView);
+        //final EditText id = idView.getEditText();
+
+        final TextInputLayout nameView = findViewById(R.id.name_textView);
+        final EditText name = nameView.getEditText();
+
+        final TextInputLayout xpView = findViewById(R.id.xp_textView);
+        final EditText xp = xpView.getEditText();
+
+        final TextInputLayout lvlView = findViewById(R.id.lvl_textView);
+        final EditText lvl = lvlView.getEditText();
+
+        final TextInputLayout friendshipLvlView = findViewById(R.id.friendship_lvl_textView);
+        final EditText friendshipLvl = friendshipLvlView.getEditText();
+
+        final TextInputLayout descriptionView = findViewById(R.id.description_textView);
+        final EditText description = descriptionView.getEditText();
+
+
+
+        //final TextView id = findViewById(R.id.id_textView);
+        //id.setText(FriendProfileActivity.id);
+        //final TextView name = findViewById(R.id.name_textView);
         name.setText(FriendProfileActivity.name);
-        final TextView xp = findViewById(R.id.xp_textView);
+        //final TextView xp = findViewById(R.id.xp_textView);
         xp.setText(""+FriendProfileActivity.xp);
-        final TextView lvl = findViewById(R.id.lvl_textView);
+        //final TextView lvl = findViewById(R.id.lvl_textView);
         lvl.setText(FriendProfileActivity.lvl);
-        final TextView friendshipLvl = findViewById(R.id.friendship_lvl_textView);
+        //final TextView friendshipLvl = findViewById(R.id.friendship_lvl_textView);
         friendshipLvl.setText(FriendProfileActivity.friendshipLvl);
-        final TextView description = findViewById(R.id.description_textView);
-        final TextView descriptionText = findViewById(R.id.description_text_textView);
-        final TextView achievement = findViewById(R.id.achievement_textView);
-
-        //können in ne liste umgewandelt werden oder so, je nach geschmack, ist nur als platzhalter da
-        final ImageView achievement1 = findViewById(R.id.achievement1_image);
-        final ImageView achievement2 = findViewById(R.id.achievement2_image);
-
+        //final TextView description = findViewById(R.id.description_textView);
+        //final TextView descriptionText = findViewById(R.id.description_text_textView);
 
         final Button sendGift = findViewById(R.id.send_gift_button);
         final Button trade = findViewById(R.id.trade_button2);

@@ -16,7 +16,7 @@
         android:fontFamily="sans-serif-black"
         android:text="Register"
         android:textAlignment="center"
-        android:textAllCaps="true"
+        android:textAllCaps="false"
         android:textSize="40dp"
         app:layout_constraintBottom_toTopOf="@+id/emailEdit"
         app:layout_constraintEnd_toEndOf="parent"

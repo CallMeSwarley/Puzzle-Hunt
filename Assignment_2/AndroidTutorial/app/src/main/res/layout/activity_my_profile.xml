@@ -4,145 +4,199 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="25dp"
     tools:context=".MyProfileActivity">
 
     <TextView
+        android:id="@+id/main_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="25dp"
+        android:fontFamily="sans-serif-black"
+        android:text="My Profile"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textSize="40dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline8"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"></TextView>
+
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/id_textView"
-        android:layout_width="175dp"
-        android:layout_height="30dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="40dp"
-        android:text="ID: 46546"
-        app:layout_constraintStart_toEndOf="@+id/profile_pic_image"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:hint="ID"
+        android:text="46546"
 
-    <TextView
+        app:layout_constraintBottom_toTopOf="@+id/name_textView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="@+id/guideline8">
+
+        <com.google.android.material.textfield.TextInputEditText
+
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/name_textView"
-        android:layout_width="175dp"
-        android:layout_height="30dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="80dp"
-        android:text="Name: Trollololo"
-        app:layout_constraintStart_toEndOf="@+id/profile_pic_image"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:hint="Name"
+        android:text="Trollololo"
+        app:layout_constraintBottom_toTopOf="@+id/guideline9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline7"
+        app:layout_constraintTop_toBottomOf="@+id/id_textView">
 
-    <TextView
+        <com.google.android.material.textfield.TextInputEditText
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/xp_textView"
-        android:layout_width="175dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="120dp"
-        android:text="XP: 12311"
-        app:layout_constraintStart_toEndOf="@+id/profile_pic_image"
-        app:layout_constraintTop_toTopOf="parent" />
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="5dp"
+        android:hint="XP"
+        android:text="12311"
+        app:layout_constraintBottom_toTopOf="@+id/guideline6"
+        app:layout_constraintEnd_toStartOf="@+id/guideline7"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline9">
 
-    <TextView
+        <com.google.android.material.textfield.TextInputEditText
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lvl_textView"
-        android:layout_width="175dp"
-        android:layout_height="30dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="160dp"
-        android:text="Lvl: 6"
-        app:layout_constraintStart_toEndOf="@+id/profile_pic_image"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginBottom="5dp"
+        android:hint="Level"
+        android:text="6"
+        app:layout_constraintBottom_toTopOf="@+id/guideline6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="@+id/guideline9">
 
-    <TextView
-        android:id="@+id/achievement_textView"
-        android:layout_width="150dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="20dp"
-        android:text="Achievements:"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description_text_textView" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <ImageView
-        android:id="@+id/achievement1_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/achievement_textView"
-        app:srcCompat="@android:drawable/btn_star_big_on" />
-
-    <ImageView
-        android:id="@+id/achievement2_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintStart_toEndOf="@+id/achievement1_image"
-        app:layout_constraintTop_toBottomOf="@+id/achievement_textView"
-        app:srcCompat="@android:drawable/ic_notification_overlay" />
-
-    <TextView
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/description_textView"
-        android:layout_width="150dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="30dp"
-        android:text="Description: "
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Description"
+        android:text="Hi, I am Elfo"
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_pic_image" />
+        app:layout_constraintTop_toTopOf="@+id/guideline6">
 
-    <TextView
-        android:id="@+id/description_text_textView"
-        android:layout_width="340dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="10dp"
-        android:text="Hello, bla bsdfl lskdf lsjd"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description_textView" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/edit_profile_button"
-        android:layout_width="130dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="140dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
         android:text="Edit Profile"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/preferences_recyclerView" />
+        app:layout_constraintTop_toTopOf="@+id/guideline10" />
 
     <ImageView
         android:id="@+id/profile_pic_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="40dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline9"
+        app:layout_constraintEnd_toStartOf="@+id/guideline7"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_camera" />
+        app:layout_constraintTop_toTopOf="@+id/guideline8"
+        app:srcCompat="@android:drawable/ic_menu_camera"
+        tools:srcCompat="@tools:sample/avatars[11]" />
 
-    <TextView
-        android:id="@+id/preferences_textView"
-        android:layout_width="80dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="20dp"
-        android:text="Preferences:"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/achievement1_image" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="379dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/preferences_recyclerView"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/preferences_textView" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="128dp" />
 
-    <Button
-        android:id="@+id/remove_friend_button"
-        android:layout_width="157dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        android:text="Edit Preferences"
-        app:layout_constraintStart_toEndOf="@+id/preferences_recyclerView"
-        app:layout_constraintTop_toBottomOf="@+id/preferences_textView" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="128dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="294dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="519dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

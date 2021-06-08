@@ -77,8 +77,8 @@ public class FriendsActivity extends AppCompatActivity {
                             createXMLRow(fs.friendTwo, fsLvlStr);
                         }
                     }//ende for (Friendship fs : friendlist) -Loop
-                    View button = getLayoutInflater().inflate(R.layout.add_friend_button, null);
-                    friends_layout.addView(button);
+                    //View button = getLayoutInflater().inflate(R.layout.add_friend_button, null);
+                    //friends_layout.addView(button);
                 } else {
                     System.out.println("Get Friendslist didn't work!");
                 }

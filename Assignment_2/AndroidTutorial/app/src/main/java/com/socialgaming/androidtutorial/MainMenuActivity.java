@@ -75,7 +75,7 @@ public class MainMenuActivity extends AppCompatActivity {
         events.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainMenuActivity.this, EventsActivity.class);
+                Intent intent = new Intent(MainMenuActivity.this, PuzzleShopActivity.class);
                 startActivity(intent);
             }
         });

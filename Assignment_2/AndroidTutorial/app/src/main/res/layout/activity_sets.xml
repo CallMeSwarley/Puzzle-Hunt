@@ -15,7 +15,7 @@
         android:fontFamily="sans-serif-black"
         android:text="Sets"
         android:textAlignment="center"
-        android:textAllCaps="true"
+        android:textAllCaps="false"
         android:textSize="40dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"

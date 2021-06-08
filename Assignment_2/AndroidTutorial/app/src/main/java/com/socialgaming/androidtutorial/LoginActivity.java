@@ -32,11 +32,9 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         final Button login = findViewById(R.id.login_button);
         final Button register = findViewById(R.id.register_button);
-        //final TextView view = findViewById(R.id.text);
+
         final TextInputLayout emailView = findViewById(R.id.editTextTextEmailAddress);
         final TextInputLayout passwordView = findViewById(R.id.editTextTextPassword);
-        //final EditText emailText = findViewById(R.id.editTextTextEmailAddress);
-        //final EditText passwordText = findViewById(R.id.editTextTextPassword);
 
         final EditText emailText = emailView.getEditText();
         final EditText passwordText = passwordView.getEditText();

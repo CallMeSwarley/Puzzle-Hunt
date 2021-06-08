@@ -1,52 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="410dp"
-        android:layout_height="128dp">
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="10dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/friend_pic_imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:translationX="10dp"
-            android:translationY="10dp"
-            app:srcCompat="@drawable/ic_launcher_foreground" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/friend_name_textView"
-            android:layout_width="108dp"
-            android:layout_height="wrap_content"
-            android:text="Name:"
-            android:translationX="130dp"
-            android:translationY="30dp" />
 
-        <TextView
-            android:id="@+id/friend_lvl_textView"
-            android:layout_width="108dp"
-            android:layout_height="wrap_content"
-            android:text="FriendshipLvl: "
-            android:translationX="130dp"
-            android:translationY="80dp" />
+            <ImageView
+                android:id="@+id/friend_pic_imageView"
+                android:layout_width="90dp"
+                android:layout_height="83dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline13"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@tools:sample/avatars" />
 
-        <Button
-            android:id="@+id/view_profile_button"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:text="View Profile"
-            android:translationX="260dp"
-            android:translationY="20dp" />
+            <TextView
+                android:id="@+id/friend_name_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                android:text="Name: "
+                app:layout_constraintBottom_toTopOf="@+id/friend_lvl_textView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline13"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/trade_button"
-            android:layout_width="116dp"
-            android:layout_height="35dp"
-            android:text="Trade"
-            android:translationX="260dp"
-            android:translationY="70dp" />
-    </FrameLayout>
-</LinearLayout>
+            <TextView
+                android:id="@+id/friend_lvl_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="FriendLvl: "
+                app:layout_constraintBottom_toTopOf="@+id/guideline12"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline13"
+                app:layout_constraintTop_toBottomOf="@+id/friend_name_textView" />
+
+            <Button
+                android:id="@+id/trade_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="Trade"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/view_profile_button"
+                app:layout_constraintStart_toStartOf="@+id/guideline13"
+                app:layout_constraintTop_toTopOf="@+id/guideline12"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <Button
+                android:id="@+id/view_profile_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="View Profile"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/trade_button"
+                app:layout_constraintTop_toTopOf="@+id/guideline12" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="66dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="92dp" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
