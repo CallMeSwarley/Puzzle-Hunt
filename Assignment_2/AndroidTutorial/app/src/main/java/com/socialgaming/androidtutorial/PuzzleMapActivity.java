@@ -1,26 +1,37 @@
 package com.socialgaming.androidtutorial;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.socialgaming.androidtutorial.Models.Weather;
 import com.socialgaming.androidtutorial.Models.Location;
+import com.socialgaming.androidtutorial.Models.Weather;
 import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
 import org.json.JSONArray;
@@ -32,6 +43,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 //Weather implementation idee: https://github.com/survivingwithandroid/Swa-app/blob/master/WeatherApp/src/com/survivingwithandroid/weatherapp/MainActivity.java,
 //wurde angepasst
@@ -46,6 +58,49 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private TextView infoText;
     private TextView condDescr;
     private ImageView imgView;
+    private final Handler handler = new Handler();
+    private static final int DELAY_LOCATION = 2000;
+    private static final int DELAY_WEATHER = 5000;
+    private LocationRequest mLocationRequest;
+    private android.location.Location mLastLocation;
+    private Marker mCurrLocationMarker;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            List<android.location.Location> locationList = locationResult.getLocations();
+            if (locationList.size() > 0) {
+                //The last location in the list is the newest
+                android.location.Location location = locationList.get(locationList.size() - 1);
+                Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
+                mLastLocation = location;
+                if (mCurrLocationMarker != null) {
+                    mCurrLocationMarker.remove();
+                }
+
+                //Place current location marker
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                markerOptions.title("Current Position");
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                mCurrLocationMarker = mMap.addMarker(markerOptions);
+
+                //move map camera
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
+            }
+        }
+    };
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        //stop location updates when Activity is no longer active
+        if (fusedLocationProviderClient != null) {
+            fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,20 +110,61 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map2);
         mapFragment.getMapAsync(this);
-
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         //kann mit city oder lat,lon aufgerufen werden (LIMIT 60 mal/h
         //String city = "Munich,DE";
         infoText = findViewById(R.id.infoText);
         condDescr = findViewById(R.id.condDescr);
-        imgView =  findViewById(R.id.condIcon);
-        String lat = "48.13743";
-        String lon = "11.57549";
-        JSONWeatherTask task = new JSONWeatherTask();
-
-        task.execute(new String[]{lat, lon});
+        imgView = findViewById(R.id.condIcon);
         //task.execute(new String[]{city});
 
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                System.out.println("Location Handler"); // Do your work here
+                if (ActivityCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                fusedLocationProviderClient.getLastLocation().addOnSuccessListener(PuzzleMapActivity.this, new OnSuccessListener<android.location.Location>() {
+                    @Override
+                    public void onSuccess(android.location.Location location) {
+                        mMap.clear();
+                        LatLng user = new LatLng(location.getLatitude(), location.getLongitude());
+                        new HTTPPoster().execute(
+                                "position",
+                                FirebaseAuth.getInstance().getUid(),
+                                "" + user.latitude,
+                                "" + user.longitude,
+                                "update");
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(user));
+                        mLastLocation = location;
+                    }
+                });
+                handler.postDelayed(this, PuzzleMapActivity.DELAY_LOCATION);
+            }
+        }, PuzzleMapActivity.DELAY_LOCATION);
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                System.out.println("Weather handler!"); // Do your work here
+                JSONWeatherTask task = new JSONWeatherTask();
+                task.execute(String.valueOf(mLastLocation.getLatitude()), String.valueOf(mLastLocation.getLongitude()));
+                handler.postDelayed(this, PuzzleMapActivity.DELAY_WEATHER);
+            }
+        }, PuzzleMapActivity.DELAY_WEATHER);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.err.println("Destroyed!!!");
+        this.handler.removeCallbacksAndMessages(null);
     }
 
     /**
@@ -113,11 +209,11 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     public String getWeatherDataWithCity(String location) {
-        HttpURLConnection con = null ;
+        HttpURLConnection con = null;
         InputStream is = null;
 
         try {
-            con = (HttpURLConnection) ( new URL(url +"q="+ location+"&appid="+appid)).openConnection();
+            con = (HttpURLConnection) (new URL(url + "q=" + location + "&appid=" + appid)).openConnection();
             con.setRequestMethod("GET");
             con.setDoInput(true);
             con.setDoOutput(true);
@@ -128,19 +224,23 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
             is = con.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line = null;
-            while (  (line = br.readLine()) != null )
+            while ((line = br.readLine()) != null)
                 buffer.append(line + "\r\n");
 
             is.close();
             con.disconnect();
             return buffer.toString();
-        }
-        catch(Throwable t) {
+        } catch (Throwable t) {
             t.printStackTrace();
-        }
-        finally {
-            try { is.close(); } catch(Throwable t) {}
-            try { con.disconnect(); } catch(Throwable t) {}
+        } finally {
+            try {
+                is.close();
+            } catch (Throwable t) {
+            }
+            try {
+                con.disconnect();
+            } catch (Throwable t) {
+            }
         }
 
         return null;
@@ -148,11 +248,11 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     public String getWeatherDataWithLatAndLon(String lat, String lon) {
-        HttpURLConnection con = null ;
+        HttpURLConnection con = null;
         InputStream is = null;
 
         try {
-            con = (HttpURLConnection) ( new URL(url +"lat="+ lat+"&lon="+lon+"&appid="+appid)).openConnection();
+            con = (HttpURLConnection) (new URL(url + "lat=" + lat + "&lon=" + lon + "&appid=" + appid)).openConnection();
             con.setRequestMethod("GET");
             con.setDoInput(true);
             con.setDoOutput(true);
@@ -163,19 +263,23 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
             is = con.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line = null;
-            while (  (line = br.readLine()) != null )
+            while ((line = br.readLine()) != null)
                 buffer.append(line + "\r\n");
 
             is.close();
             con.disconnect();
             return buffer.toString();
-        }
-        catch(Throwable t) {
+        } catch (Throwable t) {
             t.printStackTrace();
-        }
-        finally {
-            try { is.close(); } catch(Throwable t) {}
-            try { con.disconnect(); } catch(Throwable t) {}
+        } finally {
+            try {
+                is.close();
+            } catch (Throwable t) {
+            }
+            try {
+                con.disconnect();
+            } catch (Throwable t) {
+            }
         }
 
         return null;
@@ -187,11 +291,10 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         @Override
         protected Weather doInBackground(String... params) {
             Weather weather = new Weather();
-            String data="";
-            if(params.length>1) {
+            String data = "";
+            if (params.length > 1) {
                 data = (getWeatherDataWithLatAndLon(params[0], params[1]));
-            }
-            else{
+            } else {
                 data = (getWeatherDataWithCity(params[0]));
             }
 
@@ -201,14 +304,14 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 // Let's retrieve the icon
                 Bitmap bmp = null;
                 try {
-                    InputStream in = new java.net.URL(imgUrl + weather.currentCondition.getIcon()+"@2x.png").openStream();
+                    InputStream in = new java.net.URL(imgUrl + weather.currentCondition.getIcon() + "@2x.png").openStream();
                     bmp = BitmapFactory.decodeStream(in);
 
                 } catch (Exception e) {
                     Log.e("Error", e.getMessage());
                     e.printStackTrace();
                 }
-                weather.iconData =  bmp;
+                weather.iconData = bmp;
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -230,28 +333,23 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         //customized text for each weather condition
         private String getInfoText(String condition) {
-            if(condition.equals("Clear")){
+            if (condition.equals("Clear")) {
                 return "Enjoy the beautiful day outside!";
-            }
-            else if(condition.equals("Rain")||condition.equals("Drizzle")){
+            } else if (condition.equals("Rain") || condition.equals("Drizzle")) {
                 return "Don't get wet, stay inside!";
-            }
-            else if(condition.equals("Clouds")){
+            } else if (condition.equals("Clouds")) {
                 return "Get your border together now!";
-            }
-            else if(condition.equals("Snow")){
+            } else if (condition.equals("Snow")) {
                 return "Where did all the color go?";
-            }
-            else if(condition.equals("Thunderstorm")){
+            } else if (condition.equals("Thunderstorm")) {
                 return "Stay safe and puzzle at home!";
-            }
-            else {
+            } else {
                 return "Keep your eyes open!";
             }
             //TODO change spawn of puzzles based on weather conditions
         }
 
-        protected Weather getWeather(String data) throws JSONException  {
+        protected Weather getWeather(String data) throws JSONException {
             Weather weather = new Weather();
 
             // We create out JSONObject from the data
@@ -285,7 +383,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
 
 
-        private JSONObject getObject(String tagName, JSONObject jObj)  throws JSONException {
+        private JSONObject getObject(String tagName, JSONObject jObj) throws JSONException {
             JSONObject subObj = jObj.getJSONObject(tagName);
             return subObj;
         }
@@ -294,11 +392,11 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
             return jObj.getString(tagName);
         }
 
-        private float  getFloat(String tagName, JSONObject jObj) throws JSONException {
+        private float getFloat(String tagName, JSONObject jObj) throws JSONException {
             return (float) jObj.getDouble(tagName);
         }
 
-        private int  getInt(String tagName, JSONObject jObj) throws JSONException {
+        private int getInt(String tagName, JSONObject jObj) throws JSONException {
             return jObj.getInt(tagName);
         }
 

@@ -30,6 +30,6 @@ POST    /user/:firebaseId/:nickName/prepare                  controllers.HomeCon
 GET     /user/:firebaseIdMe/:firebaseIdFriend/prepareFriend     controllers.HomeController.prepareFriendship(firebaseIdMe:String,firebaseIdFriend:String)
 
 GET     /inventory/:firebaseId/getInventory                 controllers.HomeController.getInventory(firebaseId:String)
-POST    /inventory/:firebaseId/:puzzleId/:x/:y/:counter/addPiece controllers.HomeController.addPiece(firebaseId:String,puzzleId:String,x:Integer,y:Integer,counter:Integer)
+GET    /inventory/:firebaseId/:puzzleId/:x/:y/:counter/addPiece controllers.HomeController.addPiece(firebaseId:String,puzzleId:String,x:Integer,y:Integer,counter:Integer)
 GET     /user/getNicknames                                  controllers.HomeController.getNicknames
 GET     /check/:nickName/checkNickname                      controllers.HomeController.checkNickname(nickName:String)
