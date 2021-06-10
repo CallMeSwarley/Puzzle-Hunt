@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,6 +57,7 @@ public class SetsActivity extends AppCompatActivity {
 
         // Buttons
         final Button btnSortBy = findViewById(R.id.sortBy_button);
+        final Button btnTrade = findViewById(R.id.uffxD);
 
         // Switch
         final Switch switchShowCompleted = findViewById(R.id.showCompleted_switch);
@@ -158,6 +160,14 @@ public class SetsActivity extends AppCompatActivity {
                 });
 
                 popupMenu.show();
+            }
+        });
+
+        btnTrade.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SetsActivity.this, TradeActivity.class);
+                startActivity(intent);
             }
         });
     }

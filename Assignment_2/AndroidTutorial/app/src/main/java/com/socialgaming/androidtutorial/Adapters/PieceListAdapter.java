@@ -8,14 +8,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.socialgaming.androidtutorial.Interfaces.ILoadMore;
 import com.socialgaming.androidtutorial.Models.PieceViewItem;
 import com.socialgaming.androidtutorial.R;
+import com.socialgaming.androidtutorial.TradeActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -26,11 +29,38 @@ class PieceItemViewHolder extends RecyclerView.ViewHolder{
     public ImageView image;
     public TextView amount;
 
-    public PieceItemViewHolder(@NonNull @NotNull View itemView) {
+    public PieceItemViewHolder(@NonNull @NotNull View itemView, boolean createOnClickEvent, Activity activity) {
         super(itemView);
 
         image = itemView.findViewById(R.id.pieces_imageView);
         amount = itemView.findViewById(R.id.amount_textView);
+
+        if(createOnClickEvent){
+
+            if(activity instanceof TradeActivity){
+
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((TradeActivity) activity).addPieceToTradeView(getBindingAdapterPosition());
+                    }
+                });
+            }
+        }
+        else{
+
+            if(activity instanceof TradeActivity){
+
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((TradeActivity) activity).removePieceFromTradeView(getBindingAdapterPosition());
+                    }
+                });
+            }
+
+        }
+
     }
 }
 
@@ -39,14 +69,16 @@ public class PieceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private final int VIEW_TYPE_ITEM = 0,  VIEW_TYPE_LOADING = 1;
     ILoadMore loadMore;
     boolean isLoading;
+    boolean createOnClickEvent;
     Activity activity;
     List<PieceViewItem> items;
     int visibleThreshold = 5;
     int lastVisibleItem, totalItemCount;
 
-    public PieceListAdapter(RecyclerView recyclerView, Activity activity, List<PieceViewItem> items) {
+    public PieceListAdapter(RecyclerView recyclerView, Activity activity, List<PieceViewItem> items, boolean createOnClickEvent) {
         this.activity = activity;
         this.items = items;
+        this.createOnClickEvent = createOnClickEvent;
 
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -74,17 +106,21 @@ public class PieceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.loadMore = loadMore;
     }
 
+    private boolean getStuff(){
+        return true;
+    }
+
     @NonNull
     @NotNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         if(viewType == VIEW_TYPE_ITEM){
             View view = LayoutInflater.from(activity).inflate(R.layout.piece_card_field, parent, false);
-            return new PieceItemViewHolder(view);
+            return new PieceItemViewHolder(view, createOnClickEvent, activity);
         }
         else if (viewType == VIEW_TYPE_LOADING) {
             View view = LayoutInflater.from(activity).inflate(R.layout.piece_card_field, parent, false);
-            return new PieceItemViewHolder(view);
+            return new PieceItemViewHolder(view, createOnClickEvent, activity);
         }
 
         return null;
@@ -100,7 +136,7 @@ public class PieceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             PieceItemViewHolder viewHolder = (PieceItemViewHolder) holder;
             viewHolder.image.setImageBitmap(item.getImage());
-            viewHolder.amount.setText(Integer.toString(item.getAmount()));
+            viewHolder.amount.setText(item.getAmount() < 0 ? "" : Integer.toString(item.getAmount()));
         }
         else if(holder instanceof SetLoadingViewHolder){
             SetLoadingViewHolder loadingViewHolder = (SetLoadingViewHolder) holder;

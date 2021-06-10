@@ -9,6 +9,11 @@ public class PieceViewItem {
     private Bitmap image;
     private int amount;
 
+    public PieceViewItem(Bitmap image) {
+        this.amount = -1;
+        this.image = image;
+    }
+
     public PieceViewItem(Bitmap image, int amount) {
 
         this.image = image;

@@ -26,14 +26,26 @@
 
     <TextView
         android:id="@+id/player_1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="260dp"
+        android:layout_height="18dp"
         android:layout_marginBottom="5dp"
+        android:layout_marginRight="10dp"
         android:text="Your selected Pieces:"
         app:layout_constraintBottom_toTopOf="@+id/player1_trade_items_recyclerView"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/add_pieces_button"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/trade_text" />
+
+    <Button
+        android:id="@+id/add_pieces_button"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginEnd="4dp"
+        android:text="Add"
+        android:textSize="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="86dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/player1_trade_items_recyclerView"
@@ -64,7 +76,8 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_2" />
+        app:layout_constraintTop_toBottomOf="@+id/player_2"
+        android:outlineAmbientShadowColor="@color/black"/>
 
     <Button
         android:id="@+id/accept_trade_button"
@@ -98,5 +111,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_end="63dp" />
+        app:layout_constraintGuide_percent="0.8649469" />
 </androidx.constraintlayout.widget.ConstraintLayout>

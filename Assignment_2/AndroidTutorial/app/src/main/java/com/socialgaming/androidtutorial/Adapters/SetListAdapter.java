@@ -1,7 +1,6 @@
 package com.socialgaming.androidtutorial.Adapters;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -119,7 +118,7 @@ public class SetListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 return;
 
             SetItemViewHolder viewHolder = (SetItemViewHolder) holder;
-            viewHolder.title.setText(item.getName());
+            viewHolder.title.setText(item.getTitle());
             viewHolder.ownedPieces.setText(Integer.toString(item.getOwnedPieces()));
             viewHolder.maxPieces.setText(Integer.toString(item.getMaxPieces()));
             viewHolder.image.setImageResource(item.getImage());

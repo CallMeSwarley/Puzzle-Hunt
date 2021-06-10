@@ -1,35 +1,31 @@
 package com.socialgaming.androidtutorial.Models;
 
-import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.view.View;
-
 import java.util.Comparator;
 
 public class SetViewItem {
 
-    private String name;
+    private String title;
     private int imageId;
     private int ownedPieces;
     private int maxPieces;
 
-    public SetViewItem(String name, int ownedPieces, int maxPieces) {
-        this.name = name;
+    public SetViewItem(String title, int ownedPieces, int maxPieces) {
+        this.title = title;
         this.ownedPieces = ownedPieces;
         this.maxPieces = maxPieces;
     }
 
-    public SetViewItem(String name, int imageId, int ownedPieces, int maxPieces) {
-        this.name = name;
-        this.imageId = imageId;
+    public SetViewItem(String title, int imageId, int ownedPieces, int maxPieces) {
+        this.title = title;
         this.ownedPieces = ownedPieces;
         this.maxPieces = maxPieces;
+        this.imageId = imageId;
     }
 
     public static Comparator<SetViewItem> AlphabeticalComparator = new Comparator<SetViewItem>() {
         @Override
         public int compare(SetViewItem o1, SetViewItem o2) {
-            return o1.getName().compareTo(o2.getName());
+            return o1.getTitle().compareTo(o2.getTitle());
         }
     };
 
@@ -47,8 +43,8 @@ public class SetViewItem {
         }
     };
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public int getImage() {
