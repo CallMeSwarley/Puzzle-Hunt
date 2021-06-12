@@ -9,6 +9,7 @@
     app:cardElevation="10dp">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/set_cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

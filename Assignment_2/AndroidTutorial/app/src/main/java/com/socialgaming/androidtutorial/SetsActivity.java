@@ -1,12 +1,15 @@
 package com.socialgaming.androidtutorial;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -31,10 +34,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SetsActivity extends AppCompatActivity {
+
+    public static final String EXTRA_ID = "com.socialgaming.androidtutorial.id";
+
+    //CardView cardview =findViewById(R.id.set_CardView);
+    
+
 
     List<SetViewItem> items = new ArrayList<>();
     List<SetViewItem> completedItems = new ArrayList<>();
@@ -54,6 +65,7 @@ public class SetsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sets);
 
+
         // Buttons
         final Button btnSortBy = findViewById(R.id.sortBy_button);
 
@@ -66,11 +78,19 @@ public class SetsActivity extends AppCompatActivity {
 
         // RecyclerView und Adapter
         final RecyclerView setView = findViewById(R.id.sets_recyclerview);
-        setView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager lr = new LinearLayoutManager(this);
+        setView.setLayoutManager(lr);
 
-        adapter = new SetListAdapter(setView, this, items);
+        adapter = new SetListAdapter(setView, this, items, new Function<Puzzle, Void>() {
+            @Override
+            public Void apply(Puzzle puzzle) {
+                openCollection(puzzle);
+                return null;
+            }
+
+        });
+
         setView.setAdapter(adapter);
-
         // Mehr items laden event
 //        adapter.setLoadMore(new ILoadMore() {
 //            @Override
@@ -194,8 +214,15 @@ public class SetsActivity extends AppCompatActivity {
             int ownedPieces = (int) Arrays.stream(arr).flatMap(i -> Arrays.stream(i).boxed()).filter(i -> i > 0).count();
 
             int imageId = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + x.getKey(), null, null);
-
-            items.add(new SetViewItem(titles.get(x.getKey()), imageId, ownedPieces, maxPieces));
+            List<Integer> listownedPieces = new ArrayList<>();
+            for(int i=0;i<arr.length;i++){
+                for(int j=0;j<arr.length;j++){
+                    if(arr[i][j]==1){
+                        listownedPieces.add(i+j*arr.length);
+                    }
+                }
+            }
+            items.add(new SetViewItem(titles.get(x.getKey()), imageId, ownedPieces, maxPieces, listownedPieces));
         });
     }
 
@@ -210,5 +237,11 @@ public class SetsActivity extends AppCompatActivity {
             SetViewItem item = new SetViewItem("Hallo", pieces, 16);
             items.add(item);
         }
+    }
+
+    private void openCollection(Puzzle puzzle){
+        Intent intent = new Intent(this, CollectionsActivity.class);
+        intent.putExtra(EXTRA_ID, puzzle.toString());
+        startActivity(intent);
     }
 }

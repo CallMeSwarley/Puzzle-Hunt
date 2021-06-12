@@ -1,5 +1,6 @@
 package com.socialgaming.androidtutorial;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
@@ -33,10 +34,16 @@ public class CollectionsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_collections);
-        int id = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + "img_1", null, null);
-        Drawable image = getResources().getDrawable(id);
+
+        Intent intent = getIntent();
+        String puzzleString = intent.getStringExtra(SetsActivity.EXTRA_ID);
+        Puzzle puzzleFromString = Puzzle.convertStringToPuzzle(puzzleString);
+        String puzzle_id = puzzleFromString.id;
+
+       // int id = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + puzzle_id, null, null);
+        Drawable image = getResources().getDrawable(Integer.valueOf(puzzle_id));
         Bitmap returnedBitmap = ((BitmapDrawable) image).getBitmap();
-        Puzzle puzzle = new Puzzle("1", 9, 9, returnedBitmap);
+        Puzzle puzzle = new Puzzle(puzzle_id, puzzleFromString.piecesCountHorizontal, puzzleFromString.piecesCountVertical, returnedBitmap,puzzleFromString.ownedPuzzlePieces);
         PuzzlePiece[][] pieces = puzzle.getAllPuzzlePieces();
         GridLayout grid = (GridLayout) findViewById(R.id.gridlayout);
         CardView card = findViewById(R.id.cardView3x3);
@@ -44,7 +51,6 @@ public class CollectionsActivity extends AppCompatActivity {
         matrix.setSaturation(0);
 
 
-        Log.println(Log.INFO,"CountChild",grid.getChildCount()+"");
         ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
 
 
@@ -64,7 +70,7 @@ public class CollectionsActivity extends AppCompatActivity {
                 view.getLayoutParams().height=size;
                 view.requestLayout();
                 view.setImageBitmap(pieces[i][j].getImage());
-                if (((j+1)+((puzzle.piecesCountVertical)*(i))-1)%2==0) {
+                if (!puzzle.ownedPuzzlePieces.contains(i+j*puzzle.piecesCountVertical)) {
                     view.setColorFilter(filter);
                 }
                 // view[i][j].setBackground(view[i][j].getDrawable());

@@ -5,6 +5,7 @@ import android.media.Image;
 import android.view.View;
 
 import java.util.Comparator;
+import java.util.List;
 
 public class SetViewItem {
 
@@ -12,6 +13,9 @@ public class SetViewItem {
     private int imageId;
     private int ownedPieces;
     private int maxPieces;
+
+    private List<Integer> posOfOwnedPieces;
+
 
     public SetViewItem(String name, int ownedPieces, int maxPieces) {
         this.name = name;
@@ -24,6 +28,14 @@ public class SetViewItem {
         this.imageId = imageId;
         this.ownedPieces = ownedPieces;
         this.maxPieces = maxPieces;
+    }
+
+    public SetViewItem(String name, int imageId, int ownedPieces, int maxPieces,List<Integer> posOfOwnedPieces) {
+        this.name = name;
+        this.imageId = imageId;
+        this.ownedPieces = ownedPieces;
+        this.maxPieces = maxPieces;
+        this.posOfOwnedPieces = posOfOwnedPieces;
     }
 
     public static Comparator<SetViewItem> AlphabeticalComparator = new Comparator<SetViewItem>() {
@@ -61,5 +73,9 @@ public class SetViewItem {
 
     public int getMaxPieces() {
         return maxPieces;
+    }
+
+    public List<Integer> getPosOfOwnedPieces() {
+        return posOfOwnedPieces;
     }
 }

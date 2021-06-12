@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.util.Log;
 import com.google.android.gms.common.api.ApiException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,6 +14,7 @@ public class Puzzle {
     public int piecesCountHorizontal=1;
     public int piecesCountVertical=1;
     private PuzzlePiece[][] puzzlePieces;
+    public List<Integer> ownedPuzzlePieces = new ArrayList();
     public String id;
 
     public Puzzle(String id, int piecesCountHorizontal, int piecesCountVertical){
@@ -21,12 +24,30 @@ public class Puzzle {
         this.puzzlePieces = new PuzzlePiece[piecesCountHorizontal][piecesCountVertical];
     }
 
+
+    public Puzzle(String id, int piecesCountHorizontal, int piecesCountVertical,List<Integer> list){
+        this.id = id;
+        this.piecesCountHorizontal = piecesCountHorizontal;
+        this.piecesCountVertical = piecesCountVertical;
+        this.puzzlePieces = new PuzzlePiece[piecesCountHorizontal][piecesCountVertical];
+        this.ownedPuzzlePieces = list;
+    }
+
     public Puzzle(String id, int piecesCountHorizontal, int piecesCountVertical, Bitmap image){
         this.id = id;
         this.piecesCountHorizontal = piecesCountHorizontal;
         this.piecesCountVertical = piecesCountVertical;
         this.puzzlePieces = new PuzzlePiece[piecesCountHorizontal][piecesCountVertical];
         this.image = image;
+    }
+
+    public Puzzle(String id, int piecesCountHorizontal, int piecesCountVertical, Bitmap image, List<Integer> list){
+        this.id = id;
+        this.piecesCountHorizontal = piecesCountHorizontal;
+        this.piecesCountVertical = piecesCountVertical;
+        this.puzzlePieces = new PuzzlePiece[piecesCountHorizontal][piecesCountVertical];
+        this.image = image;
+        this.ownedPuzzlePieces = list;
     }
 
     public PuzzlePiece getPuzzlePiece(int positionHorizontal, int positionVertical){
@@ -61,6 +82,19 @@ public class Puzzle {
             }
         }
         return this.puzzlePieces;
+    }
+
+
+
+    public String toString(){
+        return id+";"+piecesCountHorizontal+";"+piecesCountVertical+";"+ownedPuzzlePieces.toString().replace("[","").replace("]","");
+    }
+
+    public static Puzzle convertStringToPuzzle(String s){
+        List<String> strList = Arrays.asList(s.split(";")[3].split(","));
+        List<Integer> intList = new ArrayList<>();
+        for(String str : strList) intList.add(Integer.valueOf(str.replaceAll("\\s+","")));
+        return new Puzzle(s.split(";")[0],Integer.valueOf(s.split(";")[1]),Integer.valueOf(s.split(";")[2]),intList);
     }
 
 
