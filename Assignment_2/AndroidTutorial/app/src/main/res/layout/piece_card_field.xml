@@ -31,7 +31,6 @@
                 android:id="@+id/amount_textView"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:text="3x"
                 android:textSize="28dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/pieces_imageView"

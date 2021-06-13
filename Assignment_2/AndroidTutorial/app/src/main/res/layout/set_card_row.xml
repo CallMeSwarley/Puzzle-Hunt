@@ -28,7 +28,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/img_1"
                 app:layout_constraintBottom_toTopOf="@id/const_layout_sets"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

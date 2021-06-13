@@ -127,6 +127,7 @@ public class FriendsActivity extends AppCompatActivity {
                         FriendProfileActivity.friendshipLvl=fsLvlStr;
                         FriendProfileActivity.xp=friend.xp;
                         FriendProfileActivity.name=friend.nickName;
+                        FriendProfileActivity.description=friend.description;
                         Intent intent = new Intent(FriendsActivity.this, FriendProfileActivity.class);
                         startActivity(intent);
                     }

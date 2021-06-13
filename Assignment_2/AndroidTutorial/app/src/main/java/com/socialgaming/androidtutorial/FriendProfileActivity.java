@@ -19,6 +19,7 @@ public class FriendProfileActivity extends AppCompatActivity {
     public static Long xp = Long.valueOf(0);
     public static String lvl = "";
     public static String friendshipLvl = "";
+    public static String description = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,18 +50,12 @@ public class FriendProfileActivity extends AppCompatActivity {
 
 
 
-        //final TextView id = findViewById(R.id.id_textView);
-        //id.setText(FriendProfileActivity.id);
-        //final TextView name = findViewById(R.id.name_textView);
+
         name.setText(FriendProfileActivity.name);
-        //final TextView xp = findViewById(R.id.xp_textView);
         xp.setText(""+FriendProfileActivity.xp);
-        //final TextView lvl = findViewById(R.id.lvl_textView);
         lvl.setText(FriendProfileActivity.lvl);
-        //final TextView friendshipLvl = findViewById(R.id.friendship_lvl_textView);
         friendshipLvl.setText(FriendProfileActivity.friendshipLvl);
-        //final TextView description = findViewById(R.id.description_textView);
-        //final TextView descriptionText = findViewById(R.id.description_text_textView);
+        description.setText(FriendProfileActivity.description);
 
         final Button sendGift = findViewById(R.id.send_gift_button);
         final Button trade = findViewById(R.id.trade_button2);

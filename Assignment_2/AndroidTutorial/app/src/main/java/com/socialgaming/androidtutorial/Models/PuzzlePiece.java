@@ -46,5 +46,8 @@ public class PuzzlePiece {
     public void setPositionVertical(int positionVertical) {
         this.positionVertical = positionVertical;
     }
+    public  Puzzle getPuzzleParent(){
+        return puzzleParent;
+    }
 
 }
