@@ -12,6 +12,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import models.Dealer;
+import models.DealersRepository;
 import models.Friendship;
 import models.FriendshipRepository;
 import models.Inventory;
@@ -20,12 +22,15 @@ import models.Location;
 import models.LocationsRepository;
 import models.Puzzle;
 import models.PuzzleRepository;
+import models.Shop;
+import models.ShopsRepository;
 import models.User;
 import models.UsersRepository;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import utils.Utilities;
 
 /**
  * This controller contains an action to handle HTTP requests
@@ -43,6 +48,10 @@ public class HomeController extends Controller {
     private PuzzleRepository puzzles;
     @Inject
     private InventoryRepository inventories;
+    @Inject
+    private DealersRepository dealers;
+    @Inject
+    private ShopsRepository shops;
 
     /**
      * An action that renders an HTML page with a welcome message.
@@ -91,6 +100,7 @@ public class HomeController extends Controller {
             user = new User(firebaseId);
             users.insert(user);
         }
+
         return ok("User prepared");
     }
 
@@ -225,17 +235,16 @@ public class HomeController extends Controller {
     public Result getInventory(String firebaseId) {
         Inventory result = inventories.getInventory(firebaseId);
         if (result == null) {
-            Inventory newInventory = new Inventory();
-            newInventory.id = firebaseId;
-            inventories.insert(newInventory);
-            return ok(gson.toJson(newInventory));
-        } else {
-            return ok(gson.toJson(result));
+            result = new Inventory();
+            result.id = firebaseId;
+            inventories.insert(result);
         }
+        return ok(gson.toJson(result));
     }
 
     public Result addPiece(String firebaseId, String puzzleId, Integer x, Integer y, Integer counter) {
         Inventory saved = inventories.getInventory(firebaseId);
+        User user = users.getUser(firebaseId);
         if (saved.sets.containsKey(puzzleId)) {
             saved.sets.get(puzzleId)[x][y] += counter;
         } else {
@@ -244,7 +253,9 @@ public class HomeController extends Controller {
             set[x][y] = counter;
             saved.sets.put(puzzleId, set);
         }
+        user.xp += 100 * counter;
         inventories.update(saved);
+        users.update(user);
         return ok(gson.toJson(saved));
     }
 
@@ -254,7 +265,85 @@ public class HomeController extends Controller {
 
     public Result checkNickname(String nickName) {
         return ok(gson.toJson(
-                !Arrays.stream(users.getNicknames())
-                        .anyMatch(s -> s.equals(nickName))));
+                Arrays.stream(users.getNicknames())
+                        .noneMatch(s -> s.equals(nickName))));
+    }
+
+    public Result getShop(String id) {
+        return ok(gson.toJson(shops.getShop(id)));
+    }
+
+    public Result getVisibleShops(String firebaseId, Double latSW, Double lonSW, Double latNE, Double lonNE) {
+        Double[] lastLocation = locations.getLocation(firebaseId).loc1;
+        Shop[] visible = shops.getVisible(latSW, lonSW, latNE, lonNE);
+        Logger.info("visibleShops:\t"+gson.toJson(visible));
+        return ok(gson.toJson(Arrays
+                .stream(visible)
+                .filter(d -> !Utilities.inRange(lastLocation[0], lastLocation[1], d.lat, d.lon, d.range))
+                .toArray(Shop[]::new)));
+
+    }
+
+    public Result getActiveShops(String firebaseId, Double latSW, Double lonSW, Double latNE, Double lonNE) {
+        Double[] lastLocation = locations.getLocation(firebaseId).loc1;
+        Shop[] visible = shops.getVisible(latSW, lonSW, latNE, lonNE);
+        Logger.info("activeShops:\t"+gson.toJson(visible));
+        return ok(gson.toJson(Arrays
+                .stream(visible)
+                .filter(d -> Utilities.inRange(lastLocation[0], lastLocation[1], d.lat, d.lon, d.range))
+                .toArray(Shop[]::new)));
+
+    }
+
+    public Result addShop(String title, Double lat, Double lon, Long range) {
+        Shop shop = new Shop();
+        shop.title = title;
+        shop.id = new ObjectId().toString();
+        shop.lat = lat;
+        shop.lon = lon;
+        shop.range = range;
+        shops.insert(shop);
+        return ok(gson.toJson(shop));
+    }
+
+    public Result getDealer(String id) {
+        return ok(gson.toJson(dealers.getDealer(id)));
+    }
+
+    public Result getVisibleDealers(String firebaseId, Double latSW, Double lonSW, Double latNE, Double lonNE) {
+        Double[] lastLocation = locations.getLocation(firebaseId).loc1;
+        Dealer[] visible = dealers.getVisible(latSW, lonSW, latNE, lonNE);
+        Logger.info("visibleDealer:\t"+gson.toJson(visible));
+        return ok(gson.toJson(Arrays
+                .stream(visible)
+                .filter(d -> !Utilities.inRange(lastLocation[0], lastLocation[1], d.lat, d.lon, d.range))
+                .toArray(Dealer[]::new)));
+
+    }
+
+    public Result getActiveDealers(String firebaseId, Double latSW, Double lonSW, Double latNE, Double lonNE) {
+        Double[] lastLocation = locations.getLocation(firebaseId).loc1;
+        Dealer[] visible = dealers.getVisible(latSW, lonSW, latNE, lonNE);
+        Logger.info("activeDealer:\t"+gson.toJson(visible));
+        return ok(gson.toJson(Arrays
+                .stream(visible)
+                .filter(d -> Utilities.inRange(lastLocation[0], lastLocation[1], d.lat, d.lon, d.range))
+                .toArray(Dealer[]::new)));
+
+    }
+
+    public Result addDealer(String title, Double lat, Double lon, Long range) {
+        Dealer dealer = new Dealer();
+        dealer.id = new ObjectId().toString();
+        dealer.title = title;
+        dealer.lat = lat;
+        dealer.lon = lon;
+        dealer.range = range;
+        dealers.insert(dealer);
+        return ok(gson.toJson(dealer));
+    }
+
+    public Result getNearbyPOIs(Double lat, Double lon) {
+        return ok();
     }
 }

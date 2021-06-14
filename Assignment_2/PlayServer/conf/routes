@@ -30,6 +30,18 @@ POST    /user/:firebaseId/:nickName/prepare                  controllers.HomeCon
 GET     /user/:firebaseIdMe/:firebaseIdFriend/prepareFriend     controllers.HomeController.prepareFriendship(firebaseIdMe:String,firebaseIdFriend:String)
 
 GET     /inventory/:firebaseId/getInventory                 controllers.HomeController.getInventory(firebaseId:String)
-GET    /inventory/:firebaseId/:puzzleId/:x/:y/:counter/addPiece controllers.HomeController.addPiece(firebaseId:String,puzzleId:String,x:Integer,y:Integer,counter:Integer)
+GET     /inventory/:firebaseId/:puzzleId/:x/:y/:counter/addPiece controllers.HomeController.addPiece(firebaseId:String,puzzleId:String,x:Integer,y:Integer,counter:Integer)
 GET     /user/getNicknames                                  controllers.HomeController.getNicknames
 GET     /check/:nickName/checkNickname                      controllers.HomeController.checkNickname(nickName:String)
+
+GET     /shop/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getVisible        controllers.HomeController.getVisibleShops(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)
+GET     /shop/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getActive        controllers.HomeController.getActiveShops(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)
+GET     /shop/:title/:lat/:lon/:range/addShop               controllers.HomeController.addShop(title:String,lat:Double,lon:Double,range:Long)
+GET     /shop/:id/getShop                                   controllers.HomeController.getShop(id:String)
+
+GET     /dealer/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getVisible      controllers.HomeController.getVisibleDealers(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)
+GET     /dealer/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getActive      controllers.HomeController.getActiveDealers(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)
+GET     /dealer/:title/:lat/:lon/:range/addDealer           controllers.HomeController.addDealer(title:String,lat:Double,lon:Double,range:Long)
+GET     /dealer/:id/getDealer                               controllers.HomeController.getDealer(id:String)
+
+GET     /pois/:lat/:lon/getNearbyPOIs                       controllers.HomeController.getNearbyPOIs(lat:Double,lon:Double)

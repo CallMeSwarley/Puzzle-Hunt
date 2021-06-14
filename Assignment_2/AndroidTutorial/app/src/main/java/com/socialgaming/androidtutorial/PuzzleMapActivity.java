@@ -26,12 +26,17 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
+import com.socialgaming.androidtutorial.Models.Dealer;
 import com.socialgaming.androidtutorial.Models.Location;
+import com.socialgaming.androidtutorial.Models.Shop;
 import com.socialgaming.androidtutorial.Models.Weather;
+import com.socialgaming.androidtutorial.Util.HTTPGetter;
 import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
 import org.json.JSONArray;
@@ -44,6 +49,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 //Weather implementation idee: https://github.com/survivingwithandroid/Swa-app/blob/master/WeatherApp/src/com/survivingwithandroid/weatherapp/MainActivity.java,
 //wurde angepasst
@@ -54,13 +60,13 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private static String url = "http://api.openweathermap.org/data/2.5/weather?";
     private static String imgUrl = "http://openweathermap.org/img/wn/";
     private static String appid = "858fcdc021157c5dd2e1cd35925ae125";
-
+    private final Gson gson = new Gson();
     private TextView infoText;
     private TextView condDescr;
     private ImageView imgView;
     private final Handler handler = new Handler();
-    private static final int DELAY_LOCATION = 2000;
-    private static final int DELAY_WEATHER = 5000;
+    private static final int DELAY_LOCATION = 5000;
+    private static final int DELAY_WEATHER = 20000;
     private LocationRequest mLocationRequest;
     private android.location.Location mLastLocation;
     private Marker mCurrLocationMarker;
@@ -88,6 +94,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
                 //move map camera
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
+                LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
             }
         }
     };
@@ -135,18 +142,59 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 fusedLocationProviderClient.getLastLocation().addOnSuccessListener(PuzzleMapActivity.this, new OnSuccessListener<android.location.Location>() {
                     @Override
                     public void onSuccess(android.location.Location location) {
-                        mMap.clear();
-                        LatLng user = new LatLng(location.getLatitude(), location.getLongitude());
-                        new HTTPPoster().execute(
-                                "position",
-                                FirebaseAuth.getInstance().getUid(),
-                                "" + user.latitude,
-                                "" + user.longitude,
-                                "update");
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(user));
-                        mLastLocation = location;
+                        if (location != null) {
+                            Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
+                            mLastLocation = location;
+                            if (mCurrLocationMarker != null) {
+                                mCurrLocationMarker.remove();
+                            }
+
+                            //Place current location marker
+                            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                            MarkerOptions markerOptions = new MarkerOptions();
+                            markerOptions.position(latLng);
+                            markerOptions.title("Current Position");
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                            mCurrLocationMarker = mMap.addMarker(markerOptions);
+
+                            //move map camera
+                            LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+                            Shop[] activeShops = getActiveShops(bounds);
+                            Shop[] visibleShops = getVisibleShops(bounds);
+                            Dealer[] activeDealers = getActiveDealers(bounds);
+                            Dealer[] visibleDealers = getVisibleDealers(bounds);
+                            for (Shop s : activeShops) {
+                                MarkerOptions marker = new MarkerOptions();
+                                marker.position(new LatLng(s.lat, s.lon));
+                                marker.title(s.title);
+                                marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                                mMap.addMarker(marker);
+                            }
+                            for (Shop s : visibleShops) {
+                                MarkerOptions marker = new MarkerOptions();
+                                marker.position(new LatLng(s.lat, s.lon));
+                                marker.title(s.title);
+                                marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                                mMap.addMarker(marker);
+                            }
+                            for (Dealer d : activeDealers) {
+                                MarkerOptions marker = new MarkerOptions();
+                                marker.position(new LatLng(d.lat, d.lon));
+                                marker.title(d.title);
+                                marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                                mMap.addMarker(marker);
+                            }
+                            for (Dealer d : visibleDealers) {
+                                MarkerOptions marker = new MarkerOptions();
+                                marker.position(new LatLng(d.lat, d.lon));
+                                marker.title(d.title);
+                                marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                                mMap.addMarker(marker);
+                            }
+                        }
                     }
                 });
+
                 handler.postDelayed(this, PuzzleMapActivity.DELAY_LOCATION);
             }
         }, PuzzleMapActivity.DELAY_LOCATION);
@@ -158,6 +206,102 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 handler.postDelayed(this, PuzzleMapActivity.DELAY_WEATHER);
             }
         }, PuzzleMapActivity.DELAY_WEATHER);
+    }
+
+    private Dealer[] getActiveDealers(LatLngBounds bounds) {
+        HTTPGetter getActiveDealers = new HTTPGetter();
+        getActiveDealers.execute(
+                "dealer",
+                FirebaseAuth.getInstance().getUid(),
+                String.valueOf(bounds.southwest.latitude),
+                String.valueOf(bounds.southwest.longitude),
+                String.valueOf(bounds.northeast.latitude),
+                String.valueOf(bounds.northeast.longitude),
+                "getActive"
+        );
+
+        String activeDealers = null;
+        try {
+            activeDealers = getActiveDealers.get();
+            System.out.println("activeDealers:\t" + activeDealers);
+            return gson.fromJson(activeDealers, Dealer[].class);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        return new Dealer[0];
+    }
+
+    private Dealer[] getVisibleDealers(LatLngBounds bounds) {
+        HTTPGetter getVisibleDealers = new HTTPGetter();
+        getVisibleDealers.execute(
+                "dealer",
+                FirebaseAuth.getInstance().getUid(),
+                String.valueOf(bounds.southwest.latitude),
+                String.valueOf(bounds.southwest.longitude),
+                String.valueOf(bounds.northeast.latitude),
+                String.valueOf(bounds.northeast.longitude),
+                "getVisible"
+        );
+        try {
+            String visibleDealers = getVisibleDealers.get();
+            System.out.println("visibleDealers:\t" + visibleDealers);
+            return gson.fromJson(visibleDealers, Dealer[].class);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return new Dealer[0];
+    }
+
+    private Shop[] getActiveShops(LatLngBounds bounds) {
+        HTTPGetter getActiveShops = new HTTPGetter();
+        getActiveShops.execute(
+                "shop",
+                FirebaseAuth.getInstance().getUid(),
+                String.valueOf(bounds.southwest.latitude),
+                String.valueOf(bounds.southwest.longitude),
+                String.valueOf(bounds.northeast.latitude),
+                String.valueOf(bounds.northeast.longitude),
+                "getActive"
+        );
+        try {
+            String activeShops = getActiveShops.get();
+            System.out.println("activeShops:\t" + activeShops);
+            return gson.fromJson(activeShops, Shop[].class);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return new Shop[0];
+    }
+
+    private Shop[] getVisibleShops(LatLngBounds bounds) {
+        HTTPGetter getVisibleShops = new HTTPGetter();
+        getVisibleShops.execute(
+                "shop",
+                FirebaseAuth.getInstance().getUid(),
+                String.valueOf(bounds.southwest.latitude),
+                String.valueOf(bounds.southwest.longitude),
+                String.valueOf(bounds.northeast.latitude),
+                String.valueOf(bounds.northeast.longitude),
+                "getVisible"
+        );
+        try {
+            String visibleShops = getVisibleShops.get();
+            System.out.println("visibleShops:\t" + visibleShops);
+            return gson.fromJson(visibleShops, Shop[].class);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return new Shop[0];
     }
 
     @Override
@@ -193,7 +337,6 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
                     @Override
                     public void onMyLocationChange(android.location.Location location) {
-                        mMap.clear();
                         LatLng user = new LatLng(location.getLatitude(), location.getLongitude());
                         new HTTPPoster().execute(
                                 "position",
