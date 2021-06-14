@@ -60,15 +60,15 @@ public class PuzzleShopActivity extends AppCompatActivity {
         Boolean nahGenug=false;
         Location[] shopLocations = new Location[0];
         HTTPGetter getShops = new HTTPGetter();
-        getShops.execute("shop", "getShopLocations");
-        try {
-            String getShopResult = getShops.get();
-            if (!getShopResult.equals("{ }")) {
-                shopLocations = gson.fromJson(getShopResult, Location[].class);
-            }
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+//        getShops.execute("shop", "getShopLocations");
+//        try {
+//            String getShopResult = getShops.get();
+//            if (!getShopResult.equals("{ }")) {
+//                shopLocations = gson.fromJson(getShopResult, Location[].class);
+//            }
+//        } catch (ExecutionException | InterruptedException e) {
+//            e.printStackTrace();
+//        }
         //Meine location holen
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
@@ -92,18 +92,24 @@ public class PuzzleShopActivity extends AppCompatActivity {
         for(int i=0;i<shopLocations.length;i++){
             //man muss 15 m am Shop sein um etwas zu kaufen
             if(currentLocation.distanceTo(shopLocations[i])<15){
-
                 nahGenug=true;
             }
         }
         //Wenn man zu weit weg ist, öffnet sich eine Alert Message und man kommt zurück zum Screen
         if(!nahGenug){
+            System.out.println("ZU WEIT WEG VOM SHOP");
             AlertDialog alertDialog = new AlertDialog.Builder(PuzzleShopActivity.this).create();
             alertDialog.setTitle("Kein Shop in der Nähe");
             alertDialog.setMessage("Du bist zu weit von einem Shop entfernt um etwas zu kaufen");
-            Intent intent = new Intent(PuzzleShopActivity.this, MainMenuActivity.class);
-            startActivity(intent);
-            alertDialog.dismiss();
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Zurück zum Menü", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(PuzzleShopActivity.this, MainMenuActivity.class);
+                    startActivity(intent);
+                    dialog.dismiss();
+                }
+            });
+            alertDialog.show();
             return;
         }
         Inventory inventory;
