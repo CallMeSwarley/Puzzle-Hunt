@@ -26,32 +26,34 @@
 
     <TextView
         android:id="@+id/player_1"
-        android:layout_width="260dp"
+        android:layout_width="0dp"
         android:layout_height="18dp"
-        android:layout_marginBottom="5dp"
         android:layout_marginRight="10dp"
+        android:layout_marginBottom="5dp"
         android:text="Your selected Pieces:"
         app:layout_constraintBottom_toTopOf="@+id/player1_trade_items_recyclerView"
-        app:layout_constraintEnd_toStartOf="@+id/add_pieces_button"
 
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/trade_text" />
 
     <Button
         android:id="@+id/add_pieces_button"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_marginEnd="4dp"
-        android:text="Add"
-        android:textSize="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteY="86dp" />
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:text="Select Piece"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline24"
+        app:layout_constraintEnd_toStartOf="@+id/button2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline25" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/player1_trade_items_recyclerView"
         android:layout_width="0dp"
-        android:layout_height="200dp"
-        app:layout_constraintBottom_toTopOf="@+id/player_2"
+        android:layout_height="111dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline25"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/player_1" />
@@ -60,24 +62,23 @@
         android:id="@+id/player_2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
         android:layout_marginBottom="5dp"
         android:text="Pieces offered by Friend:"
         app:layout_constraintBottom_toTopOf="@+id/player2_trade_items_recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player1_trade_items_recyclerView" />
+        app:layout_constraintTop_toTopOf="@+id/guideline24" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/player2_trade_items_recyclerView"
         android:layout_width="0dp"
-        android:layout_height="150dp"
+        android:layout_height="113dp"
         android:layout_marginBottom="20dp"
+        android:outlineAmbientShadowColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_2"
-        android:outlineAmbientShadowColor="@color/black"/>
+        app:layout_constraintTop_toBottomOf="@+id/player_2" />
 
     <Button
         android:id="@+id/accept_trade_button"
@@ -112,4 +113,30 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.8649469" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="Refresh"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/add_pieces_button"
+        app:layout_constraintTop_toTopOf="@+id/guideline25" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline24"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="359dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline25"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="281dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
