@@ -29,16 +29,16 @@ class PieceItemViewHolder extends RecyclerView.ViewHolder{
     public ImageView image;
     public TextView amount;
 
-    public PieceItemViewHolder(@NonNull @NotNull View itemView, boolean createOnClickEvent, Activity activity) {
+    public PieceItemViewHolder(@NonNull @NotNull View itemView, boolean isPopUpRecView, Activity activity) {
         super(itemView);
 
         image = itemView.findViewById(R.id.pieces_imageView);
         amount = itemView.findViewById(R.id.amount_textView);
 
-        if(createOnClickEvent){
+        if (activity instanceof TradeActivity) {
 
-            if(activity instanceof TradeActivity){
-
+            // For the pop up recyclerview
+            if (isPopUpRecView) {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -46,11 +46,7 @@ class PieceItemViewHolder extends RecyclerView.ViewHolder{
                     }
                 });
             }
-        }
-        else{
-
-            if(activity instanceof TradeActivity){
-
+            else {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -58,9 +54,7 @@ class PieceItemViewHolder extends RecyclerView.ViewHolder{
                     }
                 });
             }
-
         }
-
     }
 }
 

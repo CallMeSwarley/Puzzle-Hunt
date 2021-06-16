@@ -5,35 +5,46 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Adapters.PieceListAdapter;
+import com.socialgaming.androidtutorial.Models.Inventory;
 import com.socialgaming.androidtutorial.Models.PieceViewItem;
+import com.socialgaming.androidtutorial.Models.Puzzle;
+import com.socialgaming.androidtutorial.Models.PuzzlePiece;
+import com.socialgaming.androidtutorial.Util.HTTPGetter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class TradeActivity extends AppCompatActivity {
 
-    private AlertDialog.Builder dialogBuilder;
-    private AlertDialog dialog;
-    private RecyclerView piecesView;
-    private Button btnAdd;
-    private Button btnCancel;
+    // Database stuff
+    Inventory inventory = new Inventory();
+    Map<String, int[][]> sets = new HashMap<>();
+    Gson gson = new Gson();
 
     // Player 1
     private List<PieceViewItem> playerOneItemList = new ArrayList<>();
     private PieceListAdapter playerOneAdapter;
 
     // Popup
+    private AlertDialog.Builder dialogBuilder;
+    private AlertDialog dialog;
+    private RecyclerView piecesView;
+    private Button btnAdd;
+    private Button btnClose;
     private List<PieceViewItem> popUpItemList = new ArrayList<>();
-    PieceListAdapter popUpAdapter;
+    private PieceListAdapter popUpAdapter;
 
     public static String id = "";
     public static String name = "";
@@ -52,10 +63,11 @@ public class TradeActivity extends AppCompatActivity {
         final Button declineTrade = findViewById(R.id.decline_trade_button);
 
         // Popup list of pieces recyclerView (just for testing)
-        Bitmap bm = BitmapFactory.decodeResource(this.getResources(), R.drawable.img_1);
-        Bitmap bm1 = BitmapFactory.decodeResource(this.getResources(), R.drawable.meme);
-        popUpItemList.add(new PieceViewItem(bm));
-        popUpItemList.add(new PieceViewItem(bm1));
+//        Bitmap bm = BitmapFactory.decodeResource(this.getResources(), R.drawable.img_1);
+//        Bitmap bm1 = BitmapFactory.decodeResource(this.getResources(), R.drawable.meme);
+//        popUpItemList.add(new PieceViewItem(bm));
+//        popUpItemList.add(new PieceViewItem(bm1));
+        fetchPieces();
 
         // Player 1 list of pieces recyclerView
         playerTradeItems.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
@@ -78,8 +90,7 @@ public class TradeActivity extends AppCompatActivity {
         // View
         View addPiecesPopupView = getLayoutInflater().inflate(R.layout.trade_popup, null);
         piecesView = addPiecesPopupView.findViewById(R.id.add_pieces_recyclerView);
-        btnAdd = addPiecesPopupView.findViewById(R.id.add_button);
-        btnCancel = addPiecesPopupView.findViewById(R.id.cancel_button);
+        btnClose = addPiecesPopupView.findViewById(R.id.close_button);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false);
         piecesView.setLayoutManager(gridLayoutManager);
@@ -92,20 +103,7 @@ public class TradeActivity extends AppCompatActivity {
         dialog = dialogBuilder.create();
         dialog.show();
 
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                playerOneItemList.addAll(popUpItemList);
-//                playerOneAdapter.notifyDataSetChanged();
-//                dialog.dismiss();
-//
-//                // Remove items from selection popup
-//                popUpItemList.removeAll(playerOneItemList);
-//                popUpAdapter.notifyDataSetChanged();
-            }
-        });
-
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
@@ -113,10 +111,13 @@ public class TradeActivity extends AppCompatActivity {
         });
     }
 
-    public void addPieceToTradeView(int bindingAdapterPosition){
+    public void addPieceToTradeView(int bindingAdapterPosition) {
         playerOneItemList.add(popUpItemList.remove(bindingAdapterPosition));
         playerOneAdapter.notifyDataSetChanged();
         popUpAdapter.notifyDataSetChanged();
+
+        if (popUpItemList.isEmpty())
+            dialog.dismiss();
     }
 
     public void removePieceFromTradeView(int bindingAdapterPosition){
@@ -124,4 +125,54 @@ public class TradeActivity extends AppCompatActivity {
         playerOneAdapter.notifyDataSetChanged();
         popUpAdapter.notifyDataSetChanged();
     }
+
+    private void fetchPieces(){
+
+        HTTPGetter get = new HTTPGetter();
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), "getInventory");
+        try {
+            String getUserResult = get.get();
+            if (!getUserResult.equals("{ }")) {
+                this.inventory = gson.fromJson(getUserResult, Inventory.class);
+                this.sets = inventory.getSets();
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if(sets.isEmpty()){
+            insertDummyValues();
+        }
+
+        // Aus den Datenbankeinträgen werden hier ViewItems erstellt
+        sets.entrySet().stream().forEach(x -> {
+
+            int[][] arr = x.getValue();
+            int imageId = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + x.getKey(), null, null);
+            Bitmap image = BitmapFactory.decodeResource(this.getResources(), imageId);
+            Puzzle puzzle = new Puzzle(x.getKey(), arr.length, arr.length, image);
+
+            for(int i = 0; i < arr.length; i++){
+                for(int j = 0; j < arr[i].length; j++){
+                    if(arr[i][j] > 0){
+                        PuzzlePiece piece = puzzle.getPuzzlePiece(i, j);
+                        PieceViewItem item = new PieceViewItem(piece.getImage());
+                        popUpItemList.add(item);
+                    }
+                }
+            }
+        });
+    }
+
+    private void insertDummyValues(){
+
+        sets.put("meme", new int[][]{ {1, 2, 1}, {2, 0, 1}, {1, 0, 0}});
+        sets.put("img_1", new int[][]{{0, 1, 2, 0}, {3, 1, 2, 1}, {1, 0, 0, 2}, {1, 3, 2, 1}});
+    }
+
+    // TODO exp erhöhen wenn der trade erfolgreich war
+
+    // TODO boni für trades je nach freundeslevel, (z.B. Anzahl der Teile die man traden kann)
 }

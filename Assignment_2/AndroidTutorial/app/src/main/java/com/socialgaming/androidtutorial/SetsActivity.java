@@ -44,8 +44,6 @@ public class SetsActivity extends AppCompatActivity {
     public static final String EXTRA_ID = "com.socialgaming.androidtutorial.id";
 
     //CardView cardview =findViewById(R.id.set_CardView);
-    
-
 
     List<SetViewItem> items = new ArrayList<>();
     List<SetViewItem> completedItems = new ArrayList<>();
@@ -53,7 +51,7 @@ public class SetsActivity extends AppCompatActivity {
 
     // Eventuell Name des Puzzles
     Inventory inventory = new Inventory();
-    Map<String, String> titles = new HashMap<>();
+    //Map<String, String> titles = new HashMap<>();
     //List<String> titles = new ArrayList<>();
     Map<String, int[][]> sets = new HashMap<>();
 
@@ -200,7 +198,7 @@ public class SetsActivity extends AppCompatActivity {
             String getUserResult = get.get();
             if (!getUserResult.equals("{ }")) {
                 this.inventory = gson.fromJson(getUserResult, Inventory.class);
-                this.titles = inventory.getTitles();
+                //this.titles = inventory.getTitles();
                 this.sets = inventory.getSets();
             }
         } catch (ExecutionException e) {
@@ -209,11 +207,8 @@ public class SetsActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-//        sets.put("meme", new int[][]{ {1, 2, 1}, {2, 0, 1}, {1, 0, 0}});
-//        sets.put("img_1", new int[][]{{0, 1, 2, 0}, {3, 1, 2, 1}, {1, 0, 0, 2}, {1, 3, 2, 1}});
-//
-//        titles.put("meme", "Meme");
-//        titles.put("img_1", "Surfer");
+        if(sets.isEmpty())
+            insertDummyValues();
 
         // Aus den Datenbankeinträgen werden hier ViewItems erstellt
         sets.entrySet().stream().forEach(x -> {
@@ -231,8 +226,19 @@ public class SetsActivity extends AppCompatActivity {
                     }
                 }
             }
-            items.add(new SetViewItem(titles.get(x.getKey()), imageId, ownedPieces, maxPieces, listownedPieces));
+
+            items.add(new SetViewItem(x.getKey(), imageId, listownedPieces.size(), maxPieces, listownedPieces));
+            //items.add(new SetViewItem(titles.get(x.getKey()), imageId, listownedPieces.size(), maxPieces, listownedPieces));
         });
+    }
+
+    private void insertDummyValues() {
+
+        sets.put("meme", new int[][]{{1, 2, 1}, {2, 0, 1}, {1, 0, 0}});
+        sets.put("img_1", new int[][]{{0, 1, 2, 0}, {3, 1, 2, 1}, {1, 0, 0, 2}, {1, 3, 2, 1}});
+
+//        titles.put("meme", "This is a dummy entry");
+//        titles.put("img_1", "This is a dummy entry");
     }
 
 
