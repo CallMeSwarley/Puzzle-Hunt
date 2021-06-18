@@ -3,8 +3,11 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
+import com.mongodb.DBCursor;
 
 import org.bson.types.ObjectId;
+import org.jongo.MongoCursor;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -279,6 +282,10 @@ public class HomeController extends Controller {
 
     public Result getShop(String id) {
         return ok(gson.toJson(shops.getShop(id)));
+    }
+
+    public Result getAllShops() {
+        return ok(gson.toJson(shops.getAllShops()));
     }
 
     public Result getVisibleShops(String firebaseId, Double latSW, Double lonSW, Double latNE, Double lonNE) {

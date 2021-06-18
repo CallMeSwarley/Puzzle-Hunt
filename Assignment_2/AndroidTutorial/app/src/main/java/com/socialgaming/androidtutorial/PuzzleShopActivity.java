@@ -35,6 +35,7 @@ import com.socialgaming.androidtutorial.Models.Inventory;
 import com.socialgaming.androidtutorial.Models.PieceViewItem;
 import com.socialgaming.androidtutorial.Models.Puzzle;
 import com.socialgaming.androidtutorial.Models.PuzzlePiece;
+import com.socialgaming.androidtutorial.Models.Shop;
 import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 import com.socialgaming.androidtutorial.Util.HTTPPoster;
@@ -42,6 +43,7 @@ import com.socialgaming.androidtutorial.Util.HTTPPoster;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -58,17 +60,17 @@ public class PuzzleShopActivity extends AppCompatActivity {
         setContentView(R.layout.activity_puzzle_shop);
         //Shoplocations holen
         Boolean nahGenug=false;
-        Location[] shopLocations = new Location[0];
+        Shop[] shops = new Shop[0];
         HTTPGetter getShops = new HTTPGetter();
-//        getShops.execute("shop", "getShopLocations");
-//        try {
-//            String getShopResult = getShops.get();
-//            if (!getShopResult.equals("{ }")) {
-//                shopLocations = gson.fromJson(getShopResult, Location[].class);
-//            }
-//        } catch (ExecutionException | InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        getShops.execute("shop", "getAllShops");
+        try {
+            String getShopResult = getShops.get();
+            if (!getShopResult.equals("{ }")) {
+                shops = gson.fromJson(getShopResult, Shop[].class);
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
         //Meine location holen
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
@@ -89,10 +91,13 @@ public class PuzzleShopActivity extends AppCompatActivity {
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 500.0f, locationListener);
         Location currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        for(int i=0;i<shopLocations.length;i++){
+        for (Shop shop : shops) {
             //man muss 15 m am Shop sein um etwas zu kaufen
-            if(currentLocation.distanceTo(shopLocations[i])<15){
-                nahGenug=true;
+            Location shopLocation = new Location("");//provider name is unnecessary
+            shopLocation.setLatitude(shop.lat);
+            shopLocation.setLongitude(shop.lon);
+            if (currentLocation.distanceTo(shopLocation) < shop.range) {
+                nahGenug = true;
             }
         }
         //Wenn man zu weit weg ist, öffnet sich eine Alert Message und man kommt zurück zum Screen
@@ -123,7 +128,6 @@ public class PuzzleShopActivity extends AppCompatActivity {
             String getInventoryResult = get.get();
             if (!getInventoryResult.equals("{ }")) {
                 inventory = gson.fromJson(getInventoryResult, Inventory.class);
-                //TODO Liste mit allen pieces initialisieren
                 //Code aus der InventoryActivity übernommen
                 inventory.sets.entrySet().stream().forEach(x -> {
                     int[][] arr = x.getValue();
@@ -145,7 +149,23 @@ public class PuzzleShopActivity extends AppCompatActivity {
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-
+        Puzzle[] allPuzzles=new Puzzle[0];
+        HTTPGetter getAll = new HTTPGetter();
+        getAll.execute("puzzle", "getAll");
+        try {
+            String getAllPuzzleResult = getAll.get();
+            if (!getAllPuzzleResult.equals("{ }")) {
+                allPuzzles = gson.fromJson(getAllPuzzleResult, Puzzle[].class);
+                for(Puzzle puzzle:allPuzzles){
+                    PuzzlePiece[][] pieces =puzzle.getAllPuzzlePieces();
+                    for (PuzzlePiece[] piece : pieces) {
+                        allPuzzlePieces.addAll(Arrays.asList(piece));
+                    }
+                }
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
         //Aus allen die Rausfiltern die man bereits hat um im shop unnötige Teile zu vermeiden
         allPuzzlePieces.forEach(x -> {
             if (myPuzzlePieces.contains(x)) {
