@@ -76,6 +76,8 @@ public class GiftController extends Controller {
             }
             alreadySent.content = content;
             gifts.update(alreadySent);
+        } else {
+            return ok("{}");
         }
         return ok(gson.toJson(alreadySent));
     }
