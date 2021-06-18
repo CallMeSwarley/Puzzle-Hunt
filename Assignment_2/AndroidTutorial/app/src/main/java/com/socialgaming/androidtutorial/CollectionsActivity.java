@@ -30,6 +30,7 @@ import java.util.concurrent.ExecutionException;
 
 public class CollectionsActivity extends AppCompatActivity {
 
+    //TODO st puzzle title and number of pieces in respective textfields
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
