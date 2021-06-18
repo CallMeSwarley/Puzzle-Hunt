@@ -43,7 +43,7 @@ public class ShopsRepository {
         List<Shop> shopList = new ArrayList<>();
         for (Shop shop : othersQuery)
             shopList.add(shop);
-        return shopList.toArray(new Shop[0]);
+        return (Shop[]) shopList.toArray();
     }
     public Shop[] getVisible(Double latSW, Double lonSW, Double latNE, Double lonNE) {
         MongoCursor<Shop> othersQuery = shops().find().as(Shop.class);

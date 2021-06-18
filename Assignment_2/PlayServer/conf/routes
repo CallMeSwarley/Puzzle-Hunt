@@ -23,7 +23,7 @@ GET     /user/:nickName/getUserByNickName                   controllers.HomeCont
 GET     /user/:firebaseId/getFriendList                     controllers.HomeController.getFriendList(firebaseId:String)
 
 GET     /puzzle/:puzzleId/getPuzzle                         controllers.HomeController.getPuzzle(puzzleId:String)
-GET     /puzzle/getAll                                      controllers.HomeController.getAllPuzzles
+GET     /puzzle/getAll                                      controllers.HomeController.getAllPuzzles()
 POST    /user/:userString/update                            controllers.HomeController.updateUser(userString: String)
 POST    /user/:firebaseId/prepare                           controllers.HomeController.prepareUser(firebaseId:String)
 POST    /user/:firebaseId/:nickName/prepare                  controllers.HomeController.prepareUserWithNickname(firebaseId:String,nickName:String)
@@ -39,7 +39,7 @@ GET     /shop/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getVisible        controll
 GET     /shop/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getActive        controllers.HomeController.getActiveShops(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)
 GET     /shop/:title/:lat/:lon/:range/addShop               controllers.HomeController.addShop(title:String,lat:Double,lon:Double,range:Long)
 GET     /shop/:id/getShop                                   controllers.HomeController.getShop(id:String)
-GET     /shop/getAllShops                                   controllers.HomeController.getAllShops
+GET     /shop/getAllShops                                   controllers.HomeController.getAllShops()
 
 GET     /dealer/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getVisible      controllers.HomeController.getVisibleDealers(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)
 GET     /dealer/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getActive      controllers.HomeController.getActiveDealers(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)
