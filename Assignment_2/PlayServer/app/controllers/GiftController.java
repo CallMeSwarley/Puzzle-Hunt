@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import org.bson.types.ObjectId;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ public class GiftController extends Controller {
         Friendship friendship = friendships.getFriendship(friendshipId);
         String friendId = friendship.friendOne.equals(userId) ? friendship.friendTwo : friendship.friendOne;
         Gift alreadySent = gifts.getGift(friendshipId, friendId);
+        LocalDate localDate = LocalDate.now();
         if (alreadySent == null) {
             alreadySent = new Gift();
             alreadySent.id = new ObjectId().toString();
@@ -59,8 +61,10 @@ public class GiftController extends Controller {
             int[][] content = new int[puzzle.piecesCountHorizontal][puzzle.piecesCountVertical];
             content[x][y] = amount;
             alreadySent.content.put(puzzleId, content);
+            alreadySent.dayOfYear = localDate.getDayOfYear();
+            alreadySent.year = localDate.getYear();
             gifts.insert(alreadySent);
-        } else {
+        } else if (localDate.getYear() != alreadySent.year || (alreadySent.dayOfYear != localDate.getDayOfYear())) {
             Map<String, int[][]> content = alreadySent.content;
             if (content.containsKey(puzzleId)) {
                 content.get(puzzleId)[x][y] += amount;
