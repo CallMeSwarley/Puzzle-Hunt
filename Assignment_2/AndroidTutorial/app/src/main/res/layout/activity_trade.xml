@@ -125,7 +125,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:text="Refresh"
+        android:text=""
         android:textSize="15dp"
         app:icon="@drawable/ic_refresh"
         app:iconGravity="textStart"
