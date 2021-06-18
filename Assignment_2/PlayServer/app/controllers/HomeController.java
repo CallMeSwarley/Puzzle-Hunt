@@ -3,10 +3,8 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
-import com.mongodb.DBCursor;
 
 import org.bson.types.ObjectId;
-import org.jongo.MongoCursor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -265,6 +263,22 @@ public class HomeController extends Controller {
             saved.sets.put(puzzleId, set);
         }
         user.xp += 100 * counter;
+        inventories.update(saved);
+        users.update(user);
+        return ok(gson.toJson(saved));
+    }
+
+    public Result removePiece(String firebaseId, String puzzleId, Integer x, Integer y, Integer counter) {
+        Inventory saved = inventories.getInventory(firebaseId);
+        User user = users.getUser(firebaseId);
+        if (saved.sets.containsKey(puzzleId)) {
+            saved.sets.get(puzzleId)[x][y] += counter;
+        } else {
+            Puzzle puzzle = puzzles.getPuzzle(puzzleId);
+            int[][] set = new int[puzzle.piecesCountHorizontal][puzzle.piecesCountVertical];
+            set[x][y] = counter;
+            saved.sets.put(puzzleId, set);
+        }
         inventories.update(saved);
         users.update(user);
         return ok(gson.toJson(saved));
