@@ -34,6 +34,7 @@ import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Models.Inventory;
 import com.socialgaming.androidtutorial.Models.PieceViewItem;
 import com.socialgaming.androidtutorial.Models.Puzzle;
+import com.socialgaming.androidtutorial.Models.PuzzleModel;
 import com.socialgaming.androidtutorial.Models.PuzzlePiece;
 import com.socialgaming.androidtutorial.Models.Shop;
 import com.socialgaming.androidtutorial.Models.User;
@@ -59,7 +60,7 @@ public class PuzzleShopActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_puzzle_shop);
         //Shoplocations holen
-        Boolean nahGenug=false;
+        Boolean nahGenug = false;
         Shop[] shops = new Shop[0];
         HTTPGetter getShops = new HTTPGetter();
         getShops.execute("shop", "getAllShops");
@@ -92,16 +93,17 @@ public class PuzzleShopActivity extends AppCompatActivity {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 500.0f, locationListener);
         Location currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         for (Shop shop : shops) {
-            //man muss 15 m am Shop sein um etwas zu kaufen
             Location shopLocation = new Location("");//provider name is unnecessary
             shopLocation.setLatitude(shop.lat);
             shopLocation.setLongitude(shop.lon);
-            if (currentLocation.distanceTo(shopLocation) < shop.range) {
+            System.out.println("Distance to shop: " + currentLocation.distanceTo(shopLocation));
+            //TODO Durrch ein kleiner zeichen ersetzten wenn fertig
+            if (currentLocation.distanceTo(shopLocation) > shop.range) {
                 nahGenug = true;
             }
         }
         //Wenn man zu weit weg ist, öffnet sich eine Alert Message und man kommt zurück zum Screen
-        if(!nahGenug){
+        if (!nahGenug) {
             System.out.println("ZU WEIT WEG VOM SHOP");
             AlertDialog alertDialog = new AlertDialog.Builder(PuzzleShopActivity.this).create();
             alertDialog.setTitle("Kein Shop in der Nähe");
@@ -138,7 +140,7 @@ public class PuzzleShopActivity extends AppCompatActivity {
                         for (int j = 0; j < arr[i].length; j++) {
                             if (arr[i][j] > 0) {
                                 PuzzlePiece piece = puzzle.getPuzzlePiece(i, j);
-                                if(!myPuzzlePieces.contains(piece)){
+                                if (!myPuzzlePieces.contains(piece)) {
                                     myPuzzlePieces.add(piece);
                                 }
                             }
@@ -149,17 +151,20 @@ public class PuzzleShopActivity extends AppCompatActivity {
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-        Puzzle[] allPuzzles=new Puzzle[0];
+        PuzzleModel[] allPuzzles = new PuzzleModel[0];
         HTTPGetter getAll = new HTTPGetter();
         getAll.execute("puzzle", "getAll");
         try {
             String getAllPuzzleResult = getAll.get();
             if (!getAllPuzzleResult.equals("{ }")) {
-                allPuzzles = gson.fromJson(getAllPuzzleResult, Puzzle[].class);
-                for(Puzzle puzzle:allPuzzles){
-                    PuzzlePiece[][] pieces =puzzle.getAllPuzzlePieces();
-                    for (PuzzlePiece[] piece : pieces) {
-                        allPuzzlePieces.addAll(Arrays.asList(piece));
+                allPuzzles = gson.fromJson(getAllPuzzleResult, PuzzleModel[].class);
+                for (PuzzleModel puzzleModel : allPuzzles) {
+                    int imageId = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + puzzleModel.id, null, null);
+                    Bitmap image = BitmapFactory.decodeResource(this.getResources(), imageId);
+                    Puzzle puzzle = new Puzzle(puzzleModel.id, puzzleModel.piecesCountHorizontal, puzzleModel.piecesCountVertical, image);
+                    PuzzlePiece[][] pieces2D = puzzle.getAllPuzzlePieces();
+                    for (PuzzlePiece[] arr : pieces2D) {
+                        allPuzzlePieces.addAll(Arrays.asList(arr));
                     }
                 }
             }
@@ -193,11 +198,10 @@ public class PuzzleShopActivity extends AppCompatActivity {
             ImageButton imageButton = findViewById(resID);
             imageButton.setImageBitmap(puzzlePiece.getImage());
             //Button funktionalität geben
-            int finalXP = XP;
             imageButton.setOnClickListener(v -> {
                 AlertDialog alertDialog = new AlertDialog.Builder(PuzzleShopActivity.this).create();
                 alertDialog.setTitle("Buy Piece");
-                alertDialog.setMessage("Buy Puzzle Piece for" + finalXP + " XP?");
+                alertDialog.setMessage("Buy Puzzle Piece for" + XP + " XP?");
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "YES!", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -208,38 +212,30 @@ public class PuzzleShopActivity extends AppCompatActivity {
                             String getUserResult = get.get();
                             if (!getUserResult.equals("{ }")) {
                                 user = gson.fromJson(getUserResult, User.class);
-                                if (user.xp < finalXP) {
+                                if (user.xp < XP) {
                                     Toast.makeText(PuzzleShopActivity.this, "You don't have enough XP for that piece!", Toast.LENGTH_SHORT).show();
                                     dialog.dismiss();
                                 } else {
-                                    user.xp -= finalXP;
+                                    user.xp -= XP;
                                     new HTTPPoster().execute(
                                             "user",
                                             Uri.encode(gson.toJson(user, User.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
                                             "update");
-                                }
-                                allPuzzlePieces.remove(puzzlePiece);
-                                myPuzzlePieces.add(puzzlePiece);
-                                HTTPGetter getAddPiece = new HTTPGetter();
-                                getAddPiece.execute("inventory", FirebaseAuth.getInstance().getUid(), puzzlePiece.getPuzzleParent().id, "" + puzzlePiece.getPositionHorizontal(),
-                                        "" + puzzlePiece.getPositionVertical(), "" + 1, "addPiece");
-                                try {
-                                    String getInventoryResult = get.get();
-                                    if (!getInventoryResult.equals("{ }")) {
-
-                                    }
-                                } catch (ExecutionException | InterruptedException e) {
-                                    e.printStackTrace();
+                                    allPuzzlePieces.remove(puzzlePiece);
+                                    myPuzzlePieces.add(puzzlePiece);
+                                    HTTPGetter getAddPiece = new HTTPGetter();
+                                    getAddPiece.execute("inventory", FirebaseAuth.getInstance().getUid(), puzzlePiece.getPuzzleParent().id, "" + puzzlePiece.getPositionHorizontal(),
+                                            "" + puzzlePiece.getPositionVertical(), "" + 1, "addPiece");
+                                    //make button Unclickable and grayish
+                                    imageButton.setEnabled(false);
+                                    Drawable icon = convertDrawableToGrayScale(new BitmapDrawable(getResources(), puzzlePiece.getImage()));
+                                    imageButton.setImageDrawable(icon);
+                                    Toast.makeText(PuzzleShopActivity.this, "Bought Piece for  " + XP + " XP!", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         } catch (ExecutionException | InterruptedException e) {
                             e.printStackTrace();
                         }
-                        //make button Unclickable and grayish
-                        imageButton.setEnabled(false);
-                        Drawable icon = convertDrawableToGrayScale(new BitmapDrawable(getResources(), puzzlePiece.getImage()));
-                        imageButton.setImageDrawable(icon);
-                        Toast.makeText(PuzzleShopActivity.this, "Bought Piece for " + finalXP + " XP!", Toast.LENGTH_SHORT).show();
                     }
                 });
                 alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "NO!", new DialogInterface.OnClickListener() {
