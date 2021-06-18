@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Models.User;
@@ -25,9 +26,17 @@ public class EditProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-        final TextView idView = findViewById(R.id.idView);
-        final EditText nickNameEdit = findViewById(R.id.nickNameEdit);
-        final EditText descriptionEdit = findViewById(R.id.descriptionEdit);
+        //final TextView idView = findViewById(R.id.idView);
+        //final EditText nickNameEdit = findViewById(R.id.nickNameEdit);
+        //final EditText descriptionEdit = findViewById(R.id.descriptionEdit);
+        final TextInputLayout id = findViewById(R.id.idView);
+        final EditText idView = id.getEditText();
+        final TextInputLayout nickName = findViewById(R.id.nickNameEdit);
+        final EditText nickNameEdit = nickName.getEditText();
+        final TextInputLayout descrView = findViewById(R.id.descriptionEdit);
+        final EditText descriptionEdit = descrView.getEditText();
+
+
         HTTPGetter get = new HTTPGetter();
         get.execute("user", FirebaseAuth.getInstance().getUid(), "getUser");
         try {

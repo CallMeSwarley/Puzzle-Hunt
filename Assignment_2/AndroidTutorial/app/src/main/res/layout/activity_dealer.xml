@@ -35,14 +35,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="344dp" />
+        app:layout_constraintGuide_begin="329dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline29"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="450dp" />
+        app:layout_constraintGuide_begin="438dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView2"
@@ -69,12 +69,13 @@
 
     <Button
         android:id="@+id/play_button"
-        android:layout_width="125dp"
-        android:layout_height="60dp"
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:text="Play"
-        android:textSize="20dp"
+        android:textSize="30dp"
+        app:icon="@drawable/ic_coin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

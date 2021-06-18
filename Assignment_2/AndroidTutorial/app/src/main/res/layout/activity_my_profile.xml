@@ -26,7 +26,7 @@
 
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/id_textView"
+        android:id="@+id/idView"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline9"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline7"
-        app:layout_constraintTop_toBottomOf="@+id/id_textView">
+        app:layout_constraintTop_toBottomOf="@+id/idView">
 
         <com.google.android.material.textfield.TextInputEditText
             android:clickable="false"

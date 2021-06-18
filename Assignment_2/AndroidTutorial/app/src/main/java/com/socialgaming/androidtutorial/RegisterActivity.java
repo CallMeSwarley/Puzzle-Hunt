@@ -51,7 +51,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    final TextInputLayout nickNameView = findViewById(R.id.nickNameText);
+                    final TextInputLayout nickNameView = findViewById(R.id.descriptionEdit);
                     final EditText nicknameText = nickNameView.getEditText();
                     new HTTPPoster().execute(
                             "user",

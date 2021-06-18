@@ -13,14 +13,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
-import com.socialgaming.androidtutorial.Models.Friendship;
 import com.socialgaming.androidtutorial.Models.User;
 import com.google.gson.Gson;
-import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
-import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 public class AddFriendsActivity extends AppCompatActivity {
@@ -32,7 +28,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_friends);
 
 
-        final Button addFriendToList = findViewById(R.id.addFriendButton);
+        final Button addFriendToList = findViewById(R.id.saveChanges);
         //EditText nicknameFeld = findViewById(R.id.nickNameTextFeld);
 
         final TextInputLayout nickName = findViewById(R.id.nickNameTextFeld);

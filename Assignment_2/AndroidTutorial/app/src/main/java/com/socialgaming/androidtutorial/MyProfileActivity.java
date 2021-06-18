@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +29,7 @@ public class MyProfileActivity extends AppCompatActivity {
         final ImageView profilePic = findViewById(R.id.profile_pic_image);
 
 
-        final TextInputLayout idView = findViewById(R.id.id_textView);
+        final TextInputLayout idView = findViewById(R.id.idView);
         final EditText id = idView.getEditText();
 
         final TextInputLayout nameView = findViewById(R.id.name_textView);
