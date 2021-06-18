@@ -29,7 +29,7 @@ public class MyProfileActivity extends AppCompatActivity {
         final ImageView profilePic = findViewById(R.id.profile_pic_image);
 
 
-        final TextInputLayout idView = findViewById(R.id.idView);
+        final TextInputLayout idView = findViewById(R.id.id_textView);
         final EditText id = idView.getEditText();
 
         final TextInputLayout nameView = findViewById(R.id.name_textView);
