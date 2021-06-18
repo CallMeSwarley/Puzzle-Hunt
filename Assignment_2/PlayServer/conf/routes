@@ -23,7 +23,7 @@ GET     /user/:nickName/getUserByNickName                   controllers.HomeCont
 GET     /user/:firebaseId/getFriendList                     controllers.HomeController.getFriendList(firebaseId:String)
 
 GET     /puzzle/:puzzleId/getPuzzle                         controllers.HomeController.getPuzzle(puzzleId:String)
-
+GET     /puzzle/getAll                                      controllers.HomeController.getAllPuzzles
 POST    /user/:userString/update                            controllers.HomeController.updateUser(userString: String)
 POST    /user/:firebaseId/prepare                           controllers.HomeController.prepareUser(firebaseId:String)
 POST    /user/:firebaseId/:nickName/prepare                  controllers.HomeController.prepareUserWithNickname(firebaseId:String,nickName:String)

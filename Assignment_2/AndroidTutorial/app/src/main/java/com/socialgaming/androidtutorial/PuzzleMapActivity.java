@@ -20,7 +20,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -65,8 +64,8 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private TextView condDescr;
     private ImageView imgView;
     private final Handler handler = new Handler();
-    private static final int DELAY_LOCATION = 5000;
-    private static final int DELAY_WEATHER = 20000;
+    private static final int DELAY_LOCATION = 4000;
+    private static final int DELAY_WEATHER = 5000;
     private LocationRequest mLocationRequest;
     private android.location.Location mLastLocation;
     private Marker mCurrLocationMarker;
@@ -83,18 +82,6 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 if (mCurrLocationMarker != null) {
                     mCurrLocationMarker.remove();
                 }
-
-                //Place current location marker
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
-                markerOptions.title("Current Position");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                mCurrLocationMarker = mMap.addMarker(markerOptions);
-
-                //move map camera
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
-                LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
             }
         }
     };
@@ -148,25 +135,18 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                             if (mCurrLocationMarker != null) {
                                 mCurrLocationMarker.remove();
                             }
-
-                            //Place current location marker
-                            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            MarkerOptions markerOptions = new MarkerOptions();
-                            markerOptions.position(latLng);
-                            markerOptions.title("Current Position");
-                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                            mCurrLocationMarker = mMap.addMarker(markerOptions);
-
                             //move map camera
                             LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
                             Shop[] activeShops = getActiveShops(bounds);
                             Shop[] visibleShops = getVisibleShops(bounds);
                             Dealer[] activeDealers = getActiveDealers(bounds);
                             Dealer[] visibleDealers = getVisibleDealers(bounds);
+                            if (activeDealers.length != 0 && activeShops.length != 0 && visibleDealers.length != 0 && visibleShops.length != 0)
+                                mMap.clear();
                             for (Shop s : activeShops) {
                                 MarkerOptions marker = new MarkerOptions();
                                 marker.position(new LatLng(s.lat, s.lon));
-                                marker.title(s.title);
+                                marker.title(s.title + "\nActive");
                                 marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                                 mMap.addMarker(marker);
                             }
@@ -180,7 +160,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                             for (Dealer d : activeDealers) {
                                 MarkerOptions marker = new MarkerOptions();
                                 marker.position(new LatLng(d.lat, d.lon));
-                                marker.title(d.title);
+                                marker.title(d.title + "\nActive");
                                 marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                                 mMap.addMarker(marker);
                             }
@@ -194,7 +174,6 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         }
                     }
                 });
-
                 handler.postDelayed(this, PuzzleMapActivity.DELAY_LOCATION);
             }
         }, PuzzleMapActivity.DELAY_LOCATION);
@@ -344,6 +323,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                                 "" + user.latitude,
                                 "" + user.longitude,
                                 "update");
+                        mLastLocation=location;
                     }
                 });
             }

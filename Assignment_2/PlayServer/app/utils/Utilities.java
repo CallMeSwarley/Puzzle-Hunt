@@ -3,6 +3,8 @@ package utils;
 import models.Location;
 
 public class Utilities {
+    public static double POIVisibilityRange = 100;
+
     public static boolean inBound(Double latSW, Double lonSW, Double latNE, Double lonNE, Double lat, Double lon) {
         return latSW <= lat && lat <= latNE && lonSW <= lon && lon <= lonNE;
     }

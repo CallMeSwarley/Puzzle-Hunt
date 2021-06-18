@@ -19,6 +19,7 @@ import models.Inventory;
 import models.InventoryRepository;
 import models.Location;
 import models.LocationsRepository;
+import models.POIsRepository;
 import models.Puzzle;
 import models.PuzzleRepository;
 import models.Shop;
@@ -51,6 +52,8 @@ public class HomeController extends Controller {
     private DealersRepository dealers;
     @Inject
     private ShopsRepository shops;
+    @Inject
+    private POIsRepository pois;
 
     /**
      * An action that renders an HTML page with a welcome message.
@@ -139,10 +142,10 @@ public class HomeController extends Controller {
 
     public Result getFriendList(String firebaseId) {
         User user = users.getUser(firebaseId);
-        List fsIDs = user.friends;
-        List friendshipList = new ArrayList<>();
+        List<String> fsIDs = user.friends;
+        List<Friendship> friendshipList = new ArrayList<>();
         fsIDs.forEach(x -> {
-            friendshipList.add(friendships.getFriendship((String) x));
+            friendshipList.add(friendships.getFriendship(x));
         });
         Result res = ok(gson.toJson(friendshipList));
         return res;
@@ -281,7 +284,7 @@ public class HomeController extends Controller {
     public Result getVisibleShops(String firebaseId, Double latSW, Double lonSW, Double latNE, Double lonNE) {
         Double[] lastLocation = locations.getLocation(firebaseId).loc1;
         Shop[] visible = shops.getVisible(latSW, lonSW, latNE, lonNE);
-        Logger.info("visibleShops:\t"+gson.toJson(visible));
+        Logger.info("visibleShops:\t" + gson.toJson(visible));
         return ok(gson.toJson(Arrays
                 .stream(visible)
                 .filter(d -> !Utilities.inRange(lastLocation[0], lastLocation[1], d.lat, d.lon, d.range))
@@ -292,7 +295,7 @@ public class HomeController extends Controller {
     public Result getActiveShops(String firebaseId, Double latSW, Double lonSW, Double latNE, Double lonNE) {
         Double[] lastLocation = locations.getLocation(firebaseId).loc1;
         Shop[] visible = shops.getVisible(latSW, lonSW, latNE, lonNE);
-        Logger.info("activeShops:\t"+gson.toJson(visible));
+        Logger.info("activeShops:\t" + gson.toJson(visible));
         return ok(gson.toJson(Arrays
                 .stream(visible)
                 .filter(d -> Utilities.inRange(lastLocation[0], lastLocation[1], d.lat, d.lon, d.range))
@@ -318,7 +321,7 @@ public class HomeController extends Controller {
     public Result getVisibleDealers(String firebaseId, Double latSW, Double lonSW, Double latNE, Double lonNE) {
         Double[] lastLocation = locations.getLocation(firebaseId).loc1;
         Dealer[] visible = dealers.getVisible(latSW, lonSW, latNE, lonNE);
-        Logger.info("visibleDealer:\t"+gson.toJson(visible));
+        Logger.info("visibleDealer:\t" + gson.toJson(visible));
         return ok(gson.toJson(Arrays
                 .stream(visible)
                 .filter(d -> !Utilities.inRange(lastLocation[0], lastLocation[1], d.lat, d.lon, d.range))
@@ -329,7 +332,7 @@ public class HomeController extends Controller {
     public Result getActiveDealers(String firebaseId, Double latSW, Double lonSW, Double latNE, Double lonNE) {
         Double[] lastLocation = locations.getLocation(firebaseId).loc1;
         Dealer[] visible = dealers.getVisible(latSW, lonSW, latNE, lonNE);
-        Logger.info("activeDealer:\t"+gson.toJson(visible));
+        Logger.info("activeDealer:\t" + gson.toJson(visible));
         return ok(gson.toJson(Arrays
                 .stream(visible)
                 .filter(d -> Utilities.inRange(lastLocation[0], lastLocation[1], d.lat, d.lon, d.range))
@@ -349,6 +352,10 @@ public class HomeController extends Controller {
     }
 
     public Result getNearbyPOIs(Double lat, Double lon) {
-        return ok();
+        return ok(gson.toJson(pois.getNearbyPOIs(lat, lon)));
+    }
+
+    public Result getAllPuzzles() {
+        return ok(gson.toJson(puzzles.getAll()));
     }
 }
