@@ -33,6 +33,7 @@ GET     /inventory/:firebaseId/getInventory                 controllers.HomeCont
 GET     /inventory/:firebaseId/:puzzleId/:x/:y/:counter/addPiece controllers.HomeController.addPiece(firebaseId:String,puzzleId:String,x:Integer,y:Integer,counter:Integer)
 GET     /user/getNicknames                                  controllers.HomeController.getNicknames
 GET     /check/:nickName/checkNickname                      controllers.HomeController.checkNickname(nickName:String)
+POST    /friendship/:fsID/removeFriendship                  controllers.HomeController.removeFriendship(fsID:String)
 
 GET     /shop/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getVisible        controllers.HomeController.getVisibleShops(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)
 GET     /shop/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getActive        controllers.HomeController.getActiveShops(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)

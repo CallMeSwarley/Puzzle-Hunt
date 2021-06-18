@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 
 import org.bson.types.ObjectId;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -102,6 +101,12 @@ public class HomeController extends Controller {
         }
 
         return ok("User prepared");
+    }
+
+    public Result removeFriendship(String fsID) {
+        Logger.info("delete Friendship");
+        friendships.delete(fsID);
+        return ok("Friendship deleted");
     }
 
     public Result prepareFriendship(String firebaseIdMe, String firebaseIdFriend) {
