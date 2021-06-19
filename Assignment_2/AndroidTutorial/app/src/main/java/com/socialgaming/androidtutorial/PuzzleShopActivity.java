@@ -216,7 +216,7 @@ public class PuzzleShopActivity extends AppCompatActivity {
                                     Toast.makeText(PuzzleShopActivity.this, "You don't have enough XP for that piece!", Toast.LENGTH_SHORT).show();
                                     dialog.dismiss();
                                 } else {
-                                    user.xp -= XP;
+                                    user.xp =user.xp-XP-200;
                                     new HTTPPoster().execute(
                                             "user",
                                             Uri.encode(gson.toJson(user, User.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
@@ -225,7 +225,7 @@ public class PuzzleShopActivity extends AppCompatActivity {
                                     myPuzzlePieces.add(puzzlePiece);
                                     HTTPGetter getAddPiece = new HTTPGetter();
                                     getAddPiece.execute("inventory", FirebaseAuth.getInstance().getUid(), puzzlePiece.getPuzzleParent().id, "" + puzzlePiece.getPositionHorizontal(),
-                                            "" + puzzlePiece.getPositionVertical(), "" + 1, "addPiece");
+                                            "" + puzzlePiece.getPositionVertical(), "1", "addPiece");
                                     //make button Unclickable and grayish
                                     imageButton.setEnabled(false);
                                     Drawable icon = convertDrawableToGrayScale(new BitmapDrawable(getResources(), puzzlePiece.getImage()));
