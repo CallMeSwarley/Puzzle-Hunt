@@ -38,6 +38,13 @@ public class ShopsRepository {
         return shops().findOne("{_id: #}", id).as(Shop.class);
     }
 
+    public Shop[] getAllShops() {
+        MongoCursor<Shop> othersQuery = shops().find().as(Shop.class);
+        List<Shop> shopList = new ArrayList<>();
+        for (Shop shop : othersQuery)
+            shopList.add(shop);
+        return  shopList.toArray(new Shop[0]);
+    }
     public Shop[] getVisible(Double latSW, Double lonSW, Double latNE, Double lonNE) {
         MongoCursor<Shop> othersQuery = shops().find().as(Shop.class);
         List<Shop> dealerList = new ArrayList<>();

@@ -1,6 +1,10 @@
 package models;
 
 import org.jongo.MongoCollection;
+import org.jongo.MongoCursor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -43,5 +47,13 @@ public class PuzzleRepository {
     public Puzzle copyPuzzle(Puzzle puzzle) {
         Puzzle copy = new Puzzle(puzzle.id, puzzle.piecesCountHorizontal, puzzle.piecesCountVertical);
         return copy;
+    }
+
+    public Puzzle[] getAll() {
+        MongoCursor<Puzzle> othersQuery = puzzles().find().as(Puzzle.class);
+        List<Puzzle> puzzleList = new ArrayList<>();
+        for (Puzzle puzzle : othersQuery)
+            puzzleList.add(puzzle);
+        return puzzleList.toArray(new Puzzle[0]);
     }
 }

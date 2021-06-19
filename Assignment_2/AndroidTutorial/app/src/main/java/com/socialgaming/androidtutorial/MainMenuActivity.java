@@ -23,7 +23,6 @@ public class MainMenuActivity extends AppCompatActivity {
 
         final Button myProfile = findViewById(R.id.my_profile_button);
         final Button inventory = findViewById(R.id.inventory_button);
-        //final Button collections = findViewById(R.id.collections_button);
         final Button puzzleMap = findViewById(R.id.puzzle_map_button);
         final Button friends = findViewById(R.id.friends_button);
         final Button leaderboard = findViewById(R.id.leaderboard_button);
@@ -44,13 +43,7 @@ public class MainMenuActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-//        collections.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainMenuActivity.this, CollectionsActivity.class);
-//                startActivity(intent);
-//            }
-//        });
+
         puzzleMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

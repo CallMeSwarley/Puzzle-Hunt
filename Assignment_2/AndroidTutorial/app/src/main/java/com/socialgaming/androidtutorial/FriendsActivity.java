@@ -72,9 +72,9 @@ public class FriendsActivity extends AppCompatActivity {
                         String myID = FirebaseAuth.getInstance().getUid();
                         //Freund holen
                         if (!fs.friendOne.equals(myID)) {
-                            createXMLRow(fs.friendOne, fsLvlStr);
+                            createXMLRow(fs.friendOne, fsLvlStr,fs.id);
                         } else if (!fs.friendTwo.equals(myID)) {
-                            createXMLRow(fs.friendTwo, fsLvlStr);
+                            createXMLRow(fs.friendTwo, fsLvlStr,fs.id);
                         }
                     }//ende for (Friendship fs : friendlist) -Loop
                     //View button = getLayoutInflater().inflate(R.layout.add_friend_button, null);
@@ -102,7 +102,7 @@ public class FriendsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void createXMLRow(String friendID, String fsLvlStr) {
+    private void createXMLRow(String friendID, String fsLvlStr, String fsID) {
         LinearLayout friends_layout = findViewById(R.id.friendsActivity);
         View child = getLayoutInflater().inflate(R.layout.friend_row, null);
         TextView text = child.findViewById(R.id.friend_name_textView);
@@ -128,6 +128,7 @@ public class FriendsActivity extends AppCompatActivity {
                         FriendProfileActivity.xp=friend.xp;
                         FriendProfileActivity.name=friend.nickName;
                         FriendProfileActivity.description=friend.description;
+                        FriendProfileActivity.friendshipID=fsID;
                         Intent intent = new Intent(FriendsActivity.this, FriendProfileActivity.class);
                         startActivity(intent);
                     }

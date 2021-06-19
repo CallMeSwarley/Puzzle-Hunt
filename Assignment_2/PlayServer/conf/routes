@@ -23,7 +23,7 @@ GET     /user/:nickName/getUserByNickName                   controllers.HomeCont
 GET     /user/:firebaseId/getFriendList                     controllers.HomeController.getFriendList(firebaseId:String)
 
 GET     /puzzle/:puzzleId/getPuzzle                         controllers.HomeController.getPuzzle(puzzleId:String)
-
+GET     /puzzle/getAll                                      controllers.HomeController.getAllPuzzles()
 POST    /user/:userString/update                            controllers.HomeController.updateUser(userString: String)
 POST    /user/:firebaseId/prepare                           controllers.HomeController.prepareUser(firebaseId:String)
 POST    /user/:firebaseId/:nickName/prepare                  controllers.HomeController.prepareUserWithNickname(firebaseId:String,nickName:String)
@@ -31,13 +31,16 @@ GET     /user/:firebaseIdMe/:firebaseIdFriend/prepareFriend     controllers.Home
 
 GET     /inventory/:firebaseId/getInventory                 controllers.HomeController.getInventory(firebaseId:String)
 GET     /inventory/:firebaseId/:puzzleId/:x/:y/:counter/addPiece controllers.HomeController.addPiece(firebaseId:String,puzzleId:String,x:Integer,y:Integer,counter:Integer)
+GET     /inventory/:firebaseId/:puzzleId/:x/:y/:counter/removePiece controllers.HomeController.removePiece(firebaseId:String,puzzleId:String,x:Integer,y:Integer,counter:Integer)
 GET     /user/getNicknames                                  controllers.HomeController.getNicknames
 GET     /check/:nickName/checkNickname                      controllers.HomeController.checkNickname(nickName:String)
+POST    /friendship/:fsID/removeFriendship                  controllers.HomeController.removeFriendship(fsID:String)
 
 GET     /shop/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getVisible        controllers.HomeController.getVisibleShops(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)
 GET     /shop/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getActive        controllers.HomeController.getActiveShops(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)
 GET     /shop/:title/:lat/:lon/:range/addShop               controllers.HomeController.addShop(title:String,lat:Double,lon:Double,range:Long)
 GET     /shop/:id/getShop                                   controllers.HomeController.getShop(id:String)
+GET     /shop/getAllShops                                   controllers.HomeController.getAllShops()
 
 GET     /dealer/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getVisible      controllers.HomeController.getVisibleDealers(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)
 GET     /dealer/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getActive      controllers.HomeController.getActiveDealers(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)
@@ -45,3 +48,13 @@ GET     /dealer/:title/:lat/:lon/:range/addDealer           controllers.HomeCont
 GET     /dealer/:id/getDealer                               controllers.HomeController.getDealer(id:String)
 
 GET     /pois/:lat/:lon/getNearbyPOIs                       controllers.HomeController.getNearbyPOIs(lat:Double,lon:Double)
+
+GET     /gifts/:firebaseId/getGifts                             controllers.GiftController.getGifts(firebaseId:String)
+POST     /gifts/:friendshipId/:userId/:puzzleId/:x/:y/:amount/sendGift   controllers.GiftController.sendGift(friendshipId:String,userId:String,puzzleId:String,x:Integer,y:Integer,amount:Integer)
+POST    /gifts/:giftID/removeGift                               controllers.GiftController.removeGift(giftID:String)
+
+GET     /trade/:firebaseId/getOpenTrade                         controllers.TradeController.getOpenTrade(firebaseId:String)
+GET     /trade/:tradeId/:offer/trade                            controllers.TradeController.trade(tradeId:String,offer:String)
+GET     /trade/:tradeId/:offerList/offer                     controllers.TradeController.offer(tradeId:String,offerList:String)
+GET     /trade/:firebaseId/:offer/accept                        controllers.TradeController.accept(firebaseId:String,offer:String)
+GET     /trade/:firebaseId/decline                              controllers.TradeController.decline(firebaseId:String)

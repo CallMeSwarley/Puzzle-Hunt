@@ -1,25 +1,38 @@
 package com.socialgaming.androidtutorial;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
+import com.socialgaming.androidtutorial.Models.User;
+import com.socialgaming.androidtutorial.Util.HTTPGetter;
+import com.socialgaming.androidtutorial.Util.HTTPPoster;
+
+import java.util.concurrent.ExecutionException;
 
 public class FriendProfileActivity extends AppCompatActivity {
+    private final Gson gson = new Gson();
     public static String id = "";
     public static String name = "";
     public static Long xp = Long.valueOf(0);
     public static String lvl = "";
     public static String friendshipLvl = "";
     public static String description = "";
+    public static String friendshipID = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +62,8 @@ public class FriendProfileActivity extends AppCompatActivity {
         final EditText description = descriptionView.getEditText();
 
 
-
-
         name.setText(FriendProfileActivity.name);
-        xp.setText(""+FriendProfileActivity.xp);
+        xp.setText("" + FriendProfileActivity.xp);
         lvl.setText(FriendProfileActivity.lvl);
         friendshipLvl.setText(FriendProfileActivity.friendshipLvl);
         description.setText(FriendProfileActivity.description);
@@ -73,9 +84,9 @@ public class FriendProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 TradeActivity.id = FriendProfileActivity.id;
-                TradeActivity.friendshipLvl=FriendProfileActivity.friendshipLvl;
-                TradeActivity.xp=FriendProfileActivity.xp;
-                TradeActivity.name=FriendProfileActivity.name;
+                TradeActivity.friendshipLvl = FriendProfileActivity.friendshipLvl;
+                TradeActivity.xp = FriendProfileActivity.xp;
+                TradeActivity.name = FriendProfileActivity.name;
                 Intent intent = new Intent(FriendProfileActivity.this, TradeActivity.class);
                 startActivity(intent);
             }
@@ -83,10 +94,54 @@ public class FriendProfileActivity extends AppCompatActivity {
         removeFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(FriendProfileActivity.this, RemoveFriendActivity.class);
-                startActivity(intent);
+                AlertDialog alertDialog = new AlertDialog.Builder(FriendProfileActivity.this).create();
+                alertDialog.setTitle("Remove friend");
+                alertDialog.setMessage("Remove " + FriendProfileActivity.name + "?");
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        HTTPGetter get = new HTTPGetter();
+                        get.execute("user", FriendProfileActivity.id, "getUser");
+                        try {
+                            String getUserResult = get.get();
+                            if (!getUserResult.equals("{ }")) {
+                                User friend = gson.fromJson(getUserResult, User.class);
+                                friend.friends.remove(FriendProfileActivity.friendshipID);
+                                new HTTPPoster().execute(
+                                        "user",
+                                        Uri.encode(gson.toJson(friend, User.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
+                                        "update");
+                            }
+                        } catch (ExecutionException | InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        HTTPGetter getMe = new HTTPGetter();
+                        getMe.execute("user", FirebaseAuth.getInstance().getUid(), "getUser");
+                        try {
+                            String erg = getMe.get();
+                            if (!erg.equals("{ }")) {
+                                User me = gson.fromJson(erg, User.class);
+                                me.friends.remove(FriendProfileActivity.friendshipID);
+                                new HTTPPoster().execute(
+                                        "user",
+                                        Uri.encode(gson.toJson(me, User.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
+                                        "update");
+                            }
+                        } catch (ExecutionException | InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        new HTTPPoster().execute("friendship", FriendProfileActivity.friendshipID, "removeFriendship");
+                        Intent intent = new Intent(FriendProfileActivity.this, FriendsActivity.class);
+                        startActivity(intent);                    }
+                });
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                alertDialog.show();
             }
         });
-
     }
 }
