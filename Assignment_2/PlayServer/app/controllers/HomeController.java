@@ -283,7 +283,15 @@ public class HomeController extends Controller {
         User user = users.getUser(firebaseId);
         if (saved.sets.containsKey(puzzleId)) {
             saved.sets.get(puzzleId)[x][y] -= counter;
-            if (saved.sets.get(puzzleId)[x][y] <= 0) {
+            if (saved.sets.get(puzzleId)[x][y] < 0) {
+                saved.sets.get(puzzleId)[x][y] = 0;
+            }
+            boolean allEmpty = true;
+            Puzzle puzzle = puzzles.getPuzzle(puzzleId);
+            for (int idxX = 0; idxX < puzzle.piecesCountHorizontal && allEmpty; ++idxX)
+                for (int idxY = 0; idxY < puzzle.piecesCountVertical && allEmpty; ++idxY)
+                    allEmpty = allEmpty && saved.sets.get(puzzleId)[idxX][idxY] <= 0;
+            if (allEmpty) {
                 saved.sets.remove(puzzleId);
             }
         }
