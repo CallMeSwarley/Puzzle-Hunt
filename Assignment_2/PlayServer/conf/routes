@@ -24,6 +24,7 @@ GET     /user/:firebaseId/getFriendList                     controllers.HomeCont
 
 GET     /puzzle/:puzzleId/getPuzzle                         controllers.HomeController.getPuzzle(puzzleId:String)
 GET     /puzzle/getAll                                      controllers.HomeController.getAllPuzzles()
+
 POST    /user/:userString/update                            controllers.HomeController.updateUser(userString: String)
 POST    /user/:firebaseId/prepare                           controllers.HomeController.prepareUser(firebaseId:String)
 POST    /user/:firebaseId/:nickName/prepare                  controllers.HomeController.prepareUserWithNickname(firebaseId:String,nickName:String)
@@ -32,6 +33,8 @@ GET     /user/:firebaseIdMe/:firebaseIdFriend/prepareFriend     controllers.Home
 GET     /inventory/:firebaseId/getInventory                 controllers.HomeController.getInventory(firebaseId:String)
 GET     /inventory/:firebaseId/:puzzleId/:x/:y/:counter/addPiece controllers.HomeController.addPiece(firebaseId:String,puzzleId:String,x:Integer,y:Integer,counter:Integer)
 GET     /inventory/:firebaseId/:puzzleId/:x/:y/:counter/removePiece controllers.HomeController.removePiece(firebaseId:String,puzzleId:String,x:Integer,y:Integer,counter:Integer)
+GET     /inventory/:firebaseId/:puzzleId/:title/setTitle                   controllers.HomeController.setTitle(firebaseId:String,puzzleId:String,title:String)
+
 GET     /user/getNicknames                                  controllers.HomeController.getNicknames
 GET     /check/:nickName/checkNickname                      controllers.HomeController.checkNickname(nickName:String)
 POST    /friendship/:fsID/removeFriendship                  controllers.HomeController.removeFriendship(fsID:String)
