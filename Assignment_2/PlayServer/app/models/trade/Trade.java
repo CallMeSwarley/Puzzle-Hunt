@@ -10,9 +10,10 @@ public class Trade {
     public String id;
     public String playerOne;
     public String playerTwo;
-
     public Map<String, int[][]> playerOneTradeItems;
     public Map<String, int[][]> playerTwoTradeItems;
+    public boolean oneAccepted;
+    public boolean twoAccepted;
 
     public Trade() {
         this.id = "";
