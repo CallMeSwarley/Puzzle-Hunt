@@ -283,7 +283,11 @@ public class HomeController extends Controller {
         User user = users.getUser(firebaseId);
         if (saved.sets.containsKey(puzzleId)) {
             saved.sets.get(puzzleId)[x][y] -= counter;
+            if (saved.sets.get(puzzleId)[x][y] <= 0) {
+                saved.sets.remove(puzzleId);
+            }
         }
+
         inventories.update(saved);
         users.update(user);
         return ok(gson.toJson(saved));
