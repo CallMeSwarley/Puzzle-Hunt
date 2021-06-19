@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
@@ -118,6 +120,19 @@ public class PuzzleShopActivity extends AppCompatActivity {
             });
             alertDialog.show();
             return;
+        }
+        TextView xpAnzeige=findViewById(R.id.xpDisplayShop);
+        HTTPGetter getMe=new HTTPGetter();
+        getMe.execute("user", FirebaseAuth.getInstance().getUid(), "getUser");
+        try {
+            String getUserResult = getMe.get();
+            if (!getUserResult.equals("{ }")) {
+                User user = gson.fromJson(getUserResult, User.class);
+                String xpString="You have "+user.xp+" XP";
+                xpAnzeige.setText(xpString);
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
         }
         Inventory inventory;
         //Liste der Pieces die man schon hat
@@ -216,7 +231,10 @@ public class PuzzleShopActivity extends AppCompatActivity {
                                     Toast.makeText(PuzzleShopActivity.this, "You don't have enough XP for that piece!", Toast.LENGTH_SHORT).show();
                                     dialog.dismiss();
                                 } else {
-                                    user.xp =user.xp-XP-200;
+                                    user.xp -=XP;
+                                    String xpString="You have "+user.xp+" XP";
+                                    xpAnzeige.setText(xpString);
+                                    user.xp-=200;
                                     new HTTPPoster().execute(
                                             "user",
                                             Uri.encode(gson.toJson(user, User.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
