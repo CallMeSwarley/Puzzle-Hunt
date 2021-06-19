@@ -282,12 +282,7 @@ public class HomeController extends Controller {
         Inventory saved = inventories.getInventory(firebaseId);
         User user = users.getUser(firebaseId);
         if (saved.sets.containsKey(puzzleId)) {
-            saved.sets.get(puzzleId)[x][y] += counter;
-        } else {
-            Puzzle puzzle = puzzles.getPuzzle(puzzleId);
-            int[][] set = new int[puzzle.piecesCountHorizontal][puzzle.piecesCountVertical];
-            set[x][y] = counter;
-            saved.sets.put(puzzleId, set);
+            saved.sets.get(puzzleId)[x][y] -= counter;
         }
         inventories.update(saved);
         users.update(user);
