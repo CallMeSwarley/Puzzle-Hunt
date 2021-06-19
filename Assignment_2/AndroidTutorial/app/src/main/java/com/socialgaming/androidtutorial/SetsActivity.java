@@ -66,7 +66,6 @@ public class SetsActivity extends AppCompatActivity {
 
         // Buttons
         final Button btnSortBy = findViewById(R.id.sortBy_button);
-        final Button btnTrade = findViewById(R.id.uffxD);
 
         // Switch
         final Switch switchShowCompleted = findViewById(R.id.showCompleted_switch);
@@ -179,14 +178,6 @@ public class SetsActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
-
-        btnTrade.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SetsActivity.this, TradeActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
 
@@ -221,7 +212,7 @@ public class SetsActivity extends AppCompatActivity {
             List<Integer> listownedPieces = new ArrayList<>();
             for(int i=0;i<arr.length;i++){
                 for(int j=0;j<arr.length;j++){
-                    if(arr[i][j]==1){
+                    if(arr[i][j]>0){
                         listownedPieces.add(i+j*arr.length);
                     }
                 }
