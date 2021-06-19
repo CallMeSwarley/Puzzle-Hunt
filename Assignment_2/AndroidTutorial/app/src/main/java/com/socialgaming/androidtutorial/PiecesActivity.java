@@ -51,22 +51,23 @@ public class PiecesActivity extends AppCompatActivity {
 
     private void fetchDataFromDatabase() {
 
-//        HTTPGetter get = new HTTPGetter();
-//        get.execute("inventory", FirebaseAuth.getInstance().getUid(), "getInventory");
-//        try {
-//            String getUserResult = get.get();
-//            if (!getUserResult.equals("{ }")) {
-//                this.inventory = gson.fromJson(getUserResult, Inventory.class);
-//                this.sets = inventory.getSets();
-//            }
-//        } catch (ExecutionException e) {
-//            e.printStackTrace();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        HTTPGetter get = new HTTPGetter();
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), "getInventory");
+        try {
+            String getUserResult = get.get();
+            if (!getUserResult.equals("{ }")) {
+                this.inventory = gson.fromJson(getUserResult, Inventory.class);
+                this.sets = inventory.getSets();
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        sets.put("meme", new int[][]{ {1, 2, 1}, {2, 0, 1}, {1, 0, 0}});
-        sets.put("img_1", new int[][]{{0, 1, 2, 0}, {3, 1, 2, 1}, {1, 0, 0, 2}, {1, 3, 2, 1}});
+        if(sets.isEmpty()){
+            insertDummyValues();
+        }
 
         // Aus den Datenbankeinträgen werden hier ViewItems erstellt
         sets.entrySet().stream().forEach(x -> {
@@ -87,5 +88,11 @@ public class PiecesActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void insertDummyValues(){
+
+        sets.put("meme", new int[][]{ {1, 2, 1}, {2, 0, 1}, {1, 0, 0}});
+        sets.put("img_1", new int[][]{{0, 1, 2, 0}, {3, 1, 2, 1}, {1, 0, 0, 2}, {1, 3, 2, 1}});
     }
 }

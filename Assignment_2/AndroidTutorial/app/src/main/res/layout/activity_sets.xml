@@ -7,14 +7,6 @@
     android:padding="10dp"
     tools:context=".SetsActivity">
 
-    <Button
-        android:id="@+id/uffxD"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
     <TextView
         android:id="@+id/sets_text"
         android:layout_width="match_parent"
