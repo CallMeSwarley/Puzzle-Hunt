@@ -9,6 +9,7 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -71,6 +72,15 @@ public class HomeController extends Controller {
         User user = gson.fromJson(userString, User.class);
         users.update(user);
         return ok("User updated");
+    }
+
+    public Result setTitle(String firebaseId, String puzzleId, String title) {
+        Inventory userInventory = inventories.getInventory(firebaseId);
+        Map<String, String> map = userInventory.titles;
+        map.put(puzzleId, title);
+        userInventory.titles = map;
+        inventories.update(userInventory);
+        return ok(gson.toJson(userInventory));
     }
 
     public Result test(String firebaseId) {
