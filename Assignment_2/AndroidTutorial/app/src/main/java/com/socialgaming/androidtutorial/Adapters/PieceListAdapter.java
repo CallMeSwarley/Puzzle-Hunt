@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.socialgaming.androidtutorial.DealerActivity;
 import com.socialgaming.androidtutorial.Interfaces.ILoadMore;
 import com.socialgaming.androidtutorial.Models.PieceViewItem;
 import com.socialgaming.androidtutorial.R;
@@ -51,6 +52,24 @@ class PieceItemViewHolder extends RecyclerView.ViewHolder{
                     @Override
                     public void onClick(View v) {
                         ((TradeActivity) activity).removePieceFromTradeView(getBindingAdapterPosition());
+                    }
+                });
+            }
+        }else if(activity instanceof DealerActivity){
+            // For the pop up recyclerview
+            if (isPopUpRecView) {
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((DealerActivity) activity).addPieceToTradeView(getBindingAdapterPosition());
+                    }
+                });
+            }
+            else {
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((DealerActivity) activity).removePieceFromTradeView(getBindingAdapterPosition());
                     }
                 });
             }
