@@ -136,10 +136,10 @@ public class SetsActivity extends AppCompatActivity {
         });
 
 //        btnSortBy.setOnClickListener(v -> {
-//            Toast.makeText(this, "Id: " + inventory.getId(), Toast.LENGTH_SHORT).show();
+//            //Toast.makeText(this, "Id: " + inventory.getId(), Toast.LENGTH_SHORT).show();
 //            new HTTPPoster().execute(
 //                    "inventory",
-//                    inventory.getId(),
+//                    FirebaseAuth.getInstance().getUid(),
 //                    "meme",
 //                    "This is a meme",
 //                    Uri.encode(gson.toJson(inventory, Inventory.class)),//necessary to escape "unsafe" characters, otherwise error in play framework

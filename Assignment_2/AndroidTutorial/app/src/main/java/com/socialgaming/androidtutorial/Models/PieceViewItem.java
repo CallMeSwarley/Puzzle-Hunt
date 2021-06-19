@@ -7,7 +7,6 @@ public class PieceViewItem {
     private Bitmap image;
     private int amount;
 
-    private int listingPosition;
     private String setId;
     private int horizontalPosition;
     private int verticalPosition;
@@ -18,10 +17,16 @@ public class PieceViewItem {
     }
 
     public PieceViewItem(Bitmap image, int amount) {
-
         this.image = image;
         this.amount = amount;
+    }
 
+    public PieceViewItem(Bitmap image, String setId, int horizontalPosition, int verticalPosition) {
+        this.image = image;
+        this.amount = -1;
+        this.setId = setId;
+        this.horizontalPosition = horizontalPosition;
+        this.verticalPosition = verticalPosition;
     }
 
     public PieceViewItem(Bitmap image, int amount, String setId, int horizontalPosition, int verticalPosition) {
@@ -40,35 +45,15 @@ public class PieceViewItem {
         return amount;
     }
 
-    public int getListingPosition() {
-        return listingPosition;
-    }
-
-    public void setListingPosition(int listingPosition) {
-        this.listingPosition = listingPosition;
-    }
-
     public String getSetId() {
         return setId;
-    }
-
-    public void setSetId(String setId) {
-        this.setId = setId;
     }
 
     public int getHorizontalPosition() {
         return horizontalPosition;
     }
 
-    public void setHorizontalPosition(int horizontalPosition) {
-        this.horizontalPosition = horizontalPosition;
-    }
-
     public int getVerticalPosition() {
         return verticalPosition;
-    }
-
-    public void setVerticalPosition(int verticalPosition) {
-        this.verticalPosition = verticalPosition;
     }
 }
