@@ -5,11 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
@@ -18,7 +21,10 @@ import com.socialgaming.androidtutorial.Models.Inventory;
 import com.socialgaming.androidtutorial.Models.PieceViewItem;
 import com.socialgaming.androidtutorial.Models.Puzzle;
 import com.socialgaming.androidtutorial.Models.PuzzlePiece;
+import com.socialgaming.androidtutorial.Models.Trade;
+import com.socialgaming.androidtutorial.Models.TradeItem;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
+import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,20 +38,26 @@ public class TradeActivity extends AppCompatActivity {
     Inventory inventory = new Inventory();
     Map<String, int[][]> sets = new HashMap<>();
     Gson gson = new Gson();
+    HTTPPoster poster = new HTTPPoster();
+    HTTPGetter getter = new HTTPGetter();
 
     // Player 1
     private List<PieceViewItem> playerOneItemList = new ArrayList<>();
+    private List<TradeItem> pOnePieceInformation = new ArrayList<>();
     private PieceListAdapter playerOneAdapter;
+
+    // Player 2
+    private Map<String, int[][]> pTwoPieceInformation;
 
     // Popup
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
     private RecyclerView piecesView;
-    private Button btnAdd;
     private Button btnClose;
     private List<PieceViewItem> popUpItemList = new ArrayList<>();
     private PieceListAdapter popUpAdapter;
 
+    // Stuff
     public static String id = "";
     public static String name = "";
     public static Long xp = Long.valueOf(0);
@@ -59,15 +71,16 @@ public class TradeActivity extends AppCompatActivity {
         final RecyclerView playerTradeItems = findViewById(R.id.player1_trade_items_recyclerView);
         final RecyclerView friendTradeItems = findViewById(R.id.player2_trade_items_recyclerView);
         final Button addPieces = findViewById(R.id.add_pieces_button);
+        final Button refreshView = findViewById(R.id.refresh_button);
         final Button acceptTrade = findViewById(R.id.accept_trade_button);
         final Button declineTrade = findViewById(R.id.decline_trade_button);
 
-        // Popup list of pieces recyclerView (just for testing)
+        // Popup list of pieces recyclerView
+        fetchPieces();
 //        Bitmap bm = BitmapFactory.decodeResource(this.getResources(), R.drawable.img_1);
 //        Bitmap bm1 = BitmapFactory.decodeResource(this.getResources(), R.drawable.meme);
 //        popUpItemList.add(new PieceViewItem(bm));
 //        popUpItemList.add(new PieceViewItem(bm1));
-        fetchPieces();
 
         // Player 1 list of pieces recyclerView
         playerTradeItems.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
@@ -80,6 +93,13 @@ public class TradeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 createNewPiecesAddingDialog();
+            }
+        });
+
+        refreshView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }
@@ -107,12 +127,18 @@ public class TradeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+
+                HTTPPoster poster = new HTTPPoster();
+
             }
         });
     }
 
     public void addPieceToTradeView(int bindingAdapterPosition) {
-        playerOneItemList.add(popUpItemList.remove(bindingAdapterPosition));
+        PieceViewItem item = popUpItemList.remove(bindingAdapterPosition);
+        item.setListingPosition(playerOneItemList.size());
+        playerOneItemList.add(item);
+
         playerOneAdapter.notifyDataSetChanged();
         popUpAdapter.notifyDataSetChanged();
 
@@ -121,7 +147,10 @@ public class TradeActivity extends AppCompatActivity {
     }
 
     public void removePieceFromTradeView(int bindingAdapterPosition){
-        popUpItemList.add(playerOneItemList.remove(bindingAdapterPosition));
+        PieceViewItem item = playerOneItemList.remove(bindingAdapterPosition);
+        item.setListingPosition(popUpItemList.size());
+        popUpItemList.add(item);
+
         playerOneAdapter.notifyDataSetChanged();
         popUpAdapter.notifyDataSetChanged();
     }
@@ -158,8 +187,21 @@ public class TradeActivity extends AppCompatActivity {
                 for(int j = 0; j < arr[i].length; j++){
                     if(arr[i][j] > 0){
                         PuzzlePiece piece = puzzle.getPuzzlePiece(i, j);
-                        PieceViewItem item = new PieceViewItem(piece.getImage());
-                        popUpItemList.add(item);
+
+                        // The piece is added as often as the player has it
+                        for(int k = 0; k < arr[i][j]; k++){
+                            PieceViewItem item = new PieceViewItem(piece.getImage());
+                            item.setListingPosition(popUpItemList.size());
+                            item.setSetId(x.getKey());
+                            item.setHorizontalPosition(i);
+                            item.setVerticalPosition(j);
+                            popUpItemList.add(item);
+
+                            // TradeItem is used for internally mapping the position of the piece in the RecyclerView
+                            // to the Information of the piece that is needed when trading since the click event
+                            // on the RecyclerView only returns the position within its list
+                            //pOnePieceInformation.add(new TradeItem(popUpItemList.size() - 1, x.getKey(), i, j));
+                        }
                     }
                 }
             }

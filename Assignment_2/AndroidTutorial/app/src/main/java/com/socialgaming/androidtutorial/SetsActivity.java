@@ -6,16 +6,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.PopupMenu;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
@@ -24,17 +23,18 @@ import com.socialgaming.androidtutorial.Interfaces.ILoadMore;
 import com.socialgaming.androidtutorial.Models.Inventory;
 import com.socialgaming.androidtutorial.Models.Puzzle;
 import com.socialgaming.androidtutorial.Models.SetViewItem;
+import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
+import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -49,10 +49,11 @@ public class SetsActivity extends AppCompatActivity {
     List<SetViewItem> completedItems = new ArrayList<>();
     SetListAdapter adapter;
 
-    // Eventuell Name des Puzzles
+
+
+    // Eventuel Name des Puzzles
     Inventory inventory = new Inventory();
-    //Map<String, String> titles = new HashMap<>();
-    //List<String> titles = new ArrayList<>();
+    Map<String, String> titles = new HashMap<>();
     Map<String, int[][]> sets = new HashMap<>();
 
     private Puzzle puzzle;
@@ -62,7 +63,6 @@ public class SetsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sets);
-
 
         // Buttons
         final Button btnSortBy = findViewById(R.id.sortBy_button);
@@ -89,6 +89,7 @@ public class SetsActivity extends AppCompatActivity {
         });
 
         setView.setAdapter(adapter);
+
         // Mehr items laden event
 //        adapter.setLoadMore(new ILoadMore() {
 //            @Override
@@ -133,6 +134,17 @@ public class SetsActivity extends AppCompatActivity {
                 }
             }
         });
+
+//        btnSortBy.setOnClickListener(v -> {
+//            Toast.makeText(this, "Id: " + inventory.getId(), Toast.LENGTH_SHORT).show();
+//            new HTTPPoster().execute(
+//                    "inventory",
+//                    inventory.getId(),
+//                    "meme",
+//                    "This is a meme",
+//                    Uri.encode(gson.toJson(inventory, Inventory.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
+//                    "setTitle");
+//        });
 
         // Sortierbutton
         btnSortBy.setOnClickListener(new View.OnClickListener() {
@@ -218,8 +230,8 @@ public class SetsActivity extends AppCompatActivity {
                 }
             }
 
-            items.add(new SetViewItem(x.getKey(), imageId, listownedPieces.size(), maxPieces, listownedPieces));
-            //items.add(new SetViewItem(titles.get(x.getKey()), imageId, listownedPieces.size(), maxPieces, listownedPieces));
+            //items.add(new SetViewItem(x.getKey(), imageId, listownedPieces.size(), maxPieces, listownedPieces));
+            items.add(new SetViewItem(titles.get(x.getKey()), imageId, listownedPieces.size(), maxPieces, listownedPieces));
         });
     }
 
@@ -228,8 +240,8 @@ public class SetsActivity extends AppCompatActivity {
         sets.put("meme", new int[][]{{1, 2, 1}, {2, 0, 1}, {1, 0, 0}});
         sets.put("img_1", new int[][]{{0, 1, 2, 0}, {3, 1, 2, 1}, {1, 0, 0, 2}, {1, 3, 2, 1}});
 
-//        titles.put("meme", "This is a dummy entry");
-//        titles.put("img_1", "This is a dummy entry");
+        titles.put("meme", "This is a dummy entry");
+        titles.put("img_1", "This is a dummy entry");
     }
 
 

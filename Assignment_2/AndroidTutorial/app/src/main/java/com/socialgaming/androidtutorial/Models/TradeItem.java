@@ -1,51 +1,25 @@
 package com.socialgaming.androidtutorial.Models;
 
-import android.graphics.Bitmap;
+public class TradeItem {
 
-public class PieceViewItem {
-
-    private Bitmap image;
-    private int amount;
-
-    private int listingPosition;
+    private int listPosition;
     private String setId;
     private int horizontalPosition;
     private int verticalPosition;
 
-    public PieceViewItem(Bitmap image) {
-        this.amount = -1;
-        this.image = image;
-    }
-
-    public PieceViewItem(Bitmap image, int amount) {
-
-        this.image = image;
-        this.amount = amount;
-
-    }
-
-    public PieceViewItem(Bitmap image, int amount, String setId, int horizontalPosition, int verticalPosition) {
-        this.image = image;
-        this.amount = amount;
+    public TradeItem(int listPosition, String setId, int horizontalPosition, int verticalPosition) {
+        this.listPosition = listPosition;
         this.setId = setId;
         this.horizontalPosition = horizontalPosition;
         this.verticalPosition = verticalPosition;
     }
 
-    public Bitmap getImage() {
-        return image;
+    public int getListPosition() {
+        return listPosition;
     }
 
-    public int getAmount() {
-        return amount;
-    }
-
-    public int getListingPosition() {
-        return listingPosition;
-    }
-
-    public void setListingPosition(int listingPosition) {
-        this.listingPosition = listingPosition;
+    public void setListPosition(int listPosition) {
+        this.listPosition = listPosition;
     }
 
     public String getSetId() {

@@ -47,8 +47,22 @@
         app:icon="@drawable/ic_select"
         app:iconGravity="textStart"
         app:layout_constraintBottom_toTopOf="@+id/guideline24"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
+        app:layout_constraintEnd_toStartOf="@+id/refresh_button"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline25" />
+
+    <Button
+        android:id="@+id/refresh_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text=""
+        android:textSize="15dp"
+        app:icon="@drawable/ic_refresh"
+        app:iconGravity="textStart"
+        app:layout_constraintBottom_toTopOf="@+id/guideline24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/add_pieces_button"
         app:layout_constraintTop_toTopOf="@+id/guideline25" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -120,19 +134,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.8649469" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:text=""
-        android:textSize="15dp"
-        app:icon="@drawable/ic_refresh"
-        app:iconGravity="textStart"
-        app:layout_constraintBottom_toTopOf="@+id/guideline24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/add_pieces_button"
-        app:layout_constraintTop_toTopOf="@+id/guideline25" />
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline24"
