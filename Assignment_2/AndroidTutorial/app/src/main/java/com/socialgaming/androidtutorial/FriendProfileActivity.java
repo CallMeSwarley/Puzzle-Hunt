@@ -18,10 +18,13 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
+import com.socialgaming.androidtutorial.Models.PuzzleModel;
 import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
+import java.net.HttpCookie;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 public class FriendProfileActivity extends AppCompatActivity {
@@ -33,6 +36,7 @@ public class FriendProfileActivity extends AppCompatActivity {
     public static String friendshipLvl = "";
     public static String description = "";
     public static String friendshipID = "";
+    public static int friendshipLevelInt = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +79,59 @@ public class FriendProfileActivity extends AppCompatActivity {
         sendGift.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(FriendProfileActivity.this, SendGiftActivity.class);
-                startActivity(intent);
+                //TODO anpassen
+                if (FriendProfileActivity.friendshipLevelInt < 2) {
+                    Toast.makeText(FriendProfileActivity.this, "Your friendshiplevel is too low to send gifts!", Toast.LENGTH_SHORT).show();
+                } else {
+                    AlertDialog alertDialog = new AlertDialog.Builder(FriendProfileActivity.this).create();
+                    alertDialog.setTitle("Send Gift");
+                    alertDialog.setMessage("Do you want to send a special gift to: " + FriendProfileActivity.name + "?");
+                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes!", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Random rand = new Random();
+                            String PuzzleId="";
+                            int x=0;
+                            int y=0;
+                            //Random Puzzlepiece zum senden holen
+                            HTTPGetter getPuzzles=new HTTPGetter();
+                            getPuzzles.execute("puzzle","getAll");
+                            try{
+                                String puzzleResult=getPuzzles.get();
+                                if (!puzzleResult.equals("{ }")) {
+                                    PuzzleModel[] puzzles=gson.fromJson(puzzleResult, PuzzleModel[].class);
+                                    int randId=rand.nextInt(puzzles.length);
+                                    PuzzleId = puzzles[randId].id;
+                                    x=rand.nextInt(puzzles[randId].piecesCountHorizontal);
+                                    y=rand.nextInt(puzzles[randId].piecesCountVertical);
+                                }
+                            }catch (ExecutionException | InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            //Höheres fs-lvl=mehr inhalt im gift
+                            HTTPPoster post = new HTTPPoster();
+                            post.execute("gifts", FriendProfileActivity.friendshipID, FirebaseAuth.getInstance().getUid(), PuzzleId, "" + x, "" + y, ""+FriendProfileActivity.friendshipLevelInt, "sendGift");
+                            try {
+                                String sendGiftResult = post.get();
+                                if (sendGiftResult.equals("{}") || sendGiftResult.equals("{ }")) {
+                                    Toast.makeText(FriendProfileActivity.this, "Sth. went wrong, try again Later", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(FriendProfileActivity.this, "Gift was sent successfully", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (ExecutionException | InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            dialog.dismiss();
+                        }
+                    });
+                    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No!", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    alertDialog.show();
+                }
             }
         });
 
@@ -132,7 +187,8 @@ public class FriendProfileActivity extends AppCompatActivity {
                         }
                         new HTTPPoster().execute("friendship", FriendProfileActivity.friendshipID, "removeFriendship");
                         Intent intent = new Intent(FriendProfileActivity.this, FriendsActivity.class);
-                        startActivity(intent);                    }
+                        startActivity(intent);
+                    }
                 });
                 alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
                     @Override
