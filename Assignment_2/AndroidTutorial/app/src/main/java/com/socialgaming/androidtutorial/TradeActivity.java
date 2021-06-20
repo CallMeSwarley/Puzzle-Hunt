@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
@@ -84,6 +85,7 @@ public class TradeActivity extends AppCompatActivity {
         playerTwoAdapter = new PieceListAdapter(friendTradeItems, this, playerTwoItemList, false);
         friendTradeItems.setAdapter(playerTwoAdapter);
 
+        // Opens the popup to look for pieces to trade
         addPieces.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,6 +93,7 @@ public class TradeActivity extends AppCompatActivity {
             }
         });
 
+        // Refreshes the trading partners view
         refreshView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,14 +110,30 @@ public class TradeActivity extends AppCompatActivity {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
+
+        // TODO Accept the trade, wait for partner to accept aswell
+        acceptTrade.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        // TODO Decline the trade, leave the activity, send decline to database
+        declineTrade.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
-    public void createNewPiecesAddingDialog(){
+    public void createNewPiecesAddingDialog() {
         dialogBuilder = new AlertDialog.Builder(this);
 
         // View
@@ -136,36 +155,8 @@ public class TradeActivity extends AppCompatActivity {
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                try{
-                    trade.playerOneTradeItems.clear();
-                    for (int i = 0; i < playerOneItemList.size(); i++) {
-                        PieceViewItem item = playerOneItemList.get(i);
-
-                        int[][] entry;
-                        if(trade.playerOneTradeItems.containsKey(item.getSetId())) {
-                            entry = trade.playerOneTradeItems.get(item.getSetId());
-                        }
-                        else {
-                            int dim = sets.get(item.getSetId()).length;
-                            entry = new int[dim][dim];
-                        }
-
-                        entry[item.getHorizontalPosition()][item.getVerticalPosition()]++;
-                        trade.playerOneTradeItems.put(item.getSetId(), entry);
-                    }
-
-                    new HTTPPoster().execute(
-                            "trade",
-                            Uri.encode(gson.toJson(trade, Trade.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
-                            "update");
-
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-
+                updatePlayerOneDatabase();
                 dialog.dismiss();
-
             }
         });
     }
@@ -181,12 +172,42 @@ public class TradeActivity extends AppCompatActivity {
 
     public void removePieceFromTradeView(int bindingAdapterPosition){
         popUpItemList.add(playerOneItemList.remove(bindingAdapterPosition));
+        updatePlayerOneDatabase();
         playerOneAdapter.notifyDataSetChanged();
         popUpAdapter.notifyDataSetChanged();
     }
 
-    private void fetchPieces(){
+    private void updatePlayerOneDatabase(){
+        try{
+            trade.playerOneTradeItems.clear();
+            for (int i = 0; i < playerOneItemList.size(); i++) {
+                PieceViewItem item = playerOneItemList.get(i);
 
+                int[][] entry;
+                if(trade.playerOneTradeItems.containsKey(item.getSetId())) {
+                    entry = trade.playerOneTradeItems.get(item.getSetId());
+                }
+                else {
+                    int dim = sets.get(item.getSetId()).length;
+                    entry = new int[dim][dim];
+                }
+
+                entry[item.getHorizontalPosition()][item.getVerticalPosition()]++;
+                trade.playerOneTradeItems.put(item.getSetId(), entry);
+            }
+
+            new HTTPPoster().execute(
+                    "trade",
+                    Uri.encode(gson.toJson(trade, Trade.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
+                    "update");
+
+        } catch (Exception e){
+            e.printStackTrace();
+            //Toast.makeText(this, "Error trying to access database...", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void fetchPieces(){
         HTTPGetter getter = new HTTPGetter();
         getter.execute("inventory", FirebaseAuth.getInstance().getUid(), "getInventory");
         try {
@@ -230,12 +251,15 @@ public class TradeActivity extends AppCompatActivity {
     }
 
     private void insertDummyValues(){
-
         sets.put("meme", new int[][]{ {1, 2, 1}, {2, 0, 1}, {1, 0, 0}});
         sets.put("img_1", new int[][]{{0, 1, 2, 0}, {3, 1, 2, 1}, {1, 0, 0, 2}, {1, 3, 2, 1}});
     }
 
     // TODO exp erhöhen wenn der trade erfolgreich war
+    private void upTheExp(){
+
+    }
 
     // TODO boni für trades je nach freundeslevel, (z.B. Anzahl der Teile die man traden kann)
+
 }
