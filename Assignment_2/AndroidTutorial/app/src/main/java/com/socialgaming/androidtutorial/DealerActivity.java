@@ -23,6 +23,7 @@ import com.socialgaming.androidtutorial.Models.Puzzle;
 import com.socialgaming.androidtutorial.Models.PuzzleModel;
 import com.socialgaming.androidtutorial.Models.PuzzlePiece;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
+import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,9 +86,9 @@ public class DealerActivity extends AppCompatActivity {
                 int random = new Random().nextInt(101);
                 PieceViewItem itemStore = playerOneItemList.get(0);
                 deletePiece(itemStore.getSetId(),itemStore.getHorizontalPosition(),itemStore.getVerticalPosition());
-                addRandomPiece(itemStore.getSetId());
                 if(random>50){
                     winText.setText("you won");
+                    addRandomPiece(itemStore.getSetId());
                 }else{
                     winText.setText("you lost");
                 }
@@ -197,7 +198,7 @@ public class DealerActivity extends AppCompatActivity {
     }
 
     private void deletePiece(String id,int x, int y){
-        HTTPGetter get = new HTTPGetter();
+        HTTPPoster get = new HTTPPoster();
         get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(x),Integer.toString(y),"1","removePiece");
 
     }
@@ -206,8 +207,15 @@ public class DealerActivity extends AppCompatActivity {
         int[] size = getSizeOfPuzzle(id);
         int randomX = new Random().nextInt(size[0]);
         int randomY = new Random().nextInt(size[1]);
-        HTTPGetter get = new HTTPGetter();
+
+        int randomX2 = new Random().nextInt(size[0]);
+        int randomY2 = new Random().nextInt(size[1]);
+        HTTPPoster get = new HTTPPoster();
         get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
+
+        HTTPPoster get2 = new HTTPPoster();
+        get2.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX2),Integer.toString(randomY2),"1","addPiece");
+
 
     }
 

@@ -72,9 +72,9 @@ public class FriendsActivity extends AppCompatActivity {
                         String myID = FirebaseAuth.getInstance().getUid();
                         //Freund holen
                         if (!fs.friendOne.equals(myID)) {
-                            createXMLRow(fs.friendOne, fsLvlStr,fs.id);
+                            createXMLRow(fs.friendOne, fsLvlStr, fs.id, fs.rank);
                         } else if (!fs.friendTwo.equals(myID)) {
-                            createXMLRow(fs.friendTwo, fsLvlStr,fs.id);
+                            createXMLRow(fs.friendTwo, fsLvlStr, fs.id, fs.rank);
                         }
                     }//ende for (Friendship fs : friendlist) -Loop
                     //View button = getLayoutInflater().inflate(R.layout.add_friend_button, null);
@@ -102,7 +102,7 @@ public class FriendsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void createXMLRow(String friendID, String fsLvlStr, String fsID) {
+    private void createXMLRow(String friendID, String fsLvlStr, String fsID, int fsLvlInt) {
         LinearLayout friends_layout = findViewById(R.id.friendsActivity);
         View child = getLayoutInflater().inflate(R.layout.friend_row, null);
         TextView text = child.findViewById(R.id.friend_name_textView);
@@ -124,11 +124,12 @@ public class FriendsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         FriendProfileActivity.id = friendID;
-                        FriendProfileActivity.friendshipLvl=fsLvlStr;
-                        FriendProfileActivity.xp=friend.xp;
-                        FriendProfileActivity.name=friend.nickName;
-                        FriendProfileActivity.description=friend.description;
-                        FriendProfileActivity.friendshipID=fsID;
+                        FriendProfileActivity.friendshipLvl = fsLvlStr;
+                        FriendProfileActivity.xp = friend.xp;
+                        FriendProfileActivity.name = friend.nickName;
+                        FriendProfileActivity.description = friend.description;
+                        FriendProfileActivity.friendshipID = fsID;
+                        FriendProfileActivity.friendshipLevelInt = fsLvlInt;
                         Intent intent = new Intent(FriendsActivity.this, FriendProfileActivity.class);
                         startActivity(intent);
                     }
@@ -137,9 +138,9 @@ public class FriendsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         TradeActivity.id = friendID;
-                        TradeActivity.friendshipLvl=fsLvlStr;
-                        TradeActivity.xp=friend.xp;
-                        TradeActivity.name=friend.nickName;
+                        TradeActivity.friendshipLvl = fsLvlStr;
+                        TradeActivity.xp = friend.xp;
+                        TradeActivity.name = friend.nickName;
                         Intent intent = new Intent(FriendsActivity.this, TradeActivity.class);
                         startActivity(intent);
                     }

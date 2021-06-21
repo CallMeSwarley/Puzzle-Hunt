@@ -57,7 +57,8 @@ POST     /gifts/:friendshipId/:userId/:puzzleId/:x/:y/:amount/sendGift   control
 POST    /gifts/:giftID/removeGift                               controllers.GiftController.removeGift(giftID:String)
 
 GET     /trade/:firebaseId/getOpenTrade                         controllers.TradeController.getOpenTrade(firebaseId:String)
-GET     /trade/:tradeId/:offer/trade                            controllers.TradeController.trade(tradeId:String,offer:String)
-GET     /trade/:tradeId/:offerList/offer                     controllers.TradeController.offer(tradeId:String,offerList:String)
-GET     /trade/:firebaseId/:offer/accept                        controllers.TradeController.accept(firebaseId:String,offer:String)
-GET     /trade/:firebaseId/decline                              controllers.TradeController.decline(firebaseId:String)
+#GET     /trade/:tradeId/:firebaseId/:puzzleId/:x/:y/addOffer    controllers.TradeController.addOffer(tradeId:String,firebaseId:String,puzzleId:String,x:Integer, y:Integer)
+POST     /trade/:tradeId/:firebaseId/:offerList/offer                     controllers.TradeController.offer(tradeId:String,firebaseId:String,offerList:String)
+POST     /trade/:tradeId/:firebaseId/:offer/accept                        controllers.TradeController.accept(tradeId:String,firebaseId:String,offer:String)
+POST     /trade/:tradeId/decline                              controllers.TradeController.decline(tradeId:String)
+POST     /trade/:firebaseId/:partnerId/beginTrade                controllers.TradeController.beginTrade(firebaseId:String,partnerId:String)

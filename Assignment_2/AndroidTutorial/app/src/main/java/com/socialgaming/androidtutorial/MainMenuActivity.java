@@ -7,19 +7,49 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
+import com.socialgaming.androidtutorial.Models.Gift;
+import com.socialgaming.androidtutorial.Models.PuzzleModel;
+import com.socialgaming.androidtutorial.Util.HTTPGetter;
+import com.socialgaming.androidtutorial.Util.HTTPPoster;
+
+import java.util.concurrent.ExecutionException;
 
 public class MainMenuActivity extends AppCompatActivity {
-
+    private final Gson gson = new Gson();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        HTTPGetter getGift = new HTTPGetter();
+        getGift.execute("gifts", FirebaseAuth.getInstance().getUid(), "getGifts");
+        try {
+            String getGiftResult = getGift.get();
+            if (getGiftResult.equals("{ }")) {
+                Gift[] gifts=gson.fromJson(getGiftResult, Gift[].class);
+                if(gifts.length>0){
+                    AlertDialog alertDialog = new AlertDialog.Builder(MainMenuActivity.this).create();
+                    alertDialog.setTitle("New Gifts");
+                    alertDialog.setMessage("You received " + gifts.length + "new Gifts!");
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok!", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    alertDialog.show();
+                }
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
 
         final Button myProfile = findViewById(R.id.my_profile_button);
         final Button inventory = findViewById(R.id.inventory_button);
