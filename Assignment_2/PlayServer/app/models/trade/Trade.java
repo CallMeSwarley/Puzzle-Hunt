@@ -14,6 +14,8 @@ public class Trade {
     public Map<String, int[][]> playerTwoTradeItems;
     public boolean oneAccepted;
     public boolean twoAccepted;
+    public Offer playerOneAccepted;
+    public Offer playerTwoAccepted;
 
     public Trade() {
         this.id = "";
