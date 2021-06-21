@@ -10,7 +10,10 @@ import java.util.HashMap;
 
 import javax.inject.Inject;
 
+import models.Inventory;
 import models.InventoryRepository;
+import models.Puzzle;
+import models.PuzzleRepository;
 import models.trade.LastTrade;
 import models.trade.LastTradesRepository;
 import models.trade.Offer;
@@ -28,6 +31,8 @@ public class TradeController extends Controller {
     private LastTradesRepository lastTrades;
     @Inject
     private InventoryRepository inventories;
+    @Inject
+    private PuzzleRepository puzzles;
 
     public Result getOpenTrade(String firebaseId) {
         Trade openTrade = trades.getTrade(firebaseId);
@@ -91,6 +96,31 @@ public class TradeController extends Controller {
         }
         if (open.oneAccepted && open.twoAccepted) {
             lastTrades.log(open);
+            Inventory inventoryOne = inventories.getInventory(open.playerOne);
+            Inventory inventoryTwo = inventories.getInventory(open.playerTwo);
+            Offer acceptedByTwo = open.playerTwoAccepted;
+            Offer acceptedByOne = open.playerOneAccepted;
+            //Adjust inventory of playerOne
+            inventoryOne.sets.get(acceptedByTwo.setId)[acceptedByTwo.x][acceptedByTwo.y] -= 1;
+            if (inventoryOne.sets.containsKey(acceptedByOne.setId)) {
+                inventoryOne.sets.get(acceptedByOne.setId)[acceptedByOne.x][acceptedByOne.y] += 1;
+            } else {
+                Puzzle puzzle = puzzles.getPuzzle(acceptedByOne.setId);
+                int[][] inventory = new int[puzzle.piecesCountHorizontal][puzzle.piecesCountVertical];
+                inventory[acceptedByOne.x][acceptedByOne.y] = 1;
+                inventoryOne.sets.put(acceptedByOne.setId, inventory);
+            }
+            //Adjust inventory of playerTwo
+            inventoryTwo.sets.get(acceptedByOne.setId)[acceptedByOne.x][acceptedByOne.y] -= 1;
+            if (inventoryTwo.sets.containsKey(acceptedByTwo.setId)) {
+                inventoryTwo.sets.get(acceptedByTwo.setId)[acceptedByTwo.x][acceptedByTwo.y] += 1;
+            } else {
+                Puzzle puzzle = puzzles.getPuzzle(acceptedByTwo.setId);
+                int[][] inventory = new int[puzzle.piecesCountHorizontal][puzzle.piecesCountVertical];
+                inventory[acceptedByTwo.x][acceptedByTwo.y] = 1;
+                inventoryTwo.sets.put(acceptedByTwo.setId, inventory);
+            }
+
             trades.delete(tradeId);
             return ok("Trade Done!");
         }
