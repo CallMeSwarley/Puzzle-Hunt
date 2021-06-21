@@ -389,6 +389,10 @@ public class HomeController extends Controller {
         return ok(gson.toJson(dealer));
     }
 
+    public Result getAllUsers() {
+        return ok(gson.toJson(users.getAll()));
+    }
+
     public Result getNearbyPOIs(Double lat, Double lon) {
         return ok(gson.toJson(pois.getNearbyPOIs(lat, lon)));
     }

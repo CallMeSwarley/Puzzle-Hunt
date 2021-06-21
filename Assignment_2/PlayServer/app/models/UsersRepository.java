@@ -65,4 +65,13 @@ public class UsersRepository {
                 .map(x -> x.nickName)
                 .toArray(String[]::new);
     }
+
+    public User[] getAll() {
+        MongoCursor<User> users = users().find().as(User.class);
+        List<User> userObjects = new ArrayList();
+        for (User u : users) {
+            userObjects.add(u);
+        }
+        return userObjects.stream().toArray(User[]::new);
+    }
 }
