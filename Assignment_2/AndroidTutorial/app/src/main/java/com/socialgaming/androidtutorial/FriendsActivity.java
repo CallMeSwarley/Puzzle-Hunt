@@ -1,20 +1,13 @@
 package com.socialgaming.androidtutorial;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,14 +17,7 @@ import com.socialgaming.androidtutorial.Models.FriendshipRank;
 import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 
-import org.w3c.dom.Text;
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
-import java.util.zip.Inflater;
 
 public class FriendsActivity extends AppCompatActivity {
     private final Gson gson = new Gson();
@@ -137,10 +123,10 @@ public class FriendsActivity extends AppCompatActivity {
                 tradeWithFriend.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TradeActivity.id = friendID;
+                        TradeActivity.partnerId = friendID;
                         TradeActivity.friendshipLvl = fsLvlStr;
-                        TradeActivity.xp = friend.xp;
-                        TradeActivity.name = friend.nickName;
+                        TradeActivity.partnerXp = friend.xp;
+                        TradeActivity.partnerName = friend.nickName;
                         Intent intent = new Intent(FriendsActivity.this, TradeActivity.class);
                         startActivity(intent);
                     }

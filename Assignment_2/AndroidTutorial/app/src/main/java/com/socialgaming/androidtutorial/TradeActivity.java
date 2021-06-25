@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -56,10 +55,10 @@ public class TradeActivity extends AppCompatActivity {
     private List<PieceViewItem> popUpItemList = new ArrayList<>();
     private PieceListAdapter popUpAdapter;
 
-    // Stuff
-    public static String id = "";
-    public static String name = "";
-    public static Long xp = Long.valueOf(0);
+    // Trading partners information
+    public static String partnerId = "";
+    public static String partnerName = "";
+    public static Long partnerXp = Long.valueOf(0);
     public static String friendshipLvl = "";
 
     @Override
@@ -87,6 +86,28 @@ public class TradeActivity extends AppCompatActivity {
         playerTwoAdapter = new PieceListAdapter(friendTradeItems, this, playerTwoItemList, false);
         friendTradeItems.setAdapter(playerTwoAdapter);
 
+        // Setup trade in database
+        try{
+            new HTTPPoster().execute(
+                    "trade",
+                    FirebaseAuth.getInstance().getUid(),
+                    this.partnerId,
+                    "beginTrade");
+
+
+//            // /trade/:firebaseId/getOpenTrade
+//            HTTPGetter getter = new HTTPGetter();
+//            getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
+//
+//            String getUserResult = getter.get();
+//            if (!getUserResult.equals("{ }")) {
+//                trade = gson.fromJson(getUserResult, Trade.class);
+//            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
         // Opens the popup to look for pieces to trade
         addPieces.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,7 +121,7 @@ public class TradeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 HTTPGetter getter = new HTTPGetter();
-                getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getTrade");
+                getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
                 try {
                     String getUserResult = getter.get();
                     if (!getUserResult.equals("{ }")) {
@@ -138,7 +159,6 @@ public class TradeActivity extends AppCompatActivity {
                 catch (Exception e){
                     e.printStackTrace();
                 }
-
             }
         });
     }
@@ -192,33 +212,47 @@ public class TradeActivity extends AppCompatActivity {
         popUpAdapter.notifyDataSetChanged();
     }
 
-    private void updatePlayerOneDatabase(){
-        try{
+    private void updatePlayerOneDatabase() {
+        try {
+
+
+//            ******* CODE FOR MULTIPLE PIECE TRADING, NOT NEEDED RIGHT NOW *******
+
+//            trade.playerOneTradeItems.clear();
+//            for (int i = 0; i < playerOneItemList.size(); i++) {
+//                PieceViewItem item = playerOneItemList.get(i);
+//
+//                int[][] entry;
+//                if(trade.playerOneTradeItems.containsKey(item.getSetId())) {
+//                    entry = trade.playerOneTradeItems.get(item.getSetId());
+//                }
+//                else {
+//                    int dim = sets.get(item.getSetId()).length;
+//                    entry = new int[dim][dim];
+//                }
+//
+//                entry[item.getHorizontalPosition()][item.getVerticalPosition()]++;
+//                trade.playerOneTradeItems.put(item.getSetId(), entry);
+//            }
+
+            // Code for single piece trading
             trade.playerOneTradeItems.clear();
-            for (int i = 0; i < playerOneItemList.size(); i++) {
-                PieceViewItem item = playerOneItemList.get(i);
+            PieceViewItem item = playerOneItemList.get(0);
+            int dim = sets.get(item.getSetId()).length;
+            int[][] entry = new int[dim][dim];
+            entry[item.getHorizontalPosition()][item.getVerticalPosition()]++;
+            trade.playerOneTradeItems.put(item.getSetId(), entry);
 
-                int[][] entry;
-                if(trade.playerOneTradeItems.containsKey(item.getSetId())) {
-                    entry = trade.playerOneTradeItems.get(item.getSetId());
-                }
-                else {
-                    int dim = sets.get(item.getSetId()).length;
-                    entry = new int[dim][dim];
-                }
-
-                entry[item.getHorizontalPosition()][item.getVerticalPosition()]++;
-                trade.playerOneTradeItems.put(item.getSetId(), entry);
-            }
-
-            ///trade/:tradeId/:firebaseId/:puzzleId/:x/:y/addOffer
+            //trade/:tradeId/:firebaseId/:offerList/offer
 
             new HTTPPoster().execute(
                     "trade",
-                    Uri.encode(gson.toJson(trade, Trade.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
-                    "update");
+                    trade.getId(),
+                    FirebaseAuth.getInstance().getUid(),
+                    trade.playerOneTradeItems.get(item.getSetId()).toString(),
+                    "addOffer");
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             //Toast.makeText(this, "Error trying to access database...", Toast.LENGTH_SHORT).show();
         }

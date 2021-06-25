@@ -2,7 +2,6 @@ package com.socialgaming.androidtutorial;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,7 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -23,7 +21,6 @@ import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
-import java.net.HttpCookie;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
@@ -138,10 +135,10 @@ public class FriendProfileActivity extends AppCompatActivity {
         trade.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TradeActivity.id = FriendProfileActivity.id;
+                TradeActivity.partnerId = FriendProfileActivity.id;
                 TradeActivity.friendshipLvl = FriendProfileActivity.friendshipLvl;
-                TradeActivity.xp = FriendProfileActivity.xp;
-                TradeActivity.name = FriendProfileActivity.name;
+                TradeActivity.partnerXp = FriendProfileActivity.xp;
+                TradeActivity.partnerName = FriendProfileActivity.name;
                 Intent intent = new Intent(FriendProfileActivity.this, TradeActivity.class);
                 startActivity(intent);
             }

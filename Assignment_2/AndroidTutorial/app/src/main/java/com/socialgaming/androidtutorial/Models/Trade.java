@@ -1,6 +1,5 @@
 package com.socialgaming.androidtutorial.Models;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,8 +12,8 @@ public class Trade {
     public Map<String, int[][]> playerTwoTradeItems;
     public boolean oneAccepted;
     public boolean twoAccepted;
-    //public Offer playerOneAccepted;
-    //public Offer playerTwoAccepted;
+    public Offer playerOneAccepted;
+    public Offer playerTwoAccepted;
 
     public Trade() {
         this.id = "";
