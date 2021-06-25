@@ -83,7 +83,7 @@ public class TradeController extends Controller {
     }
 
     public Result offer(String tradeId, String firebaseId, String offers) {
-        Trade open = trades.getTrade(tradeId);
+        Trade open = trades.getTradeById(tradeId);
         if (open.playerOne.equals(firebaseId)) {
             open.playerOneTradeItems = gson.fromJson(offers, Offers.class);
         } else {
@@ -94,7 +94,7 @@ public class TradeController extends Controller {
     }
 
     public Result accept(String tradeId, String firebaseId, String offer) {
-        Trade open = trades.getTrade(tradeId);
+        Trade open = trades.getTradeById(tradeId);
         if (open.playerOne.equals(firebaseId)) {
             open.oneAccepted = true;
             open.playerOneAccepted = gson.fromJson(offer, Offer.class);
