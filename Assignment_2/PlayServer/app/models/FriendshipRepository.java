@@ -1,6 +1,5 @@
 package models;
 
-import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
 
 import javax.inject.Inject;
@@ -32,6 +31,15 @@ public class FriendshipRepository {
         return friendships().findOne("{_id: #}", id).as(Friendship.class);
     }
 
+    public Friendship getFriendshipByIds(String idOne, String idTwo) {
+        Friendship friendship = friendships().findOne("{friendOne:#,friendTwo:#}", idOne, idTwo).as(Friendship.class);
+        if (friendship == null) {
+            friendship = friendships().findOne("{friendOne:#,friendTwo:#}", idTwo, idOne).as(Friendship.class);
+        }
+        return friendship;
+    }
+
+
     public void insert(Friendship fs) {
         friendships().save(fs);
     }
@@ -45,11 +53,11 @@ public class FriendshipRepository {
     }
 
     public Friendship copyFriendship(Friendship fs) {
-        Friendship copy = new Friendship(fs.friendOne, fs.friendTwo,fs.id);
-        copy.id=fs.id;
+        Friendship copy = new Friendship(fs.friendOne, fs.friendTwo, fs.id);
+        copy.id = fs.id;
         copy.rank = fs.rank;
-        copy.year=fs.year;
-        copy.dayOfYear=fs.dayOfYear;
+        copy.year = fs.year;
+        copy.dayOfYear = fs.dayOfYear;
         return copy;
     }
 }
