@@ -125,7 +125,6 @@ public class HomeController extends Controller {
 
     public Result prepareFriendship(String firebaseIdMe, String firebaseIdFriend) {
         Logger.info("prepareFriendship");
-
         User me = users.getUser(firebaseIdMe);
         User friend = users.getUser(firebaseIdFriend);
         if (me == null || friend == null) {
@@ -133,11 +132,14 @@ public class HomeController extends Controller {
         } else if (firebaseIdFriend.equals(firebaseIdMe))
             return ok("That's kinda sad :(");
         else {
-            for (String id : me.friends) {
+            /*for (String id : me.friends) {
                 Friendship friendship = friendships.getFriendship(id);
                 if (friendship.friendOne.equals(firebaseIdFriend) || friendship.friendTwo.equals(firebaseIdFriend)) {
                     return ok("Already Friends");
                 }
+            }*/
+            if (friendships.getFriendshipByIds(firebaseIdMe, firebaseIdFriend) != null) {
+                return ok("Already Friends");
             }
             Friendship fs = new Friendship(firebaseIdMe, firebaseIdFriend, new ObjectId().toString());
             friendships.insert(fs);
@@ -155,8 +157,14 @@ public class HomeController extends Controller {
         User user = users.getUser(firebaseId);
         List<String> fsIDs = user.friends;
         List<Friendship> friendshipList = new ArrayList<>();
-        fsIDs.forEach(x -> {
-            friendshipList.add(friendships.getFriendship(x));
+        fsIDs.forEach(fsId -> {
+            Friendship friendship = friendships.getFriendship(fsId);
+            int rankBefore = friendship.rank;
+            friendship.updateRank();
+            if (friendship.rank != rankBefore) {
+                friendships.update(friendship);
+            }
+            friendshipList.add(friendship);
         });
         Result res = ok(gson.toJson(friendshipList));
         return res;
