@@ -10,10 +10,14 @@ import java.util.HashMap;
 
 import javax.inject.Inject;
 
+import models.Friendship;
+import models.FriendshipRepository;
 import models.Inventory;
 import models.InventoryRepository;
 import models.Puzzle;
 import models.PuzzleRepository;
+import models.User;
+import models.UsersRepository;
 import models.trade.LastTrade;
 import models.trade.LastTradesRepository;
 import models.trade.Offer;
@@ -33,6 +37,10 @@ public class TradeController extends Controller {
     private InventoryRepository inventories;
     @Inject
     private PuzzleRepository puzzles;
+    @Inject
+    private FriendshipRepository friendships;
+    @Inject
+    private UsersRepository users;
 
     public Result getOpenTrade(String firebaseId) {
         Trade openTrade = trades.getTrade(firebaseId);
@@ -110,6 +118,7 @@ public class TradeController extends Controller {
                 inventory[acceptedByOne.x][acceptedByOne.y] = 1;
                 inventoryOne.sets.put(acceptedByOne.setId, inventory);
             }
+            inventories.update(inventoryOne);
             //Adjust inventory of playerTwo
             inventoryTwo.sets.get(acceptedByOne.setId)[acceptedByOne.x][acceptedByOne.y] -= 1;
             if (inventoryTwo.sets.containsKey(acceptedByTwo.setId)) {
@@ -120,7 +129,22 @@ public class TradeController extends Controller {
                 inventory[acceptedByTwo.x][acceptedByTwo.y] = 1;
                 inventoryTwo.sets.put(acceptedByTwo.setId, inventory);
             }
-
+            inventories.update(inventoryTwo);
+            //Update users
+            User userOne = users.getUser(open.playerOne);
+            User userTwo = users.getUser(open.playerTwo);
+            Friendship friendship = friendships.getFriendshipByIds(open.playerOne, open.playerTwo);
+            if (friendship != null) {
+                friendship.updateRank();
+                friendships.update(friendship);
+                userOne.xp += 100 + 100 * friendship.rank;
+                userTwo.xp += 100 + 100 * friendship.rank;
+            } else {
+                userOne.xp += 100;
+                userTwo.xp += 100;
+            }
+            users.update(userOne);
+            users.update(userTwo);
             trades.delete(tradeId);
             return ok("Trade Done!");
         }
