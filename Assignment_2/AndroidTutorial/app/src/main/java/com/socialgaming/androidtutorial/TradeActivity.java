@@ -40,16 +40,14 @@ public class TradeActivity extends AppCompatActivity {
     Trade trade = new Trade();
     Map<String, int[][]> sets = new HashMap<>();
     Gson gson = new Gson();
-    Offer playerOneOffer;
-    Offer playerTwoOffer;
 
-    // Player 1
-    private List<PieceViewItem> playerOneItemList = new ArrayList<>();
-    private PieceListAdapter playerOneAdapter;
+    // Player
+    private List<PieceViewItem> playerItemList = new ArrayList<>();
+    private PieceListAdapter playerAdapter;
 
-    // Player 2
-    private List<PieceViewItem> playerTwoItemList = new ArrayList<>();
-    private PieceListAdapter playerTwoAdapter;
+    // Trading Partner
+    private List<PieceViewItem> partnerItemList = new ArrayList<>();
+    private PieceListAdapter partnerAdapter;
 
     // Popup
     private AlertDialog.Builder dialogBuilder;
@@ -71,7 +69,7 @@ public class TradeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_trade);
 
         final RecyclerView playerTradeItems = findViewById(R.id.player1_trade_items_recyclerView);
-        final RecyclerView friendTradeItems = findViewById(R.id.player2_trade_items_recyclerView);
+        final RecyclerView partnerTradeItems = findViewById(R.id.player2_trade_items_recyclerView);
         final Button addPieces = findViewById(R.id.add_pieces_button);
         final Button refreshView = findViewById(R.id.refresh_button);
         final Button acceptTrade = findViewById(R.id.accept_trade_button);
@@ -82,13 +80,13 @@ public class TradeActivity extends AppCompatActivity {
 
         // Player 1 list of pieces recyclerView
         playerTradeItems.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
-        playerOneAdapter = new PieceListAdapter(playerTradeItems, this, playerOneItemList, false);
-        playerTradeItems.setAdapter(playerOneAdapter);
+        playerAdapter = new PieceListAdapter(playerTradeItems, this, playerItemList, false);
+        playerTradeItems.setAdapter(playerAdapter);
 
         // Player 2 list of pieces recyclerView
-        friendTradeItems.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
-        playerTwoAdapter = new PieceListAdapter(friendTradeItems, this, playerTwoItemList, false);
-        friendTradeItems.setAdapter(playerTwoAdapter);
+        partnerTradeItems.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
+        partnerAdapter = new PieceListAdapter(partnerTradeItems, this, partnerItemList, false);
+        partnerTradeItems.setAdapter(partnerAdapter);
 
         // Setup trade in database
         try{
@@ -131,8 +129,8 @@ public class TradeActivity extends AppCompatActivity {
                     String getUserResult = getter.get();
                     if (!getUserResult.equals("{ }")) {
                         trade = gson.fromJson(getUserResult, Trade.class);
-                        trade.playerTwoTradeItems.entrySet().stream().forEach(x -> processPieces(x, playerTwoItemList));
-                        playerTwoAdapter.notifyDataSetChanged();
+                        trade.playerTwoTradeItems.entrySet().stream().forEach(x -> processPieces(x, partnerItemList));
+                        partnerAdapter.notifyDataSetChanged();
                     }
                     else {
                         Toast.makeText(getBaseContext(), "Trade canceled by " + partnerName, Toast.LENGTH_SHORT).show();
@@ -147,7 +145,7 @@ public class TradeActivity extends AppCompatActivity {
             }
         });
 
-        // TODO Accept the trade, wait for partner to accept as well
+        // Accept the trade, wait for partner to accept as well
         acceptTrade.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,25 +163,25 @@ public class TradeActivity extends AppCompatActivity {
 
                     trade = gson.fromJson(getUserResult, Trade.class);
                     trade.oneAccepted = true;
+                    trade.playerOneAccepted = new Offer();
                     addPieces.setEnabled(false);
+                    playerTradeItems.setEnabled(false);
 
-                    if(playerOneItemList.size() > 0){
-                        PieceViewItem piece = playerOneItemList.get(0);
-                        playerOneOffer = new Offer();
-                        playerOneOffer.setId = piece.getSetId();
-                        playerOneOffer.x = piece.getHorizontalPosition();
-                        playerOneOffer.y = piece.getVerticalPosition();
-
-                        // /trade/:tradeId/:firebaseId/:offer/accept
-                        HTTPPoster poster = new HTTPPoster();
-                        poster.execute(
-                                "trade",
-                                trade.getId(),
-                                FirebaseAuth.getInstance().getUid(),
-                                Uri.encode(gson.toJson(playerOneOffer, Offer.class)),
-                                "accept");
+                    if(playerItemList.size() > 0){
+                        PieceViewItem piece = playerItemList.get(0);
+                        trade.playerOneAccepted.setId = piece.getSetId();
+                        trade.playerOneAccepted.x = piece.getHorizontalPosition();
+                        trade.playerOneAccepted.y = piece.getVerticalPosition();
                     }
 
+                    // /trade/:tradeId/:firebaseId/:offer/accept
+                    HTTPPoster poster = new HTTPPoster();
+                    poster.execute(
+                            "trade",
+                            trade.getId(),
+                            FirebaseAuth.getInstance().getUid(),
+                            Uri.encode(gson.toJson(trade.playerOneAccepted, Offer.class)),
+                            "accept");
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -193,7 +191,7 @@ public class TradeActivity extends AppCompatActivity {
             }
         });
 
-        // TODO Decline the trade, leave the activity, send decline to database
+        // Decline the trade, leave the activity, send decline to database
         declineTrade.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -237,13 +235,13 @@ public class TradeActivity extends AppCompatActivity {
     }
 
     public void addPieceToTradeView(int bindingAdapterPosition) {
-        if(playerOneItemList.size() >= TRADE_PIECE_AMOUNT) {
+        if(playerItemList.size() >= TRADE_PIECE_AMOUNT) {
             Toast.makeText(this, "You are only allowed to trade " + TRADE_PIECE_AMOUNT + (TRADE_PIECE_AMOUNT == 1 ? " piece." : " pieces."), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        playerOneItemList.add(popUpItemList.remove(bindingAdapterPosition));
-        playerOneAdapter.notifyDataSetChanged();
+        playerItemList.add(popUpItemList.remove(bindingAdapterPosition));
+        playerAdapter.notifyDataSetChanged();
         popUpAdapter.notifyDataSetChanged();
 
         if (popUpItemList.isEmpty())
@@ -256,9 +254,9 @@ public class TradeActivity extends AppCompatActivity {
             return;
         }
 
-        popUpItemList.add(playerOneItemList.remove(bindingAdapterPosition));
+        popUpItemList.add(playerItemList.remove(bindingAdapterPosition));
         updatePlayerOneDatabase();
-        playerOneAdapter.notifyDataSetChanged();
+        playerAdapter.notifyDataSetChanged();
         popUpAdapter.notifyDataSetChanged();
     }
 
@@ -287,7 +285,7 @@ public class TradeActivity extends AppCompatActivity {
 
             // Code for single piece trading
             trade.playerOneTradeItems.clear();
-            PieceViewItem item = playerOneItemList.get(0);
+            PieceViewItem item = playerItemList.get(0);
             int dim = sets.get(item.getSetId()).length;
             int[][] entry = new int[dim][dim];
             entry[item.getHorizontalPosition()][item.getVerticalPosition()]++;
@@ -325,10 +323,6 @@ public class TradeActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        if(sets.isEmpty()){
-            insertDummyValues();
-        }
-
         sets.entrySet().stream().forEach(x -> processPieces(x, popUpItemList));
     }
 
@@ -352,31 +346,4 @@ public class TradeActivity extends AppCompatActivity {
             }
         }
     }
-
-    private String getOpenTrade(){
-        try{
-            HTTPGetter getter = new HTTPGetter();
-            getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
-            return getter.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        return "{ }";
-    }
-
-    private void insertDummyValues(){
-        sets.put("meme", new int[][]{ {1, 2, 1}, {2, 0, 1}, {1, 0, 0}});
-        sets.put("img_1", new int[][]{{0, 1, 2, 0}, {3, 1, 2, 1}, {1, 0, 0, 2}, {1, 3, 2, 1}});
-    }
-
-    // TODO exp erhöhen wenn der trade erfolgreich war
-    private void upTheExp(){
-
-    }
-
-    // TODO boni für trades je nach freundeslevel, (z.B. Anzahl der Teile die man traden kann)
-
 }
