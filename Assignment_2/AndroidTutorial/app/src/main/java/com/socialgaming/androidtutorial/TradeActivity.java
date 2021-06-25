@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Adapters.PieceListAdapter;
 import com.socialgaming.androidtutorial.Models.Inventory;
+import com.socialgaming.androidtutorial.Models.Offer;
 import com.socialgaming.androidtutorial.Models.PieceViewItem;
 import com.socialgaming.androidtutorial.Models.Puzzle;
 import com.socialgaming.androidtutorial.Models.PuzzlePiece;
@@ -38,6 +40,8 @@ public class TradeActivity extends AppCompatActivity {
     Trade trade = new Trade();
     Map<String, int[][]> sets = new HashMap<>();
     Gson gson = new Gson();
+    Offer playerOneOffer;
+    Offer playerTwoOffer;
 
     // Player 1
     private List<PieceViewItem> playerOneItemList = new ArrayList<>();
@@ -94,17 +98,18 @@ public class TradeActivity extends AppCompatActivity {
                     this.partnerId,
                     "beginTrade");
 
+            // Pull created trade instance in database to safe locally
+            HTTPGetter getter = new HTTPGetter();
+            getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
 
-//            // /trade/:firebaseId/getOpenTrade
-//            HTTPGetter getter = new HTTPGetter();
-//            getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
-//
-//            String getUserResult = getter.get();
-//            if (!getUserResult.equals("{ }")) {
-//                trade = gson.fromJson(getUserResult, Trade.class);
-//            }
+            String getUserResult = getter.get();
+            if (!getUserResult.equals("{ }")) {
+                trade = gson.fromJson(getUserResult, Trade.class);
+            }
 
-        } catch (Exception e){
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
 
@@ -120,20 +125,23 @@ public class TradeActivity extends AppCompatActivity {
         refreshView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HTTPGetter getter = new HTTPGetter();
-                getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
                 try {
+                    HTTPGetter getter = new HTTPGetter();
+                    getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
                     String getUserResult = getter.get();
                     if (!getUserResult.equals("{ }")) {
                         trade = gson.fromJson(getUserResult, Trade.class);
                         trade.playerTwoTradeItems.entrySet().stream().forEach(x -> processPieces(x, playerTwoItemList));
                         playerTwoAdapter.notifyDataSetChanged();
                     }
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
+                    else {
+                        Toast.makeText(getBaseContext(), "Trade canceled by " + partnerName, Toast.LENGTH_SHORT).show();
+                        this.wait(1000);
+                        finish();
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                } catch (Exception e) {
+                } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
             }
@@ -143,7 +151,45 @@ public class TradeActivity extends AppCompatActivity {
         acceptTrade.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                trade.oneAccepted = true;
+
+                try{
+                    HTTPGetter getter = new HTTPGetter();
+                    getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
+                    String getUserResult = getter.get();
+
+                    if (getUserResult.equals("{ }")) {
+                        Toast.makeText(getBaseContext(), "Trade canceled by " + partnerName, Toast.LENGTH_SHORT).show();
+                        this.wait(1000);
+                        finish();
+                    }
+
+                    trade = gson.fromJson(getUserResult, Trade.class);
+                    trade.oneAccepted = true;
+                    addPieces.setEnabled(false);
+
+                    if(playerOneItemList.size() > 0){
+                        PieceViewItem piece = playerOneItemList.get(0);
+                        playerOneOffer = new Offer();
+                        playerOneOffer.setId = piece.getSetId();
+                        playerOneOffer.x = piece.getHorizontalPosition();
+                        playerOneOffer.y = piece.getVerticalPosition();
+
+                        // /trade/:tradeId/:firebaseId/:offer/accept
+                        HTTPPoster poster = new HTTPPoster();
+                        poster.execute(
+                                "trade",
+                                trade.getId(),
+                                FirebaseAuth.getInstance().getUid(),
+                                Uri.encode(gson.toJson(playerOneOffer, Offer.class)),
+                                "accept");
+                    }
+
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -151,7 +197,6 @@ public class TradeActivity extends AppCompatActivity {
         declineTrade.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 try{
                     new HTTPPoster().execute("trade", trade.id, "decline");
                     finish();
@@ -206,6 +251,11 @@ public class TradeActivity extends AppCompatActivity {
     }
 
     public void removePieceFromTradeView(int bindingAdapterPosition){
+        if(trade.oneAccepted){
+            Toast.makeText(this, "You accepted the trade, you can't change your offer anymore", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         popUpItemList.add(playerOneItemList.remove(bindingAdapterPosition));
         updatePlayerOneDatabase();
         playerOneAdapter.notifyDataSetChanged();
@@ -245,12 +295,14 @@ public class TradeActivity extends AppCompatActivity {
 
             //trade/:tradeId/:firebaseId/:offerList/offer
 
+            String test = gson.toJson(trade.playerOneTradeItems);
+
             new HTTPPoster().execute(
                     "trade",
                     trade.getId(),
                     FirebaseAuth.getInstance().getUid(),
-                    trade.playerOneTradeItems.get(item.getSetId()).toString(),
-                    "addOffer");
+                    Uri.encode(gson.toJson(trade.playerOneTradeItems)),
+                    "offer");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -299,6 +351,20 @@ public class TradeActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private String getOpenTrade(){
+        try{
+            HTTPGetter getter = new HTTPGetter();
+            getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
+            return getter.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return "{ }";
     }
 
     private void insertDummyValues(){
