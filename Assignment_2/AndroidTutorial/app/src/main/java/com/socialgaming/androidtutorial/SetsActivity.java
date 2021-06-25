@@ -136,13 +136,11 @@ public class SetsActivity extends AppCompatActivity {
         });
 
 //        btnSortBy.setOnClickListener(v -> {
-//            //Toast.makeText(this, "Id: " + inventory.getId(), Toast.LENGTH_SHORT).show();
 //            new HTTPPoster().execute(
 //                    "inventory",
 //                    FirebaseAuth.getInstance().getUid(),
 //                    "meme",
 //                    "This is a meme",
-//                    Uri.encode(gson.toJson(inventory, Inventory.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
 //                    "setTitle");
 //        });
 
@@ -186,7 +184,6 @@ public class SetsActivity extends AppCompatActivity {
                         }
                     }
                 });
-
                 popupMenu.show();
             }
         });
@@ -201,7 +198,7 @@ public class SetsActivity extends AppCompatActivity {
             String getUserResult = get.get();
             if (!getUserResult.equals("{ }")) {
                 this.inventory = gson.fromJson(getUserResult, Inventory.class);
-                //this.titles = inventory.getTitles();
+                this.titles = inventory.getTitles();
                 this.sets = inventory.getSets();
             }
         } catch (ExecutionException e) {
