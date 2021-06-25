@@ -22,20 +22,26 @@ public class LastGiftsRepository {
     }
 
     public MongoCollection gifts() {
-        return jongo.getCollection("gifts");
+        return jongo.getCollection("lastGifts");
     }
 
-    public LastGift getLastGift(String friendshipId) {
-        return gifts().findOne("{_id:#}", friendshipId).as(LastGift.class);
+    public LastGift getLastGift(String id) {
+        return gifts().findOne("{_id:#}", id).as(LastGift.class);
+    }
+
+    public LastGift getLastGift(String friendshipId, String receiverId) {
+        return gifts().findOne("{friendship:#,receiverId:#}", friendshipId, receiverId).as(LastGift.class);
     }
 
 
-    public void insert(String friendshipId) {
+    public void insert(String id, String friendshipId, String receiverId) {
         LastGift lastGift = new LastGift();
-        lastGift.id = friendshipId;
+        lastGift.id = id;
         LocalDate now = LocalDate.now();
         lastGift.year = now.getYear();
         lastGift.dayOfYear = now.getDayOfYear();
+        lastGift.receiverId = receiverId;
+        lastGift.friendship = friendshipId;
         gifts().save(lastGift);
     }
 
@@ -48,13 +54,15 @@ public class LastGiftsRepository {
         copy.id = lastGift.id;
         copy.dayOfYear = lastGift.dayOfYear;
         copy.year = lastGift.year;
+        copy.friendship = lastGift.friendship;
+        copy.receiverId = lastGift.receiverId;
         return copy;
     }
 
     public void log(Gift gift) {
-        LastGift lastGift = this.getLastGift(gift.friendshipID);
+        LastGift lastGift = this.getLastGift(gift.id);
         if (lastGift == null) {
-            insert(gift.friendshipID);
+            insert(gift.id, gift.friendshipID, gift.receiverID);
         } else {
             LocalDate now = LocalDate.now();
             lastGift.year = now.getYear();

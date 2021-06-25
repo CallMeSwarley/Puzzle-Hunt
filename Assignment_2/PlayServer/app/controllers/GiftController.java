@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import org.bson.types.ObjectId;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,8 @@ import models.User;
 import models.UsersRepository;
 import models.gift.Gift;
 import models.gift.GiftsRepository;
+import models.gift.LastGift;
+import models.gift.LastGiftsRepository;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -31,6 +34,8 @@ public class GiftController extends Controller {
     FriendshipRepository friendships;
     @Inject
     PuzzleRepository puzzles;
+    @Inject
+    LastGiftsRepository lastGifts;
     Gson gson = new Gson();
 
     public Result getGifts(String firebaseId) {
@@ -50,7 +55,11 @@ public class GiftController extends Controller {
         Friendship friendship = friendships.getFriendship(friendshipId);
         String friendId = friendship.friendOne.equals(userId) ? friendship.friendTwo : friendship.friendOne;
         Gift alreadySent = gifts.getGift(friendshipId, friendId);
+        LastGift lastGift = lastGifts.getLastGift(friendshipId, friendId);
         LocalDate localDate = LocalDate.now();
+        if (lastGift != null && 0 >= ChronoUnit.DAYS.between(LocalDate.ofYearDay(lastGift.year, lastGift.dayOfYear), localDate)) {
+            return ok("Already sent gift in the last 24 hours");
+        }
         if (alreadySent == null) {
             alreadySent = new Gift();
             alreadySent.id = new ObjectId().toString();
@@ -61,10 +70,8 @@ public class GiftController extends Controller {
             int[][] content = new int[puzzle.piecesCountHorizontal][puzzle.piecesCountVertical];
             content[x][y] = amount;
             alreadySent.content.put(puzzleId, content);
-            alreadySent.dayOfYear = localDate.getDayOfYear();
-            alreadySent.year = localDate.getYear();
             gifts.insert(alreadySent);
-        } else if (localDate.getYear() != alreadySent.year || (alreadySent.dayOfYear != localDate.getDayOfYear())) {
+        } else {
             Map<String, int[][]> content = alreadySent.content;
             if (content.containsKey(puzzleId)) {
                 content.get(puzzleId)[x][y] += amount;
@@ -76,9 +83,8 @@ public class GiftController extends Controller {
             }
             alreadySent.content = content;
             gifts.update(alreadySent);
-        } else {
-            return ok("{}");
         }
+        lastGifts.log(alreadySent);
         return ok(gson.toJson(alreadySent));
     }
 
