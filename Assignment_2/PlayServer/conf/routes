@@ -29,6 +29,7 @@ POST    /user/:userString/update                            controllers.HomeCont
 POST    /user/:firebaseId/prepare                           controllers.HomeController.prepareUser(firebaseId:String)
 POST    /user/:firebaseId/:nickName/prepare                  controllers.HomeController.prepareUserWithNickname(firebaseId:String,nickName:String)
 GET     /user/:firebaseIdMe/:firebaseIdFriend/prepareFriend     controllers.HomeController.prepareFriendship(firebaseIdMe:String,firebaseIdFriend:String)
+GET     /user/getAll                                        controllers.HomeController.getAllUsers()
 
 GET     /inventory/:firebaseId/getInventory                 controllers.HomeController.getInventory(firebaseId:String)
 GET     /inventory/:firebaseId/:puzzleId/:x/:y/:counter/addPiece controllers.HomeController.addPiece(firebaseId:String,puzzleId:String,x:Integer,y:Integer,counter:Integer)
