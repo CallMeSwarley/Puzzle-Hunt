@@ -32,6 +32,8 @@ import java.util.concurrent.ExecutionException;
 
 public class TradeActivity extends AppCompatActivity {
 
+    private final int TRADE_PIECE_AMOUNT = 1;
+
     // Database stuff
     Inventory inventory = new Inventory();
     Trade trade = new Trade();
@@ -116,11 +118,11 @@ public class TradeActivity extends AppCompatActivity {
             }
         });
 
-        // TODO Accept the trade, wait for partner to accept aswell
+        // TODO Accept the trade, wait for partner to accept as well
         acceptTrade.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                trade.oneAccepted = true;
             }
         });
 
@@ -128,6 +130,14 @@ public class TradeActivity extends AppCompatActivity {
         declineTrade.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                try{
+                    new HTTPPoster().execute("trade", trade.id, "decline");
+                    finish();
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -162,6 +172,11 @@ public class TradeActivity extends AppCompatActivity {
     }
 
     public void addPieceToTradeView(int bindingAdapterPosition) {
+        if(playerOneItemList.size() >= TRADE_PIECE_AMOUNT) {
+            Toast.makeText(this, "You are only allowed to trade " + TRADE_PIECE_AMOUNT + (TRADE_PIECE_AMOUNT == 1 ? " piece." : " pieces."), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         playerOneItemList.add(popUpItemList.remove(bindingAdapterPosition));
         playerOneAdapter.notifyDataSetChanged();
         popUpAdapter.notifyDataSetChanged();
@@ -195,6 +210,8 @@ public class TradeActivity extends AppCompatActivity {
                 entry[item.getHorizontalPosition()][item.getVerticalPosition()]++;
                 trade.playerOneTradeItems.put(item.getSetId(), entry);
             }
+
+            ///trade/:tradeId/:firebaseId/:puzzleId/:x/:y/addOffer
 
             new HTTPPoster().execute(
                     "trade",
