@@ -63,7 +63,7 @@ public class PuzzleShopActivity extends AppCompatActivity {
         setContentView(R.layout.activity_puzzle_shop);
         //Shoplocations holen
         Boolean nahGenug = false;
-        Shop[] shops = new Shop[0];
+        /*Shop[] shops = new Shop[0];
         HTTPGetter getShops = new HTTPGetter();
         getShops.execute("shop", "getAllShops");
         try {
@@ -120,7 +120,7 @@ public class PuzzleShopActivity extends AppCompatActivity {
             });
             alertDialog.show();
             return;
-        }
+        }*/
         TextView xpAnzeige=findViewById(R.id.xpDisplayShop);
         HTTPGetter getMe=new HTTPGetter();
         getMe.execute("user", FirebaseAuth.getInstance().getUid(), "getUser");

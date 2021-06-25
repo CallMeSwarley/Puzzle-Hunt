@@ -1,6 +1,8 @@
 package com.socialgaming.androidtutorial;
 
 import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -111,8 +114,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         infoText = findViewById(R.id.infoText);
         condDescr = findViewById(R.id.condDescr);
         imgView = findViewById(R.id.condIcon);
-        //task.execute(new String[]{city});
-
+        //task.execute(new String[]{city})
         handler.postDelayed(new Runnable() {
             public void run() {
                 System.out.println("Location Handler"); // Do your work here
@@ -144,18 +146,14 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                             if (activeDealers.length != 0 && activeShops.length != 0 && visibleDealers.length != 0 && visibleShops.length != 0)
                                 mMap.clear();
                             for (Shop s : activeShops) {
-                                MarkerOptions marker = new MarkerOptions();
-                                marker.position(new LatLng(s.lat, s.lon));
-                                marker.title(s.title + "\nActive");
-                                marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                                mMap.addMarker(marker);
+                                Marker mark=mMap.addMarker(new MarkerOptions().position(new LatLng(s.lat, s.lon)).title(s.title + "\nActive").
+                                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                                mark.setTag("AS");//=ActiveShop
                             }
                             for (Shop s : visibleShops) {
-                                MarkerOptions marker = new MarkerOptions();
-                                marker.position(new LatLng(s.lat, s.lon));
-                                marker.title(s.title);
-                                marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                                mMap.addMarker(marker);
+                                Marker mark=mMap.addMarker(new MarkerOptions().position(new LatLng(s.lat, s.lon)).title(s.title + "\nActive").
+                                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                                mark.setTag("VS");//=VisibleShop
                             }
                             for (Dealer d : activeDealers) {
                                 MarkerOptions marker = new MarkerOptions();
@@ -171,6 +169,35 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                                 marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
                                 mMap.addMarker(marker);
                             }
+                            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                                @Override
+                                public boolean onMarkerClick(Marker marker) {
+                                    System.out.println("++++++++++++++++++++++Marker click+++++++++++++++++++++++++++++++++");
+                                    System.out.println(marker.getTag()+"++++++++++++++++++++++++++++++++++++++");
+                                    if (marker.getTag()!=null&&marker.getTag()=="AS") {
+                                        AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
+                                        alertDialog.setTitle("Shopping");
+                                        alertDialog.setMessage("Do you want to enter the shop?");
+                                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Intent intent = new Intent(PuzzleMapActivity.this, PuzzleShopActivity.class);
+                                                startActivity(intent);
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                        alertDialog.show();
+                                        return true;
+                                    } else
+                                        return false;
+                                }
+                            });
                         }
                     }
                 });
@@ -323,7 +350,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                                 "" + user.latitude,
                                 "" + user.longitude,
                                 "update");
-                        mLastLocation=location;
+                        mLastLocation = location;
                     }
                 });
             }
