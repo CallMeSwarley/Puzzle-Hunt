@@ -61,66 +61,7 @@ public class PuzzleShopActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_puzzle_shop);
-        //Shoplocations holen
-        Boolean nahGenug = false;
-        /*Shop[] shops = new Shop[0];
-        HTTPGetter getShops = new HTTPGetter();
-        getShops.execute("shop", "getAllShops");
-        try {
-            String getShopResult = getShops.get();
-            if (!getShopResult.equals("{ }")) {
-                shops = gson.fromJson(getShopResult, Shop[].class);
-            }
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        //Meine location holen
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        LocationListener locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(@NonNull Location location) {
 
-            }
-        };
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 500.0f, locationListener);
-        Location currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        for (Shop shop : shops) {
-            Location shopLocation = new Location("");//provider name is unnecessary
-            shopLocation.setLatitude(shop.lat);
-            shopLocation.setLongitude(shop.lon);
-            System.out.println("Distance to shop: " + currentLocation.distanceTo(shopLocation));
-            //TODO Durrch ein kleiner zeichen ersetzten wenn fertig
-            if (currentLocation.distanceTo(shopLocation) > shop.range) {
-                nahGenug = true;
-            }
-        }
-        //Wenn man zu weit weg ist, öffnet sich eine Alert Message und man kommt zurück zum Screen
-        if (!nahGenug) {
-            System.out.println("ZU WEIT WEG VOM SHOP");
-            AlertDialog alertDialog = new AlertDialog.Builder(PuzzleShopActivity.this).create();
-            alertDialog.setTitle("Kein Shop in der Nähe");
-            alertDialog.setMessage("Du bist zu weit von einem Shop entfernt um etwas zu kaufen");
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Zurück zum Menü", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(PuzzleShopActivity.this, MainMenuActivity.class);
-                    startActivity(intent);
-                    dialog.dismiss();
-                }
-            });
-            alertDialog.show();
-            return;
-        }*/
         TextView xpAnzeige=findViewById(R.id.xpDisplayShop);
         HTTPGetter getMe=new HTTPGetter();
         getMe.execute("user", FirebaseAuth.getInstance().getUid(), "getUser");
@@ -286,12 +227,12 @@ public class PuzzleShopActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         AlertDialog alertDialog = new AlertDialog.Builder(PuzzleShopActivity.this).create();
-        alertDialog.setTitle("Back to Menu");
+        alertDialog.setTitle("Return to Map");
         alertDialog.setMessage("Doing this will reload the Shop");
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Back to Mainmenu", new DialogInterface.OnClickListener() {
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Back to Map", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(PuzzleShopActivity.this, MainMenuActivity.class);
+                Intent intent = new Intent(PuzzleShopActivity.this, PuzzleMapActivity.class);
                 startActivity(intent);
                 dialog.dismiss();
             }

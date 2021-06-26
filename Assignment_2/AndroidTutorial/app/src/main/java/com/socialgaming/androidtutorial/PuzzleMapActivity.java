@@ -173,8 +173,8 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                                 @Override
                                 public boolean onMarkerClick(Marker marker) {
                                     System.out.println("++++++++++++++++++++++Marker click+++++++++++++++++++++++++++++++++");
-                                    System.out.println(marker.getTag()+"++++++++++++++++++++++++++++++++++++++");
-                                    if (marker.getTag()!=null&&marker.getTag()=="AS") {
+                                    System.out.println("++++++++++++++++"+marker.getTag()+"++++++++++++++++++++++++++++++++");
+                                    if (marker.getTag()!=null&& ((String) marker.getTag()).equals("AS")) {
                                         AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
                                         alertDialog.setTitle("Shopping");
                                         alertDialog.setMessage("Do you want to enter the shop?");

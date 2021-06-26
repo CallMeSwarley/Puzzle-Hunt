@@ -76,13 +76,12 @@ public class FriendProfileActivity extends AppCompatActivity {
         sendGift.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO anpassen
                 if (FriendProfileActivity.friendshipLevelInt < 2) {
                     Toast.makeText(FriendProfileActivity.this, "Your friendshiplevel is too low to send gifts!", Toast.LENGTH_SHORT).show();
                 } else {
                     AlertDialog alertDialog = new AlertDialog.Builder(FriendProfileActivity.this).create();
                     alertDialog.setTitle("Send Gift");
-                    alertDialog.setMessage("Do you want to send a special gift to: " + FriendProfileActivity.name + "?");
+                    alertDialog.setMessage("Do you want to send a special gift to " + FriendProfileActivity.name + "?");
                     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes!", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -110,8 +109,10 @@ public class FriendProfileActivity extends AppCompatActivity {
                             post.execute("gifts", FriendProfileActivity.friendshipID, FirebaseAuth.getInstance().getUid(), PuzzleId, "" + x, "" + y, ""+FriendProfileActivity.friendshipLevelInt, "sendGift");
                             try {
                                 String sendGiftResult = post.get();
-                                if (sendGiftResult.equals("{}") || sendGiftResult.equals("{ }")) {
+                                if (sendGiftResult.equals("{ }")) {
                                     Toast.makeText(FriendProfileActivity.this, "Sth. went wrong, try again Later", Toast.LENGTH_SHORT).show();
+                                } else if (sendGiftResult.equals("Already sent gift in the last 24 hours")) {
+                                    Toast.makeText(FriendProfileActivity.this, "You can only send a gift every 24 hours", Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(FriendProfileActivity.this, "Gift was sent successfully", Toast.LENGTH_SHORT).show();
                                 }
