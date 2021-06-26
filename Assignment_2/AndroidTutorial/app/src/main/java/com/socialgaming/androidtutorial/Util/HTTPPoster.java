@@ -42,7 +42,9 @@ public class HTTPPoster extends AsyncTask<String, Void, String> {
             connection.setDoOutput(true);
             connection.setRequestMethod("POST");
             result = connection.getResponseMessage();
+            //Remove following line to revert the poster to its inital state
             result = convertInputStreamToString(connection.getInputStream());
+
             Log.d("INFORMATION", "Poster returned " + result);
 
         } catch (Exception e) {
