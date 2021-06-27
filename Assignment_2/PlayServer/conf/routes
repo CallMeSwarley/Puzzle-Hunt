@@ -63,3 +63,5 @@ POST     /trade/:tradeId/:firebaseId/:offerList/offer                     contro
 POST     /trade/:tradeId/:firebaseId/:offer/accept                        controllers.TradeController.accept(tradeId:String,firebaseId:String,offer:String)
 POST     /trade/:tradeId/decline                              controllers.TradeController.decline(tradeId:String)
 POST     /trade/:firebaseId/:partnerId/beginTrade                controllers.TradeController.beginTrade(firebaseId:String,partnerId:String)
+#trial to increase performance for client
+GET      /markers/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getInBound    controllers.MarkerController.getInBound(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)

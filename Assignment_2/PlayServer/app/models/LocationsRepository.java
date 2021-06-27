@@ -65,5 +65,13 @@ public class LocationsRepository {
                 .map(loc -> loc.id).toArray(String[]::new);
     }
 
+    public List<Double[]> getAllLastLocations() {
+        MongoCursor<Location> othersQuery = locations().find().as(Location.class);
+        List<Double[]> resultList = new ArrayList();
+        for (Location loc : othersQuery) {
+            resultList.add(loc.loc1);
+        }
+        return resultList;
+    }
 
 }

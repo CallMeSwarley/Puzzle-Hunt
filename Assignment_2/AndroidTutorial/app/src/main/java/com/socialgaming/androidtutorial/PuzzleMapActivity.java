@@ -1,7 +1,6 @@
 package com.socialgaming.androidtutorial;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -36,6 +35,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Models.Dealer;
 import com.socialgaming.androidtutorial.Models.Location;
+import com.socialgaming.androidtutorial.Models.Markers;
 import com.socialgaming.androidtutorial.Models.Shop;
 import com.socialgaming.androidtutorial.Models.Weather;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
@@ -57,6 +57,7 @@ import java.util.concurrent.ExecutionException;
 //wurde angepasst
 
 public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private static final double DISTANCE_THRESHOLD = 10;
     private GoogleMap mMap;
     int MY_RESULT_FINE_LOCATION;
     private static String url = "http://api.openweathermap.org/data/2.5/weather?";
@@ -67,12 +68,14 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private TextView condDescr;
     private ImageView imgView;
     private final Handler handler = new Handler();
-    private static final int DELAY_LOCATION = 4000;
+    private static final int DELAY_LOCATION = 6000;
     private static final int DELAY_WEATHER = 5000;
     private LocationRequest mLocationRequest;
     private android.location.Location mLastLocation;
     private Marker mCurrLocationMarker;
     private FusedLocationProviderClient fusedLocationProviderClient;
+    private double distance = 0;
+
     private LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -85,6 +88,102 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 if (mCurrLocationMarker != null) {
                     mCurrLocationMarker.remove();
                 }
+            }
+        }
+    };
+    private OnSuccessListener<android.location.Location> locationSuccess = new OnSuccessListener<android.location.Location>() {
+        @Override
+        public void onSuccess(android.location.Location location) {
+            if (location != null) {
+                Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
+                if (mLastLocation != null) {
+                    distance += distance(mLastLocation, location);
+                }
+                System.out.println(distance);
+                if (distance > DISTANCE_THRESHOLD) {
+                    distance -= DISTANCE_THRESHOLD;
+                    //TODO:random puzzle piece
+
+                }
+                mLastLocation = location;
+
+                HTTPPoster locationUpdate = new HTTPPoster();
+                locationUpdate.execute("position",
+                        FirebaseAuth.getInstance().getUid(),
+                        String.valueOf(location.getLatitude()),
+                        String.valueOf(location.getLongitude()),
+                        "update");
+                JSONWeatherTask task = new JSONWeatherTask();
+                task.execute(String.valueOf(mLastLocation.getLatitude()), String.valueOf(mLastLocation.getLongitude()));
+                if (mCurrLocationMarker != null) {
+                    mCurrLocationMarker.remove();
+                }
+                //move map camera
+                LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+                Markers markers = new Markers();
+                HTTPGetter getMarkers = new HTTPGetter();
+                getMarkers.execute(
+                        "markers",
+                        FirebaseAuth.getInstance().getUid(),
+                        String.valueOf(bounds.southwest.latitude),
+                        String.valueOf(bounds.southwest.longitude),
+                        String.valueOf(bounds.northeast.latitude),
+                        String.valueOf(bounds.northeast.longitude),
+                        "getInBound");
+                try {
+                    markers = gson.fromJson(getMarkers.get(), Markers.class);
+                    System.out.println(gson.toJson(markers));
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Shop[] activeShops = markers.activeShops;
+                Shop[] visibleShops = markers.visibleShops;
+                Dealer[] activeDealers = markers.activeDealers;
+                Dealer[] visibleDealers = markers.visibleDealers;
+                if (activeDealers.length != 0 && activeShops.length != 0 && visibleDealers.length != 0 && visibleShops.length != 0)
+                    mMap.clear();
+                for (Shop s : activeShops) {
+                    Marker mark = mMap.addMarker(new MarkerOptions().position(new LatLng(s.lat, s.lon)).title(s.title + "\nActive").
+                            icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                    mark.setTag("AS");//=ActiveShop
+                }
+                for (Shop s : visibleShops) {
+                    Marker mark = mMap.addMarker(new MarkerOptions().position(new LatLng(s.lat, s.lon)).title(s.title + "\nActive").
+                            icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                    mark.setTag("VS");//=VisibleShop
+                }
+                for (Dealer d : activeDealers) {
+                    MarkerOptions marker = new MarkerOptions();
+                    marker.position(new LatLng(d.lat, d.lon));
+                    marker.title(d.title + "\nActive");
+                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                    mMap.addMarker(marker);
+                }
+                for (Dealer d : visibleDealers) {
+                    MarkerOptions marker = new MarkerOptions();
+                    marker.position(new LatLng(d.lat, d.lon));
+                    marker.title(d.title);
+                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                    mMap.addMarker(marker);
+                }
+                mMap.setOnMarkerClickListener(marker -> {
+                    System.out.println("++++++++++++++++++++++Marker click+++++++++++++++++++++++++++++++++");
+                    System.out.println("++++++++++++++++" + marker.getTag() + "++++++++++++++++++++++++++++++++");
+                    if (marker.getTag() != null && ((String) marker.getTag()).equals("AS")) {
+                        AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
+                        alertDialog.setTitle("Shopping");
+                        alertDialog.setMessage("Do you want to enter the shop?");
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
+                            Intent intent = new Intent(PuzzleMapActivity.this, PuzzleShopActivity.class);
+                            startActivity(intent);
+                            dialog.dismiss();
+                        });
+                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
+                        alertDialog.show();
+                        return true;
+                    } else
+                        return false;
+                });
             }
         }
     };
@@ -115,103 +214,19 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         condDescr = findViewById(R.id.condDescr);
         imgView = findViewById(R.id.condIcon);
         //task.execute(new String[]{city})
+        if (ContextCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(PuzzleMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_RESULT_FINE_LOCATION);
+        }
         handler.postDelayed(new Runnable() {
             public void run() {
                 System.out.println("Location Handler"); // Do your work here
-                if (ActivityCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
+                if (ContextCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(PuzzleMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_RESULT_FINE_LOCATION);
                 }
-                fusedLocationProviderClient.getLastLocation().addOnSuccessListener(PuzzleMapActivity.this, new OnSuccessListener<android.location.Location>() {
-                    @Override
-                    public void onSuccess(android.location.Location location) {
-                        if (location != null) {
-                            Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
-                            mLastLocation = location;
-                            if (mCurrLocationMarker != null) {
-                                mCurrLocationMarker.remove();
-                            }
-                            //move map camera
-                            LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-                            Shop[] activeShops = getActiveShops(bounds);
-                            Shop[] visibleShops = getVisibleShops(bounds);
-                            Dealer[] activeDealers = getActiveDealers(bounds);
-                            Dealer[] visibleDealers = getVisibleDealers(bounds);
-                            if (activeDealers.length != 0 && activeShops.length != 0 && visibleDealers.length != 0 && visibleShops.length != 0)
-                                mMap.clear();
-                            for (Shop s : activeShops) {
-                                Marker mark=mMap.addMarker(new MarkerOptions().position(new LatLng(s.lat, s.lon)).title(s.title + "\nActive").
-                                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-                                mark.setTag("AS");//=ActiveShop
-                            }
-                            for (Shop s : visibleShops) {
-                                Marker mark=mMap.addMarker(new MarkerOptions().position(new LatLng(s.lat, s.lon)).title(s.title + "\nActive").
-                                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                                mark.setTag("VS");//=VisibleShop
-                            }
-                            for (Dealer d : activeDealers) {
-                                MarkerOptions marker = new MarkerOptions();
-                                marker.position(new LatLng(d.lat, d.lon));
-                                marker.title(d.title + "\nActive");
-                                marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                                mMap.addMarker(marker);
-                            }
-                            for (Dealer d : visibleDealers) {
-                                MarkerOptions marker = new MarkerOptions();
-                                marker.position(new LatLng(d.lat, d.lon));
-                                marker.title(d.title);
-                                marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                                mMap.addMarker(marker);
-                            }
-                            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                                @Override
-                                public boolean onMarkerClick(Marker marker) {
-                                    System.out.println("++++++++++++++++++++++Marker click+++++++++++++++++++++++++++++++++");
-                                    System.out.println("++++++++++++++++"+marker.getTag()+"++++++++++++++++++++++++++++++++");
-                                    if (marker.getTag()!=null&& ((String) marker.getTag()).equals("AS")) {
-                                        AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
-                                        alertDialog.setTitle("Shopping");
-                                        alertDialog.setMessage("Do you want to enter the shop?");
-                                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                Intent intent = new Intent(PuzzleMapActivity.this, PuzzleShopActivity.class);
-                                                startActivity(intent);
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                        alertDialog.show();
-                                        return true;
-                                    } else
-                                        return false;
-                                }
-                            });
-                        }
-                    }
-                });
+                fusedLocationProviderClient.getLastLocation().addOnSuccessListener(PuzzleMapActivity.this, locationSuccess);
                 handler.postDelayed(this, PuzzleMapActivity.DELAY_LOCATION);
             }
         }, PuzzleMapActivity.DELAY_LOCATION);
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                System.out.println("Weather handler!"); // Do your work here
-                JSONWeatherTask task = new JSONWeatherTask();
-                task.execute(String.valueOf(mLastLocation.getLatitude()), String.valueOf(mLastLocation.getLongitude()));
-                handler.postDelayed(this, PuzzleMapActivity.DELAY_WEATHER);
-            }
-        }, PuzzleMapActivity.DELAY_WEATHER);
     }
 
     private Dealer[] getActiveDealers(LatLngBounds bounds) {
@@ -226,14 +241,12 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 "getActive"
         );
 
-        String activeDealers = null;
+        String activeDealers;
         try {
             activeDealers = getActiveDealers.get();
             System.out.println("activeDealers:\t" + activeDealers);
             return gson.fromJson(activeDealers, Dealer[].class);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -256,9 +269,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
             String visibleDealers = getVisibleDealers.get();
             System.out.println("visibleDealers:\t" + visibleDealers);
             return gson.fromJson(visibleDealers, Dealer[].class);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         return new Dealer[0];
@@ -279,9 +290,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
             String activeShops = getActiveShops.get();
             System.out.println("activeShops:\t" + activeShops);
             return gson.fromJson(activeShops, Shop[].class);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         return new Shop[0];
@@ -302,9 +311,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
             String visibleShops = getVisibleShops.get();
             System.out.println("visibleShops:\t" + visibleShops);
             return gson.fromJson(visibleShops, Shop[].class);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         return new Shop[0];
@@ -329,33 +336,12 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-       /* LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-*/
         if (ContextCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(PuzzleMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_RESULT_FINE_LOCATION);
         } else {
             mMap.setMyLocationEnabled(true);
-            if (mMap != null) {
-                mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-                    @Override
-                    public void onMyLocationChange(android.location.Location location) {
-                        LatLng user = new LatLng(location.getLatitude(), location.getLongitude());
-                        new HTTPPoster().execute(
-                                "position",
-                                FirebaseAuth.getInstance().getUid(),
-                                "" + user.latitude,
-                                "" + user.longitude,
-                                "update");
-                        mLastLocation = location;
-                    }
-                });
-            }
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(PuzzleMapActivity.this, locationSuccess);
         }
-
     }
 
     public String getWeatherDataWithCity(String location) {
@@ -370,12 +356,12 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
             con.connect();
 
             // Let's read the response
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             is = con.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String line = null;
+            String line;
             while ((line = br.readLine()) != null)
-                buffer.append(line + "\r\n");
+                buffer.append(line).append("\r\n");
 
             is.close();
             con.disconnect();
@@ -385,11 +371,11 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         } finally {
             try {
                 is.close();
-            } catch (Throwable t) {
+            } catch (Throwable ignored) {
             }
             try {
                 con.disconnect();
-            } catch (Throwable t) {
+            } catch (Throwable ignored) {
             }
         }
 
@@ -409,12 +395,12 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
             con.connect();
 
             // Let's read the response
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             is = con.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String line = null;
+            String line;
             while ((line = br.readLine()) != null)
-                buffer.append(line + "\r\n");
+                buffer.append(line).append("\r\n");
 
             is.close();
             con.disconnect();
@@ -424,11 +410,11 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         } finally {
             try {
                 is.close();
-            } catch (Throwable t) {
+            } catch (Throwable ignored) {
             }
             try {
                 con.disconnect();
-            } catch (Throwable t) {
+            } catch (Throwable ignored) {
             }
         }
 
@@ -441,7 +427,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         @Override
         protected Weather doInBackground(String... params) {
             Weather weather = new Weather();
-            String data = "";
+            String data;
             if (params.length > 1) {
                 data = (getWeatherDataWithLatAndLon(params[0], params[1]));
             } else {
@@ -483,18 +469,20 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         //customized text for each weather condition
         private String getInfoText(String condition) {
-            if (condition.equals("Clear")) {
-                return "Enjoy the beautiful day outside!";
-            } else if (condition.equals("Rain") || condition.equals("Drizzle")) {
-                return "Don't get wet, stay inside!";
-            } else if (condition.equals("Clouds")) {
-                return "Get your border together now!";
-            } else if (condition.equals("Snow")) {
-                return "Where did all the color go?";
-            } else if (condition.equals("Thunderstorm")) {
-                return "Stay safe and puzzle at home!";
-            } else {
-                return "Keep your eyes open!";
+            switch (condition) {
+                case "Clear":
+                    return "Enjoy the beautiful day outside!";
+                case "Rain":
+                case "Drizzle":
+                    return "Don't get wet, stay inside!";
+                case "Clouds":
+                    return "Get your border together now!";
+                case "Snow":
+                    return "Where did all the color go?";
+                case "Thunderstorm":
+                    return "Stay safe and puzzle at home!";
+                default:
+                    return "Keep your eyes open!";
             }
             //TODO change spawn of puzzles based on weather conditions
         }
@@ -534,8 +522,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
 
         private JSONObject getObject(String tagName, JSONObject jObj) throws JSONException {
-            JSONObject subObj = jObj.getJSONObject(tagName);
-            return subObj;
+            return jObj.getJSONObject(tagName);
         }
 
         private String getString(String tagName, JSONObject jObj) throws JSONException {
@@ -552,5 +539,21 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     }
 
+    private double distance(android.location.Location loc1, android.location.Location loc2) {
+
+        double radLon1 = Math.toRadians(loc1.getLongitude());
+        double radLon2 = Math.toRadians(loc2.getLongitude());
+        double radLat1 = Math.toRadians(loc1.getLatitude());
+        double radLat2 = Math.toRadians(loc2.getLatitude());
+        double dlon = radLon2 - radLon1;
+        double dlat = radLat2 - radLat1;
+        double a = Math.pow(Math.sin(dlat / 2), 2)
+                + Math.cos(radLat1) * Math.cos(radLat2)
+                * Math.pow(Math.sin(dlon / 2), 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double r = 6371e3;
+
+        return (c * r);
+    }
 
 }

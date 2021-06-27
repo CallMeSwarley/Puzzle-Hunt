@@ -9,6 +9,7 @@ public class Dealer {
     public Double lat;
     public Double lon;
     public Long range;
+    public Long despawnAt;
 
     public Dealer() {
     }
