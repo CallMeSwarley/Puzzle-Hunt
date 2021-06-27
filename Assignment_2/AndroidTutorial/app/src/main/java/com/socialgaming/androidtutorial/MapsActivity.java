@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 
 import androidx.appcompat.app.AlertDialog;
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
@@ -38,6 +40,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -62,6 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 */
+
         if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_RESULT_FINE_LOCATION);
         } else {
@@ -135,18 +140,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     String loc22 = jsonLocation.getString("loc22");
                     String loc3 = jsonLocation.getString("loc3");
                     String loc32 = jsonLocation.getString("loc32");
-
+                    Marker marker;
                     if (!loc3.equals(" ")) {
                         LatLng location3 = new LatLng(Double.parseDouble(loc3), Double.parseDouble(loc32));
-                        mMap.addMarker(new MarkerOptions().position(location3).title("Third last position of " + userName));
+                        marker = mMap.addMarker(new MarkerOptions().position(location3).title("Third last position of " + userName));
                     }
                     if (!loc2.equals(" ")) {
                         LatLng location2 = new LatLng(Double.parseDouble(loc2), Double.parseDouble(loc22));
-                        mMap.addMarker(new MarkerOptions().position(location2).title("Second last position of " + userName));
+                        marker = mMap.addMarker(new MarkerOptions().position(location2).title("Second last position of " + userName));
                     }
                     if (!loc1.equals(" ")) {
                         LatLng location1 = new LatLng(Double.parseDouble(loc1), Double.parseDouble(loc12));
-                        mMap.addMarker(new MarkerOptions().position(location1).title("Last position of " + userName));
+                        marker = mMap.addMarker(new MarkerOptions().position(location1).title("Last position of " + userName));
                         //  mMap.moveCamera(CameraUpdateFactory.newLatLng(location1));
                     }
                 }

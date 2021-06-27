@@ -160,20 +160,26 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                                 marker.position(new LatLng(d.lat, d.lon));
                                 marker.title(d.title + "\nActive");
                                 marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                                mMap.addMarker(marker);
+                                Marker mark=mMap.addMarker(marker);
+                                mark.setTag("AD");//=ActiveDealer
                             }
                             for (Dealer d : visibleDealers) {
                                 MarkerOptions marker = new MarkerOptions();
                                 marker.position(new LatLng(d.lat, d.lon));
                                 marker.title(d.title);
                                 marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                                mMap.addMarker(marker);
+                                Marker mark=mMap.addMarker(marker);
+                                mark.setTag("VD");//=VisibleDealer
                             }
                             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                                 @Override
                                 public boolean onMarkerClick(Marker marker) {
                                     System.out.println("++++++++++++++++++++++Marker click+++++++++++++++++++++++++++++++++");
                                     System.out.println("++++++++++++++++"+marker.getTag()+"++++++++++++++++++++++++++++++++");
+                                    if(marker.getTag()!= null && marker.getTag().equals("AD")){
+                                        Intent intent = new Intent(PuzzleMapActivity.this, DealerActivity.class);
+                                        startActivity(intent);
+                                    }
                                     if (marker.getTag()!=null&& ((String) marker.getTag()).equals("AS")) {
                                         AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
                                         alertDialog.setTitle("Shopping");

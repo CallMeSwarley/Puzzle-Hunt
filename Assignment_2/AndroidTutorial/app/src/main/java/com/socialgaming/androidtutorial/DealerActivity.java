@@ -7,11 +7,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -57,12 +60,18 @@ public class DealerActivity extends AppCompatActivity {
 
     private RecyclerView playerTradeItems=null;
 
+    private ImageView wonPiece1;
+
+    private ImageView wonPiece2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dealer);
         selectPiece = findViewById(R.id.select_piece_button);
         gamblePiece = findViewById(R.id.play_button);
+        wonPiece1 = findViewById(R.id.imageView2);
+        wonPiece2 = findViewById(R.id.imageView3);
         TextView winText = findViewById(R.id.textView2);
         gamblePiece.setEnabled(false);
         playerTradeItems = findViewById(R.id.recyclerView2);
@@ -204,12 +213,22 @@ public class DealerActivity extends AppCompatActivity {
     }
 
     private void addRandomPiece(String id){
+
+
         int[] size = getSizeOfPuzzle(id);
+        int resId = this.getResources().getIdentifier(id, "drawable", this.getPackageName());
+        Drawable image = getResources().getDrawable(resId);
+        Bitmap returnedBitmap = ((BitmapDrawable) image).getBitmap();
+        Puzzle puzzle = new Puzzle(id, size[0], size[1], returnedBitmap);
+
+
         int randomX = new Random().nextInt(size[0]);
         int randomY = new Random().nextInt(size[1]);
-
+        wonPiece1.setImageBitmap(puzzle.getPuzzlePiece(randomX,randomY).getImage());
         int randomX2 = new Random().nextInt(size[0]);
         int randomY2 = new Random().nextInt(size[1]);
+
+        wonPiece2.setImageBitmap(puzzle.getPuzzlePiece(randomX2,randomY2).getImage());
         HTTPPoster get = new HTTPPoster();
         get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
 

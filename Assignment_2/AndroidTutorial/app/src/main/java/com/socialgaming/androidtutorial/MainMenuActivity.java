@@ -68,7 +68,7 @@ public class MainMenuActivity extends AppCompatActivity {
         leaderboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainMenuActivity.this, LeaderboardActivity.class);
+                Intent intent = new Intent(MainMenuActivity.this, DealerActivity.class);
                 startActivity(intent);
             }
         });
