@@ -20,7 +20,7 @@ GET	    /deployTest				                            controllers.HomeController.de
 GET     /user/:firebaseId/getNearbyUsers                    controllers.HomeController.getNearbyUsers(firebaseId:String)
 GET     /user/:firebaseId/getUser                           controllers.HomeController.getUser(firebaseId:String)
 GET     /user/:nickName/getUserByNickName                   controllers.HomeController.getUserByNickName(nickName:String)
-GET     /user/:firebaseId/getFriendList                     controllers.HomeController.getFrFiendList(firebaseId:String)
+GET     /user/:firebaseId/getFriendList                     controllers.HomeController.getFriendList(firebaseId:String)
 
 GET     /puzzle/:puzzleId/getPuzzle                         controllers.HomeController.getPuzzle(puzzleId:String)
 GET     /puzzle/getAll                                      controllers.HomeController.getAllPuzzles()

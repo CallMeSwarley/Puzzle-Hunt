@@ -1,6 +1,7 @@
 package models;
 
 
+import org.jongo.Find;
 import org.jongo.MongoCollection;
 import org.jongo.MongoCursor;
 
@@ -50,8 +51,13 @@ public class LocationsRepository {
         copy.loc1 = loc.loc1;
         copy.loc2 = loc.loc2;
         copy.loc3 = loc.loc3;
+        copy.hour = loc.hour;
+        copy.minute = loc.minute;
+        copy.second = loc.second;
+        copy.nano = loc.nano;
         return copy;
     }
+
 
     public String[] getNearbyUsers(String firebaseId) {
         Location userLocation = this.getLocation(firebaseId);
@@ -72,6 +78,12 @@ public class LocationsRepository {
             resultList.add(loc.loc1);
         }
         return resultList;
+    }
+
+    public void convertToNew() {
+        Find othersQuery = locations().find();
+
+
     }
 
 }

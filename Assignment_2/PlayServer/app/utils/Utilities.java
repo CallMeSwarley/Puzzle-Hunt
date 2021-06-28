@@ -13,7 +13,7 @@ public class Utilities {
         return Utilities.distance(latUser, lonUser, lat, lon) <= range;
     }
 
-    public static final double DISTANCE_THRESHOLD = 10;
+    public static final double DISTANCE_THRESHOLD = 50;
     public static final double maxVisibilityRange = 1400;
 
     //Source: https://www.geeksforgeeks.org/program-distance-two-points-earth/

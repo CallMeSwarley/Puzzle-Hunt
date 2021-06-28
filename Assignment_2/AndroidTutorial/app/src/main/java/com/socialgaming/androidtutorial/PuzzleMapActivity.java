@@ -52,6 +52,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 //Weather implementation idee: https://github.com/survivingwithandroid/Swa-app/blob/master/WeatherApp/src/com/survivingwithandroid/weatherapp/MainActivity.java,
@@ -101,7 +102,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     distance += distance(mLastLocation, location);
                 }
                 System.out.println(distance);
-                if (distance > DISTANCE_THRESHOLD) {
+                while(distance > DISTANCE_THRESHOLD) {
                     distance -= DISTANCE_THRESHOLD;
                     //TODO:random puzzle piece
 
@@ -141,7 +142,6 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 Shop[] visibleShops = markers.visibleShops;
                 Dealer[] activeDealers = markers.activeDealers;
                 Dealer[] visibleDealers = markers.visibleDealers;
-                if (activeDealers.length != 0 && activeShops.length != 0 && visibleDealers.length != 0 && visibleShops.length != 0)
                     mMap.clear();
                 for (Shop s : activeShops) {
                     Marker mark = mMap.addMarker(new MarkerOptions().position(new LatLng(s.lat, s.lon)).title(s.title + "\nActive").
@@ -165,6 +165,13 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     marker.position(new LatLng(d.lat, d.lon));
                     marker.title(d.title);
                     marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                    mMap.addMarker(marker);
+                }
+                for (Map.Entry<String, Double[]> entry : markers.nearbyUsers.entrySet()) {
+                    MarkerOptions marker = new MarkerOptions();
+                    marker.position(new LatLng(entry.getValue()[0], entry.getValue()[1]));
+                    marker.title(entry.getKey());
+                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
                     mMap.addMarker(marker);
                 }
                 mMap.setOnMarkerClickListener(marker -> {
@@ -224,85 +231,6 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 if (ContextCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(PuzzleMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_RESULT_FINE_LOCATION);
                 }
-                fusedLocationProviderClient.getLastLocation().addOnSuccessListener(PuzzleMapActivity.this, new OnSuccessListener<android.location.Location>() {
-                    @Override
-                    public void onSuccess(android.location.Location location) {
-                        if (location != null) {
-                            Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
-                            mLastLocation = location;
-                            if (mCurrLocationMarker != null) {
-                                mCurrLocationMarker.remove();
-                            }
-                            //move map camera
-                            LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-                            Shop[] activeShops = getActiveShops(bounds);
-                            Shop[] visibleShops = getVisibleShops(bounds);
-                            Dealer[] activeDealers = getActiveDealers(bounds);
-                            Dealer[] visibleDealers = getVisibleDealers(bounds);
-                            if (activeDealers.length != 0 && activeShops.length != 0 && visibleDealers.length != 0 && visibleShops.length != 0)
-                                mMap.clear();
-                            for (Shop s : activeShops) {
-                                Marker mark=mMap.addMarker(new MarkerOptions().position(new LatLng(s.lat, s.lon)).title(s.title + "\nActive").
-                                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-                                mark.setTag("AS");//=ActiveShop
-                            }
-                            for (Shop s : visibleShops) {
-                                Marker mark=mMap.addMarker(new MarkerOptions().position(new LatLng(s.lat, s.lon)).title(s.title + "\nActive").
-                                        icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                                mark.setTag("VS");//=VisibleShop
-                            }
-                            for (Dealer d : activeDealers) {
-                                MarkerOptions marker = new MarkerOptions();
-                                marker.position(new LatLng(d.lat, d.lon));
-                                marker.title(d.title + "\nActive");
-                                marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                                Marker mark=mMap.addMarker(marker);
-                                mark.setTag("AD");//=ActiveDealer
-                            }
-                            for (Dealer d : visibleDealers) {
-                                MarkerOptions marker = new MarkerOptions();
-                                marker.position(new LatLng(d.lat, d.lon));
-                                marker.title(d.title);
-                                marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                                Marker mark=mMap.addMarker(marker);
-                                mark.setTag("VD");//=VisibleDealer
-                            }
-                            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                                @Override
-                                public boolean onMarkerClick(Marker marker) {
-                                    System.out.println("++++++++++++++++++++++Marker click+++++++++++++++++++++++++++++++++");
-                                    System.out.println("++++++++++++++++"+marker.getTag()+"++++++++++++++++++++++++++++++++");
-                                    if(marker.getTag()!= null && marker.getTag().equals("AD")){
-                                        Intent intent = new Intent(PuzzleMapActivity.this, DealerActivity.class);
-                                        startActivity(intent);
-                                    }
-                                    if (marker.getTag()!=null&& ((String) marker.getTag()).equals("AS")) {
-                                        AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
-                                        alertDialog.setTitle("Shopping");
-                                        alertDialog.setMessage("Do you want to enter the shop?");
-                                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                Intent intent = new Intent(PuzzleMapActivity.this, PuzzleShopActivity.class);
-                                                startActivity(intent);
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                        alertDialog.show();
-                                        return true;
-                                    } else
-                                        return false;
-                                }
-                            });
-                        }
-                    }
-                });
                 fusedLocationProviderClient.getLastLocation().addOnSuccessListener(PuzzleMapActivity.this, locationSuccess);
                 handler.postDelayed(this, PuzzleMapActivity.DELAY_LOCATION);
             }
