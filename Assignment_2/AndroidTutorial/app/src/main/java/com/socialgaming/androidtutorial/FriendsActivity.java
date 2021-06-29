@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -95,6 +96,8 @@ public class FriendsActivity extends AppCompatActivity {
         TextView text2 = child.findViewById(R.id.friend_lvl_textView);
         Button viewFriendProfile = child.findViewById(R.id.view_profile_button);
         Button tradeWithFriend = child.findViewById(R.id.trade_button);
+        ImageView friendPic=child.findViewById(R.id.friend_pic_imageView);
+        friendPic.setImageResource(R.drawable.avatar);
         HTTPGetter getFriend = new HTTPGetter();
         getFriend.execute("user", friendID, "getUser");
         try {

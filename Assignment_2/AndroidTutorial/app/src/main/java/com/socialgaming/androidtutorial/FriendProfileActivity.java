@@ -42,7 +42,7 @@ public class FriendProfileActivity extends AppCompatActivity {
 
 
         final ImageView profilePic = findViewById(R.id.profile_pic_image);
-
+        profilePic.setImageResource(R.drawable.avatar);
 
         //final TextInputLayout idView = findViewById(R.id.id_textView);
         //final EditText id = idView.getEditText();
