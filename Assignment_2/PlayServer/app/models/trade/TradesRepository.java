@@ -49,13 +49,13 @@ public class TradesRepository {
 
     public Trade copy(Trade trade) {
         Trade copy = new Trade();
-        copy.playerTwoTradeItems = trade.playerTwoTradeItems;
+        copy.partnerTradeItems = trade.partnerTradeItems;
         copy.id = trade.id;
-        copy.playerTwoAccepted = trade.playerTwoAccepted;
-        copy.playerTwo = trade.playerTwo;
-        copy.playerOne = trade.playerOne;
-        copy.playerOneAccepted = trade.playerOneAccepted;
-        copy.playerOneTradeItems = trade.playerOneTradeItems;
+        copy.partnerAccepted = trade.partnerAccepted;
+        copy.partnerId = trade.partnerId;
+        copy.traderId = trade.traderId;
+        copy.traderAccepted = trade.traderAccepted;
+        copy.traderTradeItems = trade.traderTradeItems;
         copy.oneAccepted = trade.oneAccepted;
         copy.twoAccepted = trade.twoAccepted;
         return copy;

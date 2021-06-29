@@ -35,8 +35,8 @@ public class LastTradesRepository {
     public void insert(Trade trade) {
         LastTrade lastTrade = new LastTrade();
         lastTrade.id = trade.id;
-        lastTrade.playerOne = trade.playerOne;
-        lastTrade.playerTwo = trade.playerTwo;
+        lastTrade.playerOne = trade.traderId;
+        lastTrade.playerTwo = trade.partnerId;
         LocalDate now = LocalDate.now();
         lastTrade.dayOfYear = now.getDayOfYear();
         lastTrade.year = now.getYear();
@@ -58,7 +58,7 @@ public class LastTradesRepository {
     }
 
     public void log(Trade trade) {
-        LastTrade lastTrade = this.getLastTrade(trade.playerOne, trade.playerTwo);
+        LastTrade lastTrade = this.getLastTrade(trade.traderId, trade.partnerId);
         if (lastTrade == null) {
             insert(trade);
         } else {

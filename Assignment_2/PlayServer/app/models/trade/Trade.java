@@ -8,36 +8,36 @@ import java.util.Map;
 public class Trade {
     @JsonProperty("_id")
     public String id;
-    public String playerOne;
-    public String playerTwo;
-    public Map<String, int[][]> playerOneTradeItems;
-    public Map<String, int[][]> playerTwoTradeItems;
+    public String traderId;
+    public String partnerId;
+    public Map<String, int[][]> traderTradeItems;
+    public Map<String, int[][]> partnerTradeItems;
     public boolean oneAccepted;
     public boolean twoAccepted;
-    public Offer playerOneAccepted;
-    public Offer playerTwoAccepted;
+    public Offer traderAccepted;
+    public Offer partnerAccepted;
 
     public Trade() {
         this.id = "";
-        this.playerOneTradeItems = new HashMap<>();
-        this.playerTwoTradeItems = new HashMap<>();
+        this.traderTradeItems = new HashMap<>();
+        this.partnerTradeItems = new HashMap<>();
     }
 
     public Trade(String firebaseId) {
         this.id = firebaseId;
-        this.playerOneTradeItems = new HashMap<>();
-        this.playerTwoTradeItems = new HashMap<>();
+        this.traderTradeItems = new HashMap<>();
+        this.partnerTradeItems = new HashMap<>();
     }
 
     public String getId() {
         return id;
     }
 
-    public Map<String, int[][]> getPlayerOneTradeItems() {
-        return playerOneTradeItems;
+    public Map<String, int[][]> getTraderTradeItems() {
+        return traderTradeItems;
     }
 
-    public Map<String, int[][]> getPlayerTwoTradeItems() {
-        return playerTwoTradeItems;
+    public Map<String, int[][]> getPartnerTradeItems() {
+        return partnerTradeItems;
     }
 }
