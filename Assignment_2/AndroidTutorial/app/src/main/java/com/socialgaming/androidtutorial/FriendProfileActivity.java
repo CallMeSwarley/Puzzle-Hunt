@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -34,6 +35,7 @@ public class FriendProfileActivity extends AppCompatActivity {
     public static String description = "";
     public static String friendshipID = "";
     public static int friendshipLevelInt = 0;
+    public static int profilePicId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +44,10 @@ public class FriendProfileActivity extends AppCompatActivity {
 
 
         final ImageView profilePic = findViewById(R.id.profile_pic_image);
-        profilePic.setImageResource(R.drawable.avatar);
+        if (profilePicId > 0)
+            profilePic.setImageResource(profilePicId);
+        else
+            profilePic.setImageResource(R.drawable.avatar);
 
         //final TextInputLayout idView = findViewById(R.id.id_textView);
         //final EditText id = idView.getEditText();
@@ -86,27 +91,27 @@ public class FriendProfileActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Random rand = new Random();
-                            String PuzzleId="";
-                            int x=0;
-                            int y=0;
+                            String PuzzleId = "";
+                            int x = 0;
+                            int y = 0;
                             //Random Puzzlepiece zum senden holen
-                            HTTPGetter getPuzzles=new HTTPGetter();
-                            getPuzzles.execute("puzzle","getAll");
-                            try{
-                                String puzzleResult=getPuzzles.get();
+                            HTTPGetter getPuzzles = new HTTPGetter();
+                            getPuzzles.execute("puzzle", "getAll");
+                            try {
+                                String puzzleResult = getPuzzles.get();
                                 if (!puzzleResult.equals("{ }")) {
-                                    PuzzleModel[] puzzles=gson.fromJson(puzzleResult, PuzzleModel[].class);
-                                    int randId=rand.nextInt(puzzles.length);
+                                    PuzzleModel[] puzzles = gson.fromJson(puzzleResult, PuzzleModel[].class);
+                                    int randId = rand.nextInt(puzzles.length);
                                     PuzzleId = puzzles[randId].id;
-                                    x=rand.nextInt(puzzles[randId].piecesCountHorizontal);
-                                    y=rand.nextInt(puzzles[randId].piecesCountVertical);
+                                    x = rand.nextInt(puzzles[randId].piecesCountHorizontal);
+                                    y = rand.nextInt(puzzles[randId].piecesCountVertical);
                                 }
-                            }catch (ExecutionException | InterruptedException e) {
+                            } catch (ExecutionException | InterruptedException e) {
                                 e.printStackTrace();
                             }
                             //Höheres fs-lvl=mehr inhalt im gift
                             HTTPPoster post = new HTTPPoster();
-                            post.execute("gifts", FriendProfileActivity.friendshipID, FirebaseAuth.getInstance().getUid(), PuzzleId, "" + x, "" + y, ""+FriendProfileActivity.friendshipLevelInt, "sendGift");
+                            post.execute("gifts", FriendProfileActivity.friendshipID, FirebaseAuth.getInstance().getUid(), PuzzleId, "" + x, "" + y, "" + FriendProfileActivity.friendshipLevelInt, "sendGift");
                             try {
                                 String sendGiftResult = post.get();
                                 if (sendGiftResult.equals("{ }")) {
@@ -114,7 +119,22 @@ public class FriendProfileActivity extends AppCompatActivity {
                                 } else if (sendGiftResult.equals("Already sent gift in the last 24 hours")) {
                                     Toast.makeText(FriendProfileActivity.this, "You can only send a gift every 24 hours", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(FriendProfileActivity.this, "Gift was sent successfully", Toast.LENGTH_SHORT).show();
+                                    HTTPGetter get = new HTTPGetter();
+                                    get.execute("user", FirebaseAuth.getInstance().getUid(), "getUser");
+                                    try {
+                                        String getUserResult = get.get();
+                                        if (!getUserResult.equals("{ }")) {
+                                            User user = gson.fromJson(getUserResult, User.class);
+                                            user.xp += 3;
+                                            new HTTPPoster().execute(
+                                                    "user",
+                                                    Uri.encode(gson.toJson(user, User.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
+                                                    "update");
+                                        }
+                                    } catch (ExecutionException | InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    Toast.makeText(FriendProfileActivity.this, "Gift was sent successfully! Earned +3XP", Toast.LENGTH_SHORT).show();
                                 }
                             } catch (ExecutionException | InterruptedException e) {
                                 e.printStackTrace();

@@ -18,6 +18,7 @@ import com.socialgaming.androidtutorial.Models.FriendshipRank;
 import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 public class FriendsActivity extends AppCompatActivity {
@@ -97,7 +98,15 @@ public class FriendsActivity extends AppCompatActivity {
         Button viewFriendProfile = child.findViewById(R.id.view_profile_button);
         Button tradeWithFriend = child.findViewById(R.id.trade_button);
         ImageView friendPic=child.findViewById(R.id.friend_pic_imageView);
-        friendPic.setImageResource(R.drawable.avatar);
+        int randomOfTwoInts = new Random().nextBoolean() ? 1 : 2;
+        int picID=-1;
+        if(randomOfTwoInts==1){
+            friendPic.setImageResource(R.drawable.profile_pic1);
+            picID=R.drawable.profile_pic1;
+        }else {
+            friendPic.setImageResource(R.drawable.profile_pic2);
+            picID=R.drawable.profile_pic2;
+        }
         HTTPGetter getFriend = new HTTPGetter();
         getFriend.execute("user", friendID, "getUser");
         try {
@@ -109,6 +118,7 @@ public class FriendsActivity extends AppCompatActivity {
                 else
                     text.append(friend.id);
                 text2.append(fsLvlStr);
+                int finalPicID = picID;
                 viewFriendProfile.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -119,6 +129,7 @@ public class FriendsActivity extends AppCompatActivity {
                         FriendProfileActivity.description = friend.description;
                         FriendProfileActivity.friendshipID = fsID;
                         FriendProfileActivity.friendshipLevelInt = fsLvlInt;
+                        FriendProfileActivity.profilePicId= finalPicID;
                         Intent intent = new Intent(FriendsActivity.this, FriendProfileActivity.class);
                         startActivity(intent);
                     }
