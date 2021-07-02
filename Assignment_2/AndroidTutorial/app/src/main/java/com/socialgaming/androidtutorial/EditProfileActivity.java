@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -47,14 +47,23 @@ public class EditProfileActivity extends AppCompatActivity {
                 nickNameEdit.setText(user.nickName);
                 descriptionEdit.setText(user.description);
             }
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         final Button saveChanges = findViewById(R.id.saveChanges);
         saveChanges.setOnClickListener(v -> {
-            user.nickName = nickNameEdit.getText().toString();
+            String preferred = nickNameEdit.getText().toString();
+            HTTPGetter check = new HTTPGetter();
+            check.execute("check", preferred, "checkNickname");
+            try {
+                if (!gson.fromJson(check.get(), Boolean.class)) {
+                    Toast.makeText(EditProfileActivity.this, "Nickname is already taken, please choose another one", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
+            user.nickName = preferred;
             user.description = descriptionEdit.getText().toString();
             new HTTPPoster().execute(
                     "user",

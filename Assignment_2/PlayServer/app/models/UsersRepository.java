@@ -32,7 +32,10 @@ public class UsersRepository {
     }
 
     public User getUser(String id) {
-        return users().findOne("{_id: #}", id).as(User.class);
+        User user = users().findOne("{nickName:#}", id).as(User.class);
+        if (user == null)
+            return users().findOne("{_id: #}", id).as(User.class);
+        return user;
     }
 
     public User getUserByNickName(String nickName) {
