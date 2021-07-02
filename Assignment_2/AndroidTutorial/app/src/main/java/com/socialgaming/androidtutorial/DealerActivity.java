@@ -79,7 +79,7 @@ public class DealerActivity extends AppCompatActivity {
 
         // Player 1 list of pieces recyclerView
         playerTradeItems.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
-        playerOneAdapter = new PieceListAdapter(playerTradeItems, this, playerOneItemList, false);
+        playerOneAdapter = new PieceListAdapter(playerTradeItems, this, playerOneItemList);
         playerTradeItems.setAdapter(playerOneAdapter);
 
         selectPiece.setOnClickListener(new View.OnClickListener() {
@@ -113,7 +113,7 @@ public class DealerActivity extends AppCompatActivity {
         popUpItemList.clear();
         fetchPieces();
         playerTradeItems.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
-        playerOneAdapter = new PieceListAdapter(playerTradeItems, this, playerOneItemList, false);
+        playerOneAdapter = new PieceListAdapter(playerTradeItems, this, playerOneItemList);
         playerTradeItems.setAdapter(playerOneAdapter);
     }
 
@@ -130,7 +130,7 @@ public class DealerActivity extends AppCompatActivity {
         piecesView.setLayoutManager(gridLayoutManager);
 
         // Adapter
-        popUpAdapter = new PieceListAdapter(piecesView, this, popUpItemList, true);
+        popUpAdapter = new PieceListAdapter(piecesView, this, popUpItemList);
         piecesView.setAdapter(popUpAdapter);
 
         dialogBuilder.setView(addPiecesPopupView);

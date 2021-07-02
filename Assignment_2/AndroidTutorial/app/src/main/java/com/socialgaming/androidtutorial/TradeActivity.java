@@ -53,7 +53,7 @@ public class TradeActivity extends AppCompatActivity {
     // Popup
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
-    private RecyclerView piecesView;
+    private RecyclerView tradePopupRecyclerView;
     private Button btnClose;
     private List<PieceViewItem> popUpItemList = new ArrayList<>();
     private PieceListAdapter popUpAdapter;
@@ -87,12 +87,12 @@ public class TradeActivity extends AppCompatActivity {
 
         // Players list of pieces recyclerView
         playerTradeItems.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
-        playerAdapter = new PieceListAdapter(playerTradeItems, this, playerItemList, false);
+        playerAdapter = new PieceListAdapter(playerTradeItems, this, playerItemList);
         playerTradeItems.setAdapter(playerAdapter);
 
         // Partners list of pieces recyclerView
         partnerTradeItems.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
-        partnerAdapter = new PieceListAdapter(partnerTradeItems, this, partnerItemList, false);
+        partnerAdapter = new PieceListAdapter(partnerTradeItems, this, partnerItemList);
         partnerTradeItems.setAdapter(partnerAdapter);
 
         // Setup trade in database
@@ -193,32 +193,32 @@ public class TradeActivity extends AppCompatActivity {
                     playerTradeItems.setEnabled(false);
 
                     if(role == Role.Trader){
-                        trade.oneAccepted = true;
-                        trade.traderAccepted = new Offer();
+                        trade.playerAccepted = true;
+                        trade.traderOffer = new Offer();
 
                         if(playerItemList.size() > 0){
                             PieceViewItem piece = playerItemList.get(0);
-                            trade.traderAccepted.setId = piece.getSetId();
-                            trade.traderAccepted.x = piece.getHorizontalPosition();
-                            trade.traderAccepted.y = piece.getVerticalPosition();
+                            trade.traderOffer.setId = piece.getSetId();
+                            trade.traderOffer.x = piece.getHorizontalPosition();
+                            trade.traderOffer.y = piece.getVerticalPosition();
                         }
 
                         new HTTPPoster().execute(
                                 "trade",
                                 trade.getId(),
                                 FirebaseAuth.getInstance().getUid(),
-                                Uri.encode(gson.toJson(trade.traderAccepted, Offer.class)),
+                                Uri.encode(gson.toJson(trade.traderOffer, Offer.class)),
                                 "accept");
                     }
                     else if(role == Role.Partner){
-                        trade.twoAccepted = true;
-                        trade.partnerAccepted = new Offer();
+                        trade.partnerAccepted = true;
+                        trade.partnerOffer = new Offer();
 
                         if(playerItemList.size() > 0){
                             PieceViewItem piece = playerItemList.get(0);
-                            trade.partnerAccepted.setId = piece.getSetId();
-                            trade.partnerAccepted.x = piece.getHorizontalPosition();
-                            trade.partnerAccepted.y = piece.getVerticalPosition();
+                            trade.partnerOffer.setId = piece.getSetId();
+                            trade.partnerOffer.x = piece.getHorizontalPosition();
+                            trade.partnerOffer.y = piece.getVerticalPosition();
                         }
 
                         // /trade/:tradeId/:firebaseId/:offer/accept
@@ -226,7 +226,7 @@ public class TradeActivity extends AppCompatActivity {
                                 "trade",
                                 trade.getId(),
                                 FirebaseAuth.getInstance().getUid(),
-                                Uri.encode(gson.toJson(trade.partnerAccepted, Offer.class)),
+                                Uri.encode(gson.toJson(trade.partnerOffer, Offer.class)),
                                 "accept");
                     }
 
@@ -258,15 +258,15 @@ public class TradeActivity extends AppCompatActivity {
 
         // View
         View addPiecesPopupView = getLayoutInflater().inflate(R.layout.trade_popup, null);
-        piecesView = addPiecesPopupView.findViewById(R.id.add_pieces_recyclerView);
+        tradePopupRecyclerView = addPiecesPopupView.findViewById(R.id.add_pieces_recyclerView);
         btnClose = addPiecesPopupView.findViewById(R.id.close_button);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false);
-        piecesView.setLayoutManager(gridLayoutManager);
+        tradePopupRecyclerView.setLayoutManager(gridLayoutManager);
 
         // Adapter
-        popUpAdapter = new PieceListAdapter(piecesView, this, popUpItemList, true);
-        piecesView.setAdapter(popUpAdapter);
+        popUpAdapter = new PieceListAdapter(tradePopupRecyclerView, this, popUpItemList);
+        tradePopupRecyclerView.setAdapter(popUpAdapter);
 
         dialogBuilder.setView(addPiecesPopupView);
         dialog = dialogBuilder.create();
@@ -282,22 +282,19 @@ public class TradeActivity extends AppCompatActivity {
     }
 
     public void addPieceToTradeView(int bindingAdapterPosition) {
-//        if(playerItemList.size() >= TRADE_PIECE_AMOUNT) {
-//            Toast.makeText(this, "You are only allowed to trade " + TRADE_PIECE_AMOUNT + (TRADE_PIECE_AMOUNT == 1 ? " piece." : " pieces."), Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-
         playerItemList.add(popUpItemList.remove(bindingAdapterPosition));
         playerAdapter.notifyDataSetChanged();
         popUpAdapter.notifyDataSetChanged();
 
-        if (popUpItemList.isEmpty())
+        if (popUpItemList.isEmpty()){
+            updateDatabase();
             dialog.dismiss();
+        }
     }
 
     public void removePieceFromTradeView(int bindingAdapterPosition){
-        if(trade.oneAccepted){
-            Toast.makeText(this, "You accepted the trade, you can't change your offer anymore", Toast.LENGTH_LONG).show();
+        if(trade.playerAccepted){
+            Toast.makeText(this, "You accepted the trade, you can't change your offers anymore", Toast.LENGTH_LONG).show();
             return;
         }
 

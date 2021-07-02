@@ -70,10 +70,10 @@ public class TradeController extends Controller {
         }
         trade.traderTradeItems = new HashMap<>();
         trade.partnerTradeItems = new HashMap<>();
-        trade.oneAccepted = false;
-        trade.twoAccepted = false;
-        trade.traderAccepted = new Offer();
-        trade.partnerAccepted = new Offer();
+        trade.traderAccepted = false;
+        trade.partnerAccepted = false;
+        trade.traderOffer = new Offer();
+        trade.partnerOffer = new Offer();
         trades.insert(trade);
         return ok(gson.toJson(trade));
     }
@@ -96,18 +96,18 @@ public class TradeController extends Controller {
     public Result accept(String tradeId, String firebaseId, String offer) {
         Trade open = trades.getTradeById(tradeId);
         if (open.traderId.equals(firebaseId)) {
-            open.oneAccepted = true;
-            open.traderAccepted = gson.fromJson(offer, Offer.class);
+            open.traderAccepted = true;
+            open.traderOffer = gson.fromJson(offer, Offer.class);
         } else {
-            open.twoAccepted = true;
-            open.partnerAccepted = gson.fromJson(offer, Offer.class);
+            open.partnerAccepted = true;
+            open.partnerOffer = gson.fromJson(offer, Offer.class);
         }
-        if (open.oneAccepted && open.twoAccepted) {
+        if (open.traderAccepted && open.partnerAccepted) {
             lastTrades.log(open);
             Inventory inventoryOne = inventories.getInventory(open.traderId);
             Inventory inventoryTwo = inventories.getInventory(open.partnerId);
-            Offer acceptedByTwo = open.partnerAccepted;
-            Offer acceptedByOne = open.traderAccepted;
+            Offer acceptedByTwo = open.partnerOffer;
+            Offer acceptedByOne = open.traderOffer;
             //Adjust inventory of playerOne
             inventoryOne.sets.get(acceptedByTwo.setId)[acceptedByTwo.x][acceptedByTwo.y] -= 1;
             if (inventoryOne.sets.containsKey(acceptedByOne.setId)) {

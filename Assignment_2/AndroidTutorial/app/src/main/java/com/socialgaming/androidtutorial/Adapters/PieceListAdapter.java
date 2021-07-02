@@ -1,17 +1,13 @@
 package com.socialgaming.androidtutorial.Adapters;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,24 +26,20 @@ class PieceItemViewHolder extends RecyclerView.ViewHolder{
     public ImageView image;
     public TextView amount;
 
-    public PieceItemViewHolder(@NonNull @NotNull View itemView, boolean isPopUpRecView, Activity activity) {
+    public PieceItemViewHolder(@NonNull @NotNull View itemView, Activity activity, RecyclerView view) {
         super(itemView);
 
         image = itemView.findViewById(R.id.pieces_imageView);
         amount = itemView.findViewById(R.id.amount_textView);
 
+
+        /* OnClickEvents for recyclerViews can be added here
+         * 1. Determine the Activity your RecyclerView is in
+         * 2. Choose the right one with the id
+         */
         if (activity instanceof TradeActivity) {
 
-            // For the pop up recyclerview
-            if (isPopUpRecView) {
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ((TradeActivity) activity).addPieceToTradeView(getBindingAdapterPosition());
-                    }
-                });
-            }
-            else {
+            if(view.getId() == R.id.player1_trade_items_recyclerView) {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -55,9 +47,18 @@ class PieceItemViewHolder extends RecyclerView.ViewHolder{
                     }
                 });
             }
-        }else if(activity instanceof DealerActivity){
+            else if (view.getId() == R.id.add_pieces_recyclerView){
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((TradeActivity) activity).addPieceToTradeView(getBindingAdapterPosition());
+                    }
+                });
+            }
+        }
+        else if(activity instanceof DealerActivity){
             // For the pop up recyclerview
-            if (isPopUpRecView) {
+            if (view.getId() == R.id.add_pieces_recyclerView) {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -65,7 +66,7 @@ class PieceItemViewHolder extends RecyclerView.ViewHolder{
                     }
                 });
             }
-            else {
+            else if(view.getId() == R.id.recyclerView2) {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -84,14 +85,16 @@ public class PieceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     boolean isLoading;
     boolean createOnClickEvent;
     Activity activity;
+    RecyclerView recyclerView;
     List<PieceViewItem> items;
     int visibleThreshold = 5;
     int lastVisibleItem, totalItemCount;
 
-    public PieceListAdapter(RecyclerView recyclerView, Activity activity, List<PieceViewItem> items, boolean createOnClickEvent) {
+    public PieceListAdapter(RecyclerView recyclerView, Activity activity, List<PieceViewItem> items) {
         this.activity = activity;
         this.items = items;
         this.createOnClickEvent = createOnClickEvent;
+        this.recyclerView = recyclerView;
 
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -129,11 +132,11 @@ public class PieceListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         if(viewType == VIEW_TYPE_ITEM){
             View view = LayoutInflater.from(activity).inflate(R.layout.piece_card_field, parent, false);
-            return new PieceItemViewHolder(view, createOnClickEvent, activity);
+            return new PieceItemViewHolder(view, activity, recyclerView);
         }
         else if (viewType == VIEW_TYPE_LOADING) {
             View view = LayoutInflater.from(activity).inflate(R.layout.piece_card_field, parent, false);
-            return new PieceItemViewHolder(view, createOnClickEvent, activity);
+            return new PieceItemViewHolder(view, activity, recyclerView);
         }
 
         return null;

@@ -42,7 +42,7 @@ public class PiecesActivity extends AppCompatActivity {
         pieceView.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
 
         // Adapter
-        adapter = new PieceListAdapter(pieceView, this, viewItems, false);
+        adapter = new PieceListAdapter(pieceView, this, viewItems);
         pieceView.setAdapter(adapter);
 
         // Fetch Data

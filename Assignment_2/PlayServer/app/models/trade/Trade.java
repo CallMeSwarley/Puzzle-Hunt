@@ -12,10 +12,10 @@ public class Trade {
     public String partnerId;
     public Map<String, int[][]> traderTradeItems;
     public Map<String, int[][]> partnerTradeItems;
-    public boolean oneAccepted;
-    public boolean twoAccepted;
-    public Offer traderAccepted;
-    public Offer partnerAccepted;
+    public boolean traderAccepted;
+    public boolean partnerAccepted;
+    public Offer traderOffer;
+    public Offer partnerOffer;
 
     public Trade() {
         this.id = "";
