@@ -24,9 +24,9 @@ public class TradesRepository {
     }
 
     public Trade getTrade(String firebaseId) {
-        Trade result = trades().findOne("{playerOne:#}", firebaseId).as(Trade.class);
+        Trade result = trades().findOne("{traderId:#}", firebaseId).as(Trade.class);
         if (result == null)
-            result = trades().findOne("{playerTwo:#}", firebaseId).as(Trade.class);
+            result = trades().findOne("{partnerId:#}", firebaseId).as(Trade.class);
         return result;
     }
 
