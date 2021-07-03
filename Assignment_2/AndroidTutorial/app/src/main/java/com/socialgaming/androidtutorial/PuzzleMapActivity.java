@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,6 +39,8 @@ import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Models.Dealer;
 import com.socialgaming.androidtutorial.Models.Location;
 import com.socialgaming.androidtutorial.Models.Markers;
+import com.socialgaming.androidtutorial.Models.Puzzle;
+import com.socialgaming.androidtutorial.Models.PuzzleModel;
 import com.socialgaming.androidtutorial.Models.Shop;
 import com.socialgaming.androidtutorial.Models.Weather;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
@@ -53,6 +57,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 //Weather implementation idee: https://github.com/survivingwithandroid/Swa-app/blob/master/WeatherApp/src/com/survivingwithandroid/weatherapp/MainActivity.java,
@@ -105,7 +110,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 while(distance > DISTANCE_THRESHOLD) {
                     distance -= DISTANCE_THRESHOLD;
                     //TODO:random puzzle piece
-
+                    addRandomPiece("meme");
                 }
                 mLastLocation = location;
 
@@ -158,14 +163,16 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     marker.position(new LatLng(d.lat, d.lon));
                     marker.title(d.title + "\nActive");
                     marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                    mMap.addMarker(marker);
+                    Marker mark = mMap.addMarker(marker);
+                    mark.setTag("AD");//=ActiveDealer
                 }
                 for (Dealer d : visibleDealers) {
                     MarkerOptions marker = new MarkerOptions();
                     marker.position(new LatLng(d.lat, d.lon));
                     marker.title(d.title);
                     marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                    mMap.addMarker(marker);
+                    Marker mark = mMap.addMarker(marker);
+                    mark.setTag("VD");//=VisibleDealer
                 }
                 for (Map.Entry<String, Double[]> entry : markers.nearbyUsers.entrySet()) {
                     MarkerOptions marker = new MarkerOptions();
@@ -177,12 +184,29 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 mMap.setOnMarkerClickListener(marker -> {
                     System.out.println("++++++++++++++++++++++Marker click+++++++++++++++++++++++++++++++++");
                     System.out.println("++++++++++++++++" + marker.getTag() + "++++++++++++++++++++++++++++++++");
+
                     if (marker.getTag() != null && ((String) marker.getTag()).equals("AS")) {
                         AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
                         alertDialog.setTitle("Shopping");
                         alertDialog.setMessage("Do you want to enter the shop?");
                         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
                             Intent intent = new Intent(PuzzleMapActivity.this, PuzzleShopActivity.class);
+                            startActivity(intent);
+                            dialog.dismiss();
+                        });
+                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
+                        alertDialog.show();
+                        return true;
+                    } else
+                        return false;
+                });
+                mMap.setOnMarkerClickListener(marker ->{
+                    if (marker.getTag() != null && ((String) marker.getTag()).equals("VD")) {
+                        AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
+                        alertDialog.setTitle("Dealer");
+                        alertDialog.setMessage("Do you wanna play a game?");
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
+                            Intent intent = new Intent(PuzzleMapActivity.this, DealerActivity.class);
                             startActivity(intent);
                             dialog.dismiss();
                         });
@@ -545,6 +569,49 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
             return jObj.getInt(tagName);
         }
 
+    }
+
+    private void addRandomPiece(String id){
+
+
+        int[] size = getSizeOfPuzzle(id);
+        int resId = this.getResources().getIdentifier(id, "drawable", this.getPackageName());
+        Drawable image = getResources().getDrawable(resId);
+        Bitmap returnedBitmap = ((BitmapDrawable) image).getBitmap();
+        Puzzle puzzle = new Puzzle(id, size[0], size[1], returnedBitmap);
+
+
+        int randomX = new Random().nextInt(size[0]);
+        int randomY = new Random().nextInt(size[1]);
+        int randomX2 = new Random().nextInt(size[0]);
+        int randomY2 = new Random().nextInt(size[1]);
+
+        HTTPPoster get = new HTTPPoster();
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
+
+        HTTPPoster get2 = new HTTPPoster();
+        get2.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX2),Integer.toString(randomY2),"1","addPiece");
+
+
+    }
+
+    private int[] getSizeOfPuzzle(String id){
+        int[] ret = new int[2];
+        HTTPGetter get = new HTTPGetter();
+        get.execute("puzzle",id,"getPuzzle");
+        try {
+            String getUserResult = get.get();
+            if (!getUserResult.equals("{ }")) {
+                PuzzleModel puzzle = gson.fromJson(getUserResult, PuzzleModel.class);
+                ret[0] = puzzle.piecesCountHorizontal;
+                ret[1] = puzzle.piecesCountVertical;
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return ret;
     }
 
     private double distance(android.location.Location loc1, android.location.Location loc2) {
