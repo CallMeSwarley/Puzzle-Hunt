@@ -41,6 +41,7 @@ import com.socialgaming.androidtutorial.Models.Location;
 import com.socialgaming.androidtutorial.Models.Markers;
 import com.socialgaming.androidtutorial.Models.Puzzle;
 import com.socialgaming.androidtutorial.Models.PuzzleModel;
+import com.socialgaming.androidtutorial.Models.PuzzlePiece;
 import com.socialgaming.androidtutorial.Models.Shop;
 import com.socialgaming.androidtutorial.Models.Weather;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
@@ -55,6 +56,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -82,6 +85,9 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private Marker mCurrLocationMarker;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private double distance = 0;
+    private PuzzleModel[] allPuzzles = new PuzzleModel[0];
+    private ArrayList<PuzzlePiece> allPuzzlePieces = new ArrayList<>();
+    private String current_weather_condition = "Clear";
 
     private LocationCallback mLocationCallback = new LocationCallback() {
         @Override
@@ -110,7 +116,30 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 while(distance > DISTANCE_THRESHOLD) {
                     distance -= DISTANCE_THRESHOLD;
                     //TODO:random puzzle piece
-                    addRandomPiece("meme");
+                    switch (current_weather_condition) {
+                        case "Clear":
+                            addRandomPiece();
+                            break;
+                        case "Rain":
+                        case "Drizzle":
+                            addRandomCornerPiece();
+                            break;
+                        case "Clouds":
+                            addRandomEdgePiece();
+                            break;
+                        case "Snow":
+                            addRandomOddPiece();;
+                            break;
+                        case "Thunderstorm":
+                            addRandomEvenPiece();
+                            break;
+                        default:
+                            addRandomPiece();
+                            break;
+                    }
+
+
+
                 }
                 mLastLocation = location;
 
@@ -201,7 +230,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         return false;
                 });
                 mMap.setOnMarkerClickListener(marker ->{
-                    if (marker.getTag() != null && ((String) marker.getTag()).equals("VD")) {
+                    if (marker.getTag() != null && ((String) marker.getTag()).equals("AD")) {
                         AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
                         alertDialog.setTitle("Dealer");
                         alertDialog.setMessage("Do you wanna play a game?");
@@ -242,6 +271,26 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         //kann mit city oder lat,lon aufgerufen werden (LIMIT 60 mal/h
         //String city = "Munich,DE";
+        HTTPGetter getAll = new HTTPGetter();
+        getAll.execute("puzzle", "getAll");
+        try {
+            String getAllPuzzleResult = getAll.get();
+            if (!getAllPuzzleResult.equals("{ }")) {
+                allPuzzles = gson.fromJson(getAllPuzzleResult, PuzzleModel[].class);
+                for (PuzzleModel puzzleModel : allPuzzles) {
+                    int imageId = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + puzzleModel.id, null, null);
+                    Bitmap image = BitmapFactory.decodeResource(this.getResources(), imageId);
+                    Puzzle puzzle = new Puzzle(puzzleModel.id, puzzleModel.piecesCountHorizontal, puzzleModel.piecesCountVertical, image);
+                    PuzzlePiece[][] pieces2D = puzzle.getAllPuzzlePieces();
+                    for (PuzzlePiece[] arr : pieces2D) {
+                        allPuzzlePieces.addAll(Arrays.asList(arr));
+                    }
+                }
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
         infoText = findViewById(R.id.infoText);
         condDescr = findViewById(R.id.condDescr);
         imgView = findViewById(R.id.condIcon);
@@ -493,6 +542,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
             super.onPostExecute(weather);
             imgView.setImageBitmap(weather.iconData);
             String info = getInfoText(weather.currentCondition.getCondition());
+            current_weather_condition = weather.currentCondition.getCondition();
             //infoText.setText(weather.location.getCity() + "," + weather.location.getCountry());
             //condDescr.setText(weather.currentCondition.getCondition() + "(" + weather.currentCondition.getDescr() + ")");
             infoText.setText(info);
@@ -548,7 +598,6 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
             weather.currentCondition.setIcon(getString("icon", JSONWeather));
 
             JSONObject mainObj = getObject("main", jObj);
-
             return weather;
         }
 
@@ -571,48 +620,63 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     }
 
-    private void addRandomPiece(String id){
+    private void addRandomPiece(){
 
-
-        int[] size = getSizeOfPuzzle(id);
-        int resId = this.getResources().getIdentifier(id, "drawable", this.getPackageName());
-        Drawable image = getResources().getDrawable(resId);
-        Bitmap returnedBitmap = ((BitmapDrawable) image).getBitmap();
-        Puzzle puzzle = new Puzzle(id, size[0], size[1], returnedBitmap);
-
-
-        int randomX = new Random().nextInt(size[0]);
-        int randomY = new Random().nextInt(size[1]);
-        int randomX2 = new Random().nextInt(size[0]);
-        int randomY2 = new Random().nextInt(size[1]);
-
+        PuzzlePiece randomPiece = allPuzzlePieces.get(new Random().nextInt(allPuzzlePieces.size()));
+        String id = randomPiece.getPuzzleParent().id;
+        int randomX = randomPiece.getPositionHorizontal();
+        int randomY = randomPiece.getPositionVertical();
         HTTPPoster get = new HTTPPoster();
         get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
-
-        HTTPPoster get2 = new HTTPPoster();
-        get2.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX2),Integer.toString(randomY2),"1","addPiece");
-
-
     }
 
-    private int[] getSizeOfPuzzle(String id){
-        int[] ret = new int[2];
-        HTTPGetter get = new HTTPGetter();
-        get.execute("puzzle",id,"getPuzzle");
-        try {
-            String getUserResult = get.get();
-            if (!getUserResult.equals("{ }")) {
-                PuzzleModel puzzle = gson.fromJson(getUserResult, PuzzleModel.class);
-                ret[0] = puzzle.piecesCountHorizontal;
-                ret[1] = puzzle.piecesCountVertical;
-            }
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    private void addRandomOddPiece(){
+
+        PuzzlePiece randomPiece = allPuzzlePieces.get(new Random().nextInt(allPuzzlePieces.size()));
+        String id = randomPiece.getPuzzleParent().id;
+        int randomX = randomPiece.getPositionHorizontal()%2==1?randomPiece.getPositionHorizontal():(randomPiece.getPositionHorizontal()+1)%randomPiece.getPuzzleParent().piecesCountHorizontal;
+        int randomY = randomPiece.getPositionVertical()%2==1?randomPiece.getPositionVertical():(randomPiece.getPositionVertical()+1)%randomPiece.getPuzzleParent().piecesCountVertical;
+        HTTPPoster get = new HTTPPoster();
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
+    }
+
+    private void addRandomEvenPiece(){
+
+        PuzzlePiece randomPiece = allPuzzlePieces.get(new Random().nextInt(allPuzzlePieces.size()));
+        String id = randomPiece.getPuzzleParent().id;
+        int randomX = randomPiece.getPositionHorizontal()%2==0?randomPiece.getPositionHorizontal():(randomPiece.getPositionHorizontal()+1)%randomPiece.getPuzzleParent().piecesCountHorizontal;
+        int randomY = randomPiece.getPositionVertical()%2==0?randomPiece.getPositionVertical():(randomPiece.getPositionVertical()+1)%randomPiece.getPuzzleParent().piecesCountVertical;
+        HTTPPoster get = new HTTPPoster();
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
+    }
+
+
+    private void addRandomEdgePiece(){
+
+        PuzzlePiece randomPiece = allPuzzlePieces.get(new Random().nextInt(allPuzzlePieces.size()));
+        String id = randomPiece.getPuzzleParent().id;
+        int edgeIsX = new Random().nextInt(2);
+        int randomX = randomPiece.getPositionHorizontal();
+        int randomY = randomPiece.getPositionVertical();
+        if(edgeIsX==0){
+            randomX = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountHorizontal;
+        }else{
+            randomY = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountVertical;
         }
-        return ret;
+        HTTPPoster get = new HTTPPoster();
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
     }
+
+    private void addRandomCornerPiece(){
+
+        PuzzlePiece randomPiece = allPuzzlePieces.get(new Random().nextInt(allPuzzlePieces.size()));
+        String id = randomPiece.getPuzzleParent().id;
+        int randomX = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountHorizontal;
+        int randomY = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountVertical;
+        HTTPPoster get = new HTTPPoster();
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
+    }
+
 
     private double distance(android.location.Location loc1, android.location.Location loc2) {
 

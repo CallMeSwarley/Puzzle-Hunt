@@ -52,7 +52,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
-public class PuzzleShopActivity extends AppCompatActivity {
+public class    PuzzleShopActivity extends AppCompatActivity {
     private User user;
     private final Gson gson = new Gson();
 
