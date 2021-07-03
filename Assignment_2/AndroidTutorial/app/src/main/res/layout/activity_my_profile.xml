@@ -163,7 +163,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline8"
-        app:srcCompat="@android:drawable/ic_menu_camera"
+        app:srcCompat="@drawable/profile_pic1"
         tools:srcCompat="@tools:sample/avatars[11]" />
 
     <androidx.constraintlayout.widget.Guideline

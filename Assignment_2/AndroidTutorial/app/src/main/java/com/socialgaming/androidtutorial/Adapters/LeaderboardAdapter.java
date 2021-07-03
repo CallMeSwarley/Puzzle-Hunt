@@ -36,7 +36,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
             holder.etPlaceTextView.setText(Integer.toString(position+1));
             holder.etNameTextView.setText(myList.get(position).getName().toString());
             holder.etXPTextView.setText(myList.get(position).getXP().toString());
-            holder.crossImage.setImageResource(R.drawable.avatar);
+            holder.crossImage.setImageResource(R.drawable.profile_pic1);
             mLastPosition =position;
         }
         @Override
