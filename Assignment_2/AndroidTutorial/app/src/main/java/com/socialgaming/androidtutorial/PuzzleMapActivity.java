@@ -67,7 +67,7 @@ import java.util.concurrent.ExecutionException;
 //wurde angepasst
 
 public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private static final double DISTANCE_THRESHOLD = 10;
+    private static final double DISTANCE_THRESHOLD = 100;
     private GoogleMap mMap;
     int MY_RESULT_FINE_LOCATION;
     private static String url = "http://api.openweathermap.org/data/2.5/weather?";
@@ -115,6 +115,14 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 System.out.println(distance);
                 while(distance > DISTANCE_THRESHOLD) {
                     distance -= DISTANCE_THRESHOLD;
+                    AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
+                    alertDialog.setTitle("Puzzle");
+                    alertDialog.setMessage("You received a Puzzle Pieces!");
+
+                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
+                        dialog.dismiss();
+                    });
+                    alertDialog.show();
                     //TODO:random puzzle piece
                     switch (current_weather_condition) {
                         case "Clear":
