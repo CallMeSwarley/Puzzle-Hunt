@@ -47,6 +47,11 @@ public class TradeController extends Controller {
         return ok(gson.toJson(openTrade));
     }
 
+    public Result getOpenTradeTwoIds(String firebaseId, String partnerId) {
+        Trade openTrade = trades.getTradeWithBothIds(firebaseId,partnerId);
+        return ok(gson.toJson(openTrade));
+    }
+
     /**
      * @return "Fail" wenn ein Trade nicht möglich ist
      * Trade-Objekt wenn der Trade begonnen hat, egal ob neu oder erneut
@@ -89,6 +94,10 @@ public class TradeController extends Controller {
         } else {
             open.partnerTradeItems = gson.fromJson(offers, Offers.class);
         }
+        open.traderAccepted = false;
+        open.partnerAccepted = false;
+        open.traderOffer = new Offer();
+        open.partnerOffer = new Offer();
         trades.update(open);
         return ok(gson.toJson(open));
     }

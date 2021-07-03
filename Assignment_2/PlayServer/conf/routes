@@ -58,6 +58,7 @@ POST     /gifts/:friendshipId/:userId/:puzzleId/:x/:y/:amount/sendGift   control
 POST    /gifts/:giftID/removeGift                               controllers.GiftController.removeGift(giftID:String)
 
 GET     /trade/:firebaseId/getOpenTrade                         controllers.TradeController.getOpenTrade(firebaseId:String)
+GET     /trade/:firebaseId/:partnerId/getOpenTradeTwoIds              controllers.TradeController.getOpenTradeTwoIds(firebaseId:String,partnerId:String)
 #GET     /trade/:tradeId/:firebaseId/:puzzleId/:x/:y/addOffer    controllers.TradeController.addOffer(tradeId:String,firebaseId:String,puzzleId:String,x:Integer, y:Integer)
 POST     /trade/:tradeId/:firebaseId/:offerList/offer                     controllers.TradeController.offer(tradeId:String,firebaseId:String,offerList:String)
 POST     /trade/:tradeId/:firebaseId/:offer/accept                        controllers.TradeController.accept(tradeId:String,firebaseId:String,offer:String)

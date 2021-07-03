@@ -60,4 +60,11 @@ public class TradesRepository {
         copy.partnerAccepted = trade.partnerAccepted;
         return copy;
     }
+
+    public Trade getTradeWithBothIds(String firebaseId, String partnerId) {
+        Trade result = trades().findOne("{traderId:#,partnerId:#}", firebaseId, partnerId).as(Trade.class);
+        if (result == null)
+            result = trades().findOne("{partnerId:#,traderId:#}", firebaseId, partnerId).as(Trade.class);
+        return result;
+    }
 }
