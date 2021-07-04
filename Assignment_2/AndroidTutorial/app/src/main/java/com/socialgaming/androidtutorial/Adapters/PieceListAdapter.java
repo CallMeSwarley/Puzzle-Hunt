@@ -26,20 +26,20 @@ class PieceItemViewHolder extends RecyclerView.ViewHolder{
     public ImageView image;
     public TextView amount;
 
-    public PieceItemViewHolder(@NonNull @NotNull View itemView, Activity activity, RecyclerView view) {
+    public PieceItemViewHolder(@NonNull @NotNull View itemView, Activity activity, RecyclerView recyclerView) {
         super(itemView);
 
         image = itemView.findViewById(R.id.pieces_imageView);
         amount = itemView.findViewById(R.id.amount_textView);
 
 
-        /* OnClickEvents for recyclerViews can be added here
-         * 1. Determine the Activity your RecyclerView is in
-         * 2. Choose the right one with the id
+        /** OnClickEvents for recyclerViews can be added here
+          * 1. Determine the Activity your RecyclerView is in
+          * 2. Choose the right RecyclerView one with the id
          */
         if (activity instanceof TradeActivity) {
 
-            if(view.getId() == R.id.player1_trade_items_recyclerView) {
+            if(recyclerView.getId() == R.id.player1_trade_items_recyclerView) {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -47,7 +47,15 @@ class PieceItemViewHolder extends RecyclerView.ViewHolder{
                     }
                 });
             }
-            else if (view.getId() == R.id.add_pieces_recyclerView){
+            else if (recyclerView.getId() == R.id.player2_trade_items_recyclerView) {
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((TradeActivity) activity).choosePieceFromPartner(getBindingAdapterPosition());
+                    }
+                });
+            }
+            else if (recyclerView.getId() == R.id.add_pieces_recyclerView){
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -58,7 +66,7 @@ class PieceItemViewHolder extends RecyclerView.ViewHolder{
         }
         else if(activity instanceof DealerActivity){
             // For the pop up recyclerview
-            if (view.getId() == R.id.add_pieces_recyclerView) {
+            if (recyclerView.getId() == R.id.add_pieces_recyclerView) {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -66,7 +74,7 @@ class PieceItemViewHolder extends RecyclerView.ViewHolder{
                     }
                 });
             }
-            else if(view.getId() == R.id.recyclerView2) {
+            else if(recyclerView.getId() == R.id.recyclerView2) {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

@@ -11,12 +11,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Adapters.PieceListAdapter;
 import com.socialgaming.androidtutorial.Models.Inventory;
+import com.socialgaming.androidtutorial.Models.LastTrade;
 import com.socialgaming.androidtutorial.Models.Offer;
 import com.socialgaming.androidtutorial.Models.PieceViewItem;
 import com.socialgaming.androidtutorial.Models.Puzzle;
@@ -26,6 +29,8 @@ import com.socialgaming.androidtutorial.Util.HTTPGetter;
 import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,14 +38,17 @@ import java.util.concurrent.ExecutionException;
 
 public class TradeActivity extends AppCompatActivity {
 
-    private final int TRADE_PIECE_AMOUNT = 1;
-
     // Database stuff
     Inventory inventory = new Inventory();
     Trade trade = new Trade();
     Map<String, int[][]> sets = new HashMap<>();
     Gson gson = new Gson();
     Role role = Role.Unasigned;
+
+    private PieceViewItem selectedPiece;
+
+    private Trade lastTradeState;
+    private static String tradeAccepted = "";
 
     // Player
     private List<PieceViewItem> playerItemList = new ArrayList<>();
@@ -65,6 +73,20 @@ public class TradeActivity extends AppCompatActivity {
     public static String friendshipLvl = "";
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        //Toast.makeText(this, "Destroyed", Toast.LENGTH_SHORT).show();
+
+        try{
+            new HTTPPoster().execute("trade", trade.id, "decline");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trade);
@@ -76,11 +98,11 @@ public class TradeActivity extends AppCompatActivity {
         final Button acceptTrade = findViewById(R.id.accept_trade_button);
         final Button declineTrade = findViewById(R.id.decline_trade_button);
 
-//        new HTTPPoster().execute(
-//                "inventory",
-//                FirebaseAuth.getInstance().getUid(),
-//                "img_1", "3", "2", "1",
-//                "addPiece");
+        final TextView pText = findViewById(R.id.player_2);
+        pText.setText(String.format((String) pText.getText(), partnerName));
+
+        // Setup trade in database
+        setupDatabase();
 
         // Popup list of pieces recyclerView
         fetchPieces();
@@ -95,52 +117,11 @@ public class TradeActivity extends AppCompatActivity {
         partnerAdapter = new PieceListAdapter(partnerTradeItems, this, partnerItemList);
         partnerTradeItems.setAdapter(partnerAdapter);
 
-        // Setup trade in database
-        try {
-
-            // Check if trade exists
-            HTTPGetter get = new HTTPGetter();
-            get.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
-            String getUserResult = get.get();
-
-            /*
-             *  If the partner already created the trade it can just be pulled from the database.
-             *  Otherwise it needs to be created and pulled afterwards
-             */
-            if(!getUserResult.equals("null") && !getUserResult.equals("{ }")){
-                trade = gson.fromJson(getUserResult, Trade.class);
-                role = Role.Partner;
-            }
-            else{
-
-                new HTTPPoster().execute(
-                        "trade",
-                        FirebaseAuth.getInstance().getUid(),
-                        this.partnerId,
-                        "beginTrade");
-
-                HTTPGetter getter = new HTTPGetter();
-                getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
-
-                getUserResult = getter.get();
-                if (!getUserResult.equals("null") && !getUserResult.equals("{ }")) {
-                    trade = gson.fromJson(getUserResult, Trade.class);
-                    role = Role.Trader;
-                }
-            }
-
-            Toast.makeText(this, "Role: " + role.toString(), Toast.LENGTH_SHORT).show();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
         // Opens the popup to look for pieces to trade
         addPieces.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createNewPiecesAddingDialog();
+                createAddPiecePopup();
             }
         });
 
@@ -152,19 +133,70 @@ public class TradeActivity extends AppCompatActivity {
                     HTTPGetter getter = new HTTPGetter();
                     getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
                     String getUserResult = getter.get();
+
                     if (!getUserResult.equals("null") && !getUserResult.equals("{ }")) {
+
+                        lastTradeState = trade;
                         trade = gson.fromJson(getUserResult, Trade.class);
-                        if(role == Role.Trader)
+                        partnerItemList.clear();
+                        if (role == Role.Trader)
                             trade.partnerTradeItems.entrySet().stream().forEach(x -> processPieces(x, partnerItemList));
-                        else if(role == Role.Partner)
+                        else if (role == Role.Partner)
                             trade.traderTradeItems.entrySet().stream().forEach(x -> processPieces(x, partnerItemList));
 
                         partnerAdapter.notifyDataSetChanged();
+
+                        /**
+                         *   Check if some players accepted status has changed as a result of
+                         *   the other player changing his offered items. In that
+                         *   case the addPiece Button needs to be activated again
+                         *   and the selectedPiece is set to null for each player.
+                         *   Accepted statuses are reset on the server side.
+                         */
+//                        if((lastTradeState.traderAccepted || lastTradeState.partnerAccepted) && (!trade.traderAccepted || !trade.partnerAccepted)){
+//                            Toast.makeText(getBaseContext(), "This seems to work", Toast.LENGTH_SHORT).show();
+//                        }
+
+                        if ((role == Role.Trader && lastTradeState.traderAccepted && !trade.traderAccepted) ||
+                                (role == Role.Partner && lastTradeState.partnerAccepted && !trade.partnerAccepted)) {
+
+                            addPieces.setEnabled(true);
+                            selectedPiece = null;
+
+                            Toast.makeText(getBaseContext(), String.format("%s has changed his offered pieces, your Accept state has been reversed.", partnerName), Toast.LENGTH_LONG).show();
+                        }
                     }
                     else {
-                        Toast.makeText(getBaseContext(), "Trade canceled by " + partnerName, Toast.LENGTH_SHORT).show();
-                        this.wait(1000);
-                        finish();
+                        // Check if last trade was successful
+                        // Datum checken, dayOfYear + year
+                        HTTPGetter get = new HTTPGetter();
+                        get.execute("trade", trade.getId(), "getLastTrade");
+                        getUserResult = get.get();
+
+                        if(!getUserResult.equals("null") && !getUserResult.equals("{ }")){
+
+                            LastTrade lastTrade = gson.fromJson(getUserResult, LastTrade.class);
+
+                            Calendar calendar = Calendar.getInstance();
+                            int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+                            int year = calendar.get(Calendar.YEAR);
+
+                            if(lastTrade.dayOfYear == dayOfYear && lastTrade.year == year){
+                                if(lastTrade.playerOne.equals(FirebaseAuth.getInstance().getUid()))
+                                    createTradeSuccessfulPopup(lastTrade.traderAccepted, lastTrade.playerAccepted);
+                                else
+                                    createTradeSuccessfulPopup(lastTrade.playerAccepted, lastTrade.traderAccepted);
+
+                            }
+                            else{
+                                Toast.makeText(getBaseContext(), String.format("Trade canceled by %s.", partnerName), Toast.LENGTH_LONG).show();
+                                finish();
+                            }
+                        }
+                        else{
+                            Toast.makeText(getBaseContext(), String.format("Trade canceled by %s.", partnerName), Toast.LENGTH_LONG).show();
+                            finish();
+                        }
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -179,56 +211,67 @@ public class TradeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try{
+                    // "Trade Done!"
+                    // "FAIL"
+
+                    if(selectedPiece == null){
+                        Toast.makeText(getBaseContext(), "Select a piece from your partner before you accept the trade.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     HTTPGetter getter = new HTTPGetter();
                     getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
                     String getUserResult = getter.get();
 
                     if (getUserResult.equals("null") || getUserResult.equals("{ }")) {
-                        Toast.makeText(getBaseContext(), "Trade canceled by " + partnerName, Toast.LENGTH_SHORT).show();
-                        this.wait(1000);
+                        Toast.makeText(getBaseContext(), String.format("Trade canceled by %s.", partnerName), Toast.LENGTH_LONG).show();
                         finish();
                     }
                     trade = gson.fromJson(getUserResult, Trade.class);
+
+                    // Disable button to select pieces
                     addPieces.setEnabled(false);
-                    playerTradeItems.setEnabled(false);
 
+                    HTTPPoster poster = new HTTPPoster();
                     if(role == Role.Trader){
-                        trade.playerAccepted = true;
+                        trade.traderAccepted = true;
                         trade.traderOffer = new Offer();
+                        trade.traderOffer.setId = selectedPiece.getSetId();
+                        trade.traderOffer.x = selectedPiece.getHorizontalPosition();
+                        trade.traderOffer.y = selectedPiece.getVerticalPosition();
 
-                        if(playerItemList.size() > 0){
-                            PieceViewItem piece = playerItemList.get(0);
-                            trade.traderOffer.setId = piece.getSetId();
-                            trade.traderOffer.x = piece.getHorizontalPosition();
-                            trade.traderOffer.y = piece.getVerticalPosition();
-                        }
-
-                        new HTTPPoster().execute(
+                        poster.execute(
                                 "trade",
                                 trade.getId(),
                                 FirebaseAuth.getInstance().getUid(),
                                 Uri.encode(gson.toJson(trade.traderOffer, Offer.class)),
                                 "accept");
                     }
-                    else if(role == Role.Partner){
+                    else if(role == Role.Partner) {
                         trade.partnerAccepted = true;
                         trade.partnerOffer = new Offer();
+                        trade.partnerOffer.setId = selectedPiece.getSetId();
+                        trade.partnerOffer.x = selectedPiece.getHorizontalPosition();
+                        trade.partnerOffer.y = selectedPiece.getVerticalPosition();
 
-                        if(playerItemList.size() > 0){
-                            PieceViewItem piece = playerItemList.get(0);
-                            trade.partnerOffer.setId = piece.getSetId();
-                            trade.partnerOffer.x = piece.getHorizontalPosition();
-                            trade.partnerOffer.y = piece.getVerticalPosition();
-                        }
-
-                        // /trade/:tradeId/:firebaseId/:offer/accept
-                        new HTTPPoster().execute(
+                        poster.execute(
                                 "trade",
                                 trade.getId(),
                                 FirebaseAuth.getInstance().getUid(),
                                 Uri.encode(gson.toJson(trade.partnerOffer, Offer.class)),
                                 "accept");
                     }
+
+                    String result = poster.get();
+
+                    if(result.equals("Trade Done!")){
+                        if(role == Role.Trader)
+                            createTradeSuccessfulPopup(trade.partnerOffer, trade.traderOffer);
+                        else if(role == Role.Partner)
+                            createTradeSuccessfulPopup(trade.traderOffer, trade.partnerOffer);
+                    }
+                    else
+                        trade = gson.fromJson(result, Trade.class);
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -238,22 +281,192 @@ public class TradeActivity extends AppCompatActivity {
             }
         });
 
-        // Decline the trade, leave the activity, send decline to database
+        // Decline the trade, leave the activity
         declineTrade.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try{
-                    new HTTPPoster().execute("trade", trade.id, "decline");
-                    finish();
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
+                finish();
             }
         });
     }
 
-    public void createNewPiecesAddingDialog() {
+    public void addPieceToTradeView(int bindingAdapterPosition) {
+        playerItemList.add(popUpItemList.remove(bindingAdapterPosition));
+        playerAdapter.notifyDataSetChanged();
+        popUpAdapter.notifyDataSetChanged();
+
+        if (popUpItemList.isEmpty()){
+            updateDatabase();
+            dialog.dismiss();
+        }
+    }
+
+    public void removePieceFromTradeView(int bindingAdapterPosition){
+        if((role == Role.Trader && trade.traderAccepted) || (role == Role.Partner && trade.partnerAccepted)){
+            Toast.makeText(this, "You accepted the trade, you can't change your offers anymore.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        popUpItemList.add(playerItemList.remove(bindingAdapterPosition));
+        updateDatabase();
+        playerAdapter.notifyDataSetChanged();
+        popUpAdapter.notifyDataSetChanged();
+    }
+
+    public void choosePieceFromPartner(int bindingAdapterPosition){
+        if((role == Role.Trader && trade.traderAccepted) || (role == Role.Partner && trade.partnerAccepted)) {
+            Toast.makeText(this, "You accepted the trade, you can't change your choice anymore.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        selectedPiece = partnerItemList.get(bindingAdapterPosition);
+        Toast.makeText(this, String.format("You chose the pieces at position %d, click 'Accept' to lock your choice.", bindingAdapterPosition), Toast.LENGTH_SHORT).show();
+    }
+
+    private void setupDatabase(){
+        try {
+            // Check if trade exists
+            HTTPGetter get = new HTTPGetter();
+            get.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
+            String getUserResult = get.get();
+
+            /*
+             *  If the partner already created the trade it can just be pulled from the database.
+             *  Otherwise it needs to be created
+             */
+            if(!getUserResult.equals("null") && !getUserResult.equals("{ }")){
+                trade = gson.fromJson(getUserResult, Trade.class);
+                role = Role.Partner;
+            }
+            else{
+                HTTPPoster poster = new HTTPPoster();
+                poster.execute(
+                        "trade",
+                        FirebaseAuth.getInstance().getUid(),
+                        this.partnerId,
+                        "beginTrade");
+
+                getUserResult = poster.get();
+                if (!getUserResult.equals("null") && !getUserResult.equals("{ }")) {
+
+                    if(getUserResult.equals("FAIL")){
+                        Toast.makeText(this, String.format("You already traded with %s today, try again tomorrow.", partnerName), Toast.LENGTH_LONG).show();
+                        finish();
+                        return;
+                    }
+
+                    trade = gson.fromJson(getUserResult, Trade.class);
+                    role = Role.Trader;
+                }
+            }
+
+            Toast.makeText(this, "Role: " + role.toString(), Toast.LENGTH_SHORT).show();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateDatabase() {
+        try {
+            HTTPGetter getter = new HTTPGetter();
+            getter.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
+            String getUserResult = getter.get();
+            if (!getUserResult.equals("null") && !getUserResult.equals("{ }")) {
+                trade = gson.fromJson(getUserResult, Trade.class);
+            }
+
+            // Links Trader
+            // Trader: N0gKquyUbHOo5TMqIdvdoakqTTl1
+            // Partner: mE4YUQn9rhVYMwK7Mjll9hdXjPg1
+
+            // Trader: N0gKquyUbHOo5TMqIdvdoakqTTl1
+            // Partner: mE4YUQn9rhVYMwK7Mjll9hdXjPg1
+
+            HTTPPoster poster = new HTTPPoster();
+            if (role == Role.Trader) {
+                trade.traderTradeItems.clear();
+                for (int i = 0; i < playerItemList.size(); i++) {
+                    PieceViewItem item = playerItemList.get(i);
+                    int[][] entry;
+
+                    if (trade.traderTradeItems.containsKey(item.getSetId())) {
+                        entry = trade.traderTradeItems.get(item.getSetId());
+                    } else {
+                        int dim = sets.get(item.getSetId()).length;
+                        entry = new int[dim][dim];
+                    }
+
+                    entry[item.getHorizontalPosition()][item.getVerticalPosition()]++;
+                    trade.traderTradeItems.put(item.getSetId(), entry);
+                }
+
+                poster.execute(
+                        "trade",
+                        trade.getId(),
+                        FirebaseAuth.getInstance().getUid(),
+                        Uri.encode(gson.toJson(trade.traderTradeItems)),
+                        "offer");
+
+            } else if (role == Role.Partner) {
+                trade.partnerTradeItems.clear();
+                for (int i = 0; i < playerItemList.size(); i++) {
+                    PieceViewItem item = playerItemList.get(i);
+                    int[][] entry;
+
+                    if (trade.partnerTradeItems.containsKey(item.getSetId())) {
+                        entry = trade.partnerTradeItems.get(item.getSetId());
+                    } else {
+                        int dim = sets.get(item.getSetId()).length;
+                        entry = new int[dim][dim];
+                    }
+
+                    entry[item.getHorizontalPosition()][item.getVerticalPosition()]++;
+                    trade.partnerTradeItems.put(item.getSetId(), entry);
+                }
+
+                poster.execute(
+                        "trade",
+                        trade.getId(),
+                        FirebaseAuth.getInstance().getUid(),
+                        Uri.encode(gson.toJson(trade.partnerTradeItems)),
+                        "offer");
+            }
+
+            lastTradeState = trade;
+            trade = gson.fromJson(poster.get(), Trade.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void fetchPieces(){
+        this.sets = getSets(FirebaseAuth.getInstance().getUid());
+        if(sets != null)
+            getSets(FirebaseAuth.getInstance().getUid()).entrySet().stream().forEach(x -> processPieces(x, popUpItemList));
+    }
+
+    private void processPieces(Map.Entry<String, int[][]> x, List<PieceViewItem> itemList) {
+        int[][] arr = x.getValue();
+        Puzzle puzzle = createPuzzleInstance(x.getKey(), arr.length);
+
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr[i].length; j++) {
+                if (arr[i][j] > 0) {
+                    PuzzlePiece piece = puzzle.getPuzzlePiece(i, j);
+
+                    // The piece is added as often as the player has it
+                    for (int k = 0; k < arr[i][j]; k++) {
+                        PieceViewItem item = new PieceViewItem(piece.getImage(), x.getKey(), i, j);
+                        itemList.add(item);
+                    }
+                }
+            }
+        }
+    }
+
+    private void createAddPiecePopup() {
         dialogBuilder = new AlertDialog.Builder(this);
 
         // View
@@ -281,93 +494,59 @@ public class TradeActivity extends AppCompatActivity {
         });
     }
 
-    public void addPieceToTradeView(int bindingAdapterPosition) {
-        playerItemList.add(popUpItemList.remove(bindingAdapterPosition));
-        playerAdapter.notifyDataSetChanged();
-        popUpAdapter.notifyDataSetChanged();
+    private void createTradeSuccessfulPopup(Offer traderOffer, Offer partnerOffer){
 
-        if (popUpItemList.isEmpty()){
-            updateDatabase();
-            dialog.dismiss();
-        }
-    }
+        // View
+        View tradeSuccessful = getLayoutInflater().inflate(R.layout.trade_successful_popup, null);
+        final ImageView traderImg = tradeSuccessful.findViewById(R.id.trader_piece);
+        final ImageView partnerImg = tradeSuccessful.findViewById(R.id.partner_piece);
+        //final TextView playerText = tradeSuccessful.findViewById(R.id.player_name_text);
+        final TextView partnerText = tradeSuccessful.findViewById(R.id.partner_name_text);
+        final Button button = tradeSuccessful.findViewById(R.id.close_trade_button);
 
-    public void removePieceFromTradeView(int bindingAdapterPosition){
-        if(trade.playerAccepted){
-            Toast.makeText(this, "You accepted the trade, you can't change your offers anymore", Toast.LENGTH_LONG).show();
-            return;
-        }
+        partnerText.setText(partnerName);
 
-        popUpItemList.add(playerItemList.remove(bindingAdapterPosition));
-        updateDatabase();
-        playerAdapter.notifyDataSetChanged();
-        popUpAdapter.notifyDataSetChanged();
-    }
+        Map<String, int[][]> sets = getSets(FirebaseAuth.getInstance().getUid());
 
-    private void updateDatabase() {
-        try {
+        // Trader
+        int traderArr[][] = sets.get(traderOffer.setId);
+        Puzzle traderPuzzle = createPuzzleInstance(traderOffer.setId, traderArr.length);
+        PuzzlePiece traderPiece = traderPuzzle.getPuzzlePiece(traderOffer.x, traderOffer.y);
+        traderImg.setImageBitmap(traderPiece.getImage());
 
-            if(role == Role.Trader){
-                trade.traderTradeItems.clear();
-                for (int i = 0; i < playerItemList.size(); i++) {
-                    PieceViewItem item = playerItemList.get(i);
-                    int[][] entry;
+        // Partner
+        int partnerArr[][] = sets.get(partnerOffer.setId);
+        Puzzle partnerPuzzle = createPuzzleInstance(partnerOffer.setId, partnerArr.length);
+        PuzzlePiece partnerPiece = partnerPuzzle.getPuzzlePiece(partnerOffer.x, partnerOffer.y);
+        partnerImg.setImageBitmap(partnerPiece.getImage());
 
-                    if (trade.traderTradeItems.containsKey(item.getSetId())) {
-                        entry = trade.traderTradeItems.get(item.getSetId());
-                    } else {
-                        int dim = sets.get(item.getSetId()).length;
-                        entry = new int[dim][dim];
-                    }
+//        TranslateAnimation animation = new TranslateAnimation(0, 50, 0, 100);
+//        animation.setDuration(1000);
+//        animation.setFillAfter(false);
+//        animation.setAnimationListener(new MyAnimationListener());
+//
+//        imageView.startAnimation(animation);
 
-                    entry[item.getHorizontalPosition()][item.getVerticalPosition()]++;
-                    trade.traderTradeItems.put(item.getSetId(), entry);
-                }
-
-                new HTTPPoster().execute(
-                        "trade",
-                        trade.getId(),
-                        FirebaseAuth.getInstance().getUid(),
-                        Uri.encode(gson.toJson(trade.traderTradeItems)),
-                        "offer");
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
-            else if(role == Role.Partner){
-                trade.partnerTradeItems.clear();
-                for (int i = 0; i < playerItemList.size(); i++) {
-                    PieceViewItem item = playerItemList.get(i);
-                    int[][] entry;
+        });
 
-                    if (trade.partnerTradeItems.containsKey(item.getSetId())) {
-                        entry = trade.partnerTradeItems.get(item.getSetId());
-                    } else {
-                        int dim = sets.get(item.getSetId()).length;
-                        entry = new int[dim][dim];
-                    }
-
-                    entry[item.getHorizontalPosition()][item.getVerticalPosition()]++;
-                    trade.partnerTradeItems.put(item.getSetId(), entry);
-                }
-
-                new HTTPPoster().execute(
-                        "trade",
-                        trade.getId(),
-                        FirebaseAuth.getInstance().getUid(),
-                        Uri.encode(gson.toJson(trade.partnerTradeItems)),
-                        "offer");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        dialogBuilder.setView(tradeSuccessful);
+        dialog = dialogBuilder.create();
+        dialog.show();
     }
 
-    private void fetchPieces(){
+    private Map<String, int[][]> getSets(String userId){
         HTTPGetter getter = new HTTPGetter();
         getter.execute("inventory", FirebaseAuth.getInstance().getUid(), "getInventory");
         try {
             String getUserResult = getter.get();
             if (!getUserResult.equals("{ }")) {
-                this.inventory = gson.fromJson(getUserResult, Inventory.class);
-                this.sets = inventory.getSets();
+                Inventory inv = gson.fromJson(getUserResult, Inventory.class);
+                return inv.getSets();
             }
         } catch (ExecutionException e) {
             e.printStackTrace();
@@ -375,28 +554,13 @@ public class TradeActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        sets.entrySet().stream().forEach(x -> processPieces(x, popUpItemList));
+        return null;
     }
 
-    private void processPieces(Map.Entry<String, int[][]> x, List<PieceViewItem> itemList){
-        int[][] arr = x.getValue();
-        int imageId = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + x.getKey(), null, null);
+    private Puzzle createPuzzleInstance(String setId, int setDimension){
+        int imageId = getResources().getIdentifier("com.socialgaming.androidtutorial:drawable/" + setId, null, null);
         Bitmap image = BitmapFactory.decodeResource(this.getResources(), imageId);
-        Puzzle puzzle = new Puzzle(x.getKey(), arr.length, arr.length, image);
-
-        for(int i = 0; i < arr.length; i++){
-            for(int j = 0; j < arr[i].length; j++){
-                if(arr[i][j] > 0){
-                    PuzzlePiece piece = puzzle.getPuzzlePiece(i, j);
-
-                    // The piece is added as often as the player has it
-                    for(int k = 0; k < arr[i][j]; k++){
-                        PieceViewItem item = new PieceViewItem(piece.getImage(), x.getKey(), i, j);
-                        itemList.add(item);
-                    }
-                }
-            }
-        }
+        return new Puzzle(setId, setDimension, setDimension, image);
     }
 }
 
