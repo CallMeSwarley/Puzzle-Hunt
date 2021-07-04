@@ -48,7 +48,7 @@ public class TradeController extends Controller {
     }
 
     public Result getOpenTradeTwoIds(String firebaseId, String partnerId) {
-        Trade openTrade = trades.getTradeWithBothIds(firebaseId,partnerId);
+        Trade openTrade = trades.getTradeWithBothIds(firebaseId, partnerId);
         return ok(gson.toJson(openTrade));
     }
 
@@ -63,8 +63,13 @@ public class TradeController extends Controller {
         if (lastTrade != null) {
             if ((lastTrade.year < now.getYear() || lastTrade.dayOfYear != now.getDayOfYear())) {
                 trade.id = lastTrade.id;
-                trade.traderId = lastTrade.playerOne;
-                trade.partnerId = lastTrade.playerTwo;
+                if (lastTrade.playerOne.equals(firebaseId)) {
+                    trade.traderId = lastTrade.playerOne;
+                    trade.partnerId = lastTrade.playerTwo;
+                } else {
+                    trade.partnerId = lastTrade.playerOne;
+                    trade.traderId = lastTrade.playerTwo;
+                }
             } else {
                 return ok("FAIL");
             }
