@@ -9,4 +9,6 @@ public class LastTrade {
     public String playerTwo;
     public int dayOfYear;
     public int year;
+    public Offer playerAccepted;
+    public Offer traderAccepted;
 }

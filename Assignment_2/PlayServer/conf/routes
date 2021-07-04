@@ -66,3 +66,4 @@ POST     /trade/:tradeId/decline                              controllers.TradeC
 POST     /trade/:firebaseId/:partnerId/beginTrade                controllers.TradeController.beginTrade(firebaseId:String,partnerId:String)
 #trial to increase performance for client
 GET      /markers/:firebaseId/:latSW/:lonSW/:latNE/:lonNE/getInBound    controllers.MarkerController.getInBound(firebaseId:String,latSW:Double,lonSW:Double,latNE:Double,lonNE:Double)
+GET     /trade/:tradeId/getLastTrade                        controllers.TradeController.getLastTrade(tradeId:String)

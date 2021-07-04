@@ -47,6 +47,11 @@ public class TradeController extends Controller {
         return ok(gson.toJson(openTrade));
     }
 
+    public Result getLastTrade(String tradeId) {
+        LastTrade lastTrade = lastTrades.getLastTrade(tradeId);
+        return ok(gson.toJson(lastTrade));
+    }
+
     public Result getOpenTradeTwoIds(String firebaseId, String partnerId) {
         Trade openTrade = trades.getTradeWithBothIds(firebaseId, partnerId);
         return ok(gson.toJson(openTrade));
