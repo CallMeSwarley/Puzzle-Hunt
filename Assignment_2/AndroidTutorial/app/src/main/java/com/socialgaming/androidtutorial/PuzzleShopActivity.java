@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import android.annotation.SuppressLint;
@@ -26,7 +27,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -153,6 +156,10 @@ public class    PuzzleShopActivity extends AppCompatActivity {
             int resID = getResources().getIdentifier(buttonID, "id", getPackageName());
             ImageButton imageButton = findViewById(resID);
             imageButton.setImageBitmap(puzzlePiece.getImage());
+            ViewGroup.LayoutParams params=imageButton.getLayoutParams();
+            params.height=300;
+            params.width=300;
+            imageButton.setLayoutParams(params);
             //Button funktionalität geben
             imageButton.setOnClickListener(v -> {
                 AlertDialog alertDialog = new AlertDialog.Builder(PuzzleShopActivity.this).create();
