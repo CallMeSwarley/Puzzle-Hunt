@@ -20,6 +20,7 @@ import models.Location;
 import models.LocationsRepository;
 import models.Shop;
 import models.ShopsRepository;
+import models.UsersRepository;
 import models.markers.Markers;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -32,6 +33,8 @@ public class MarkerController extends Controller {
     private ShopsRepository shops;
     @Inject
     private DealersRepository dealers;
+    @Inject
+    private UsersRepository users;
     private static final Gson gson = new Gson();
 
 
@@ -77,7 +80,10 @@ public class MarkerController extends Controller {
         markers.activeShops = activeShops;
         markers.visibleDealers = visibleDealers;
         markers.visibleShops = visibleShops;
-        markers.nearbyUsers = nearbyUsers;
+        markers.userLocations = nearbyUsers;
+        markers.nearbyUsers = new HashMap();
+        nearbyUsers.keySet().stream().forEach(id -> markers.nearbyUsers.put(id, users.getUser(id)));
+
         return ok(gson.toJson(markers));
     }
 
