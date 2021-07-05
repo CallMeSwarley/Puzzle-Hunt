@@ -2,9 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Inventory {
@@ -49,4 +47,16 @@ public class Inventory {
         return sets;
     }
 
+    public void cleanUp() {
+        Map<String, int[][]> afterCleanUp = new HashMap<>(this.sets);
+        for (Map.Entry<String, int[][]> entry : sets.entrySet()) {
+            boolean allEmpty = true;
+            for (int[] row : entry.getValue()) {
+                for (int v : row)
+                    allEmpty = allEmpty && v <= 0;
+            }
+            if (allEmpty)
+                afterCleanUp.remove(entry.getKey());
+        }
+    }
 }

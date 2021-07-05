@@ -86,7 +86,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private PuzzleModel[] allPuzzles = new PuzzleModel[0];
     private ArrayList<PuzzlePiece> allPuzzlePieces = new ArrayList<>();
     private String current_weather_condition = "Clear";
-
+    private boolean focused = true;
     private LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -105,7 +105,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private OnSuccessListener<android.location.Location> locationSuccess = new OnSuccessListener<android.location.Location>() {
         @Override
         public void onSuccess(android.location.Location location) {
-            if (location != null) {
+            if (focused && location != null) {
                 Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
                 if (mLastLocation != null) {
                     distance += distance(mLastLocation, location);
@@ -269,38 +269,40 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     return false;
                 });
                 //TODO add openTrade Check
-                final Trade openTrade;
-                Trade openTrade1;
-                try {
-                    openTrade1 = gson.fromJson(checkForTrades.get(), Trade.class);
-                } catch (ExecutionException | InterruptedException e) {
-                    e.printStackTrace();
-                    openTrade1 = null;
-                }
-                openTrade = openTrade1;
-                if (openTrade != null && markers.nearbyUsers.get(openTrade.traderId) != null) {
-                    AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
-                    alertDialog.setTitle("Trade request");
-                    alertDialog.setMessage("Do you wanna trade with player " + markers.nearbyUsers.get(openTrade.traderId).nickName + "?");
-                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
-                        Intent intent = new Intent(PuzzleMapActivity.this, TradeActivity.class);
-                        TradeActivity.partnerId = openTrade.traderId;
-                        TradeActivity.partnerXp = markers.nearbyUsers.get(openTrade.traderId).xp;
-                        TradeActivity.partnerName = markers.nearbyUsers.get(openTrade.traderId).nickName;
-                        startActivity(intent);
-                        dialog.dismiss();
-                    });
+                if (focused) {
+                    final Trade openTrade;
+                    Trade openTrade1;
+                    try {
+                        openTrade1 = gson.fromJson(checkForTrades.get(), Trade.class);
+                    } catch (ExecutionException | InterruptedException e) {
+                        e.printStackTrace();
+                        openTrade1 = null;
+                    }
+                    openTrade = openTrade1;
+                    if (openTrade != null && markers.nearbyUsers.get(openTrade.traderId) != null) {
+                        AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
+                        alertDialog.setTitle("Trade request");
+                        alertDialog.setMessage("Do you wanna trade with player " + markers.nearbyUsers.get(openTrade.traderId).nickName + "?");
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
+                            Intent intent = new Intent(PuzzleMapActivity.this, TradeActivity.class);
+                            TradeActivity.partnerId = openTrade.traderId;
+                            TradeActivity.partnerXp = markers.nearbyUsers.get(openTrade.traderId).xp;
+                            TradeActivity.partnerName = markers.nearbyUsers.get(openTrade.traderId).nickName;
+                            startActivity(intent);
+                            dialog.dismiss();
+                        });
 
-                    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
-                    alertDialog.show();
-                    final Runnable autoDismiss = () -> {
-                        if (alertDialog.isShowing())
-                            alertDialog.dismiss();
-                    };
-                    alertDialog.setOnDismissListener(dialog -> {
-                        handler.removeCallbacks(autoDismiss);
-                    });
-                    handler.postDelayed(autoDismiss, DELAY_LOCATION - 1000);
+                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
+                        alertDialog.show();
+                        final Runnable autoDismiss = () -> {
+                            if (alertDialog.isShowing())
+                                alertDialog.dismiss();
+                        };
+                        alertDialog.setOnDismissListener(dialog -> {
+                            handler.removeCallbacks(autoDismiss);
+                        });
+                        handler.postDelayed(autoDismiss, DELAY_LOCATION - 1000);
+                    }
                 }
             }
         }
@@ -309,7 +311,8 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     @Override
     public void onPause() {
         super.onPause();
-
+        focused = false;
+        focused = false;
         //stop location updates when Activity is no longer active
         if (fusedLocationProviderClient != null) {
             fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
@@ -459,6 +462,12 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     public void onBackPressed() {
         Intent intent = new Intent(PuzzleMapActivity.this, MainMenuActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        focused = true;
     }
 
     @Override

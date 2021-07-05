@@ -137,17 +137,7 @@ public class TradeController extends Controller {
                 inventory[acceptedByOne.x][acceptedByOne.y] = 1;
                 inventoryOne.sets.put(acceptedByOne.setId, inventory);
             }
-            removeIfEmptyOne:
-            {
-                boolean allEmpty = true;
-                Puzzle puzzle = puzzles.getPuzzle(acceptedByTwo.setId);
-                for (int idxX = 0; idxX < puzzle.piecesCountHorizontal && allEmpty; ++idxX)
-                    for (int idxY = 0; idxY < puzzle.piecesCountVertical && allEmpty; ++idxY)
-                        allEmpty = allEmpty && inventoryOne.sets.get(acceptedByTwo.setId)[idxX][idxY] <= 0;
-                if (allEmpty) {
-                    inventoryOne.sets.remove(acceptedByTwo.setId);
-                }
-            }
+            inventoryOne.cleanUp();
             inventories.update(inventoryOne);
             //Adjust inventory of playerTwo
             inventoryTwo.sets.get(acceptedByOne.setId)[acceptedByOne.x][acceptedByOne.y] -= 1;
@@ -160,17 +150,7 @@ public class TradeController extends Controller {
                 inventoryTwo.sets.put(acceptedByTwo.setId, inventory);
 
             }
-            removeIfEmptyTwo:
-            {
-                boolean allEmpty = true;
-                Puzzle puzzle = puzzles.getPuzzle(acceptedByTwo.setId);
-                for (int idxX = 0; idxX < puzzle.piecesCountHorizontal && allEmpty; ++idxX)
-                    for (int idxY = 0; idxY < puzzle.piecesCountVertical && allEmpty; ++idxY)
-                        allEmpty = allEmpty && inventoryOne.sets.get(acceptedByTwo.setId)[idxX][idxY] <= 0;
-                if (allEmpty) {
-                    inventoryOne.sets.remove(acceptedByTwo.setId);
-                }
-            }
+            inventoryTwo.cleanUp();
             inventories.update(inventoryTwo);
             //Update users
             User userOne = users.getUser(open.traderId);
