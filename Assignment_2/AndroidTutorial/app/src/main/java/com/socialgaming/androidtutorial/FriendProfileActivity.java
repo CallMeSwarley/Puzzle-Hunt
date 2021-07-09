@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -67,6 +68,11 @@ public class FriendProfileActivity extends AppCompatActivity {
         final TextInputLayout descriptionView = findViewById(R.id.description_textView);
         final EditText description = descriptionView.getEditText();
 
+        final TextView title = findViewById(R.id.main_text);
+        String titleString = FriendProfileActivity.name + "'s Profile";
+        if (!FriendProfileActivity.name.equals("")) {
+            title.setText(titleString);
+        }
 
         name.setText(FriendProfileActivity.name);
         xp.setText("" + FriendProfileActivity.xp);
