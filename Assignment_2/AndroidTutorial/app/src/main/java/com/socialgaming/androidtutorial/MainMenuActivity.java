@@ -33,7 +33,7 @@ public class MainMenuActivity extends AppCompatActivity {
         final Button puzzleMap = findViewById(R.id.puzzle_map_button);
         final Button friends = findViewById(R.id.friends_button);
         final Button leaderboard = findViewById(R.id.leaderboard_button);
-        final Button events = findViewById(R.id.events_button);
+//        final Button events = findViewById(R.id.events_button);
 
 
         myProfile.setOnClickListener(new View.OnClickListener() {
@@ -72,13 +72,13 @@ public class MainMenuActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        events.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainMenuActivity.this, PuzzleShopActivity.class);
-                startActivity(intent);
-            }
-        });
+//        events.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(MainMenuActivity.this, PuzzleShopActivity.class);
+//                startActivity(intent);
+//            }
+//        });
     }
 
     @Override

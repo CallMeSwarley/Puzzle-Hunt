@@ -358,7 +358,7 @@ public class TradeActivity extends AppCompatActivity {
                 }
             }
 
-            Toast.makeText(this, "Role: " + role.toString(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Role: " + role.toString(), Toast.LENGTH_SHORT).show();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
