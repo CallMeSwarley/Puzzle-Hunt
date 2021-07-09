@@ -67,7 +67,7 @@ import java.util.concurrent.ExecutionException;
 //wurde angepasst
 
 public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private static final double DISTANCE_THRESHOLD = 100;
+    private static final double DISTANCE_THRESHOLD = 1000;
     private GoogleMap mMap;
     int MY_RESULT_FINE_LOCATION;
     private static String url = "http://api.openweathermap.org/data/2.5/weather?";
@@ -667,9 +667,9 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         int randomX = randomPiece.getPositionHorizontal();
         int randomY = randomPiece.getPositionVertical();
         if(edgeIsX==0){
-            randomX = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountHorizontal;
+            randomX = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountHorizontal-1;
         }else{
-            randomY = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountVertical;
+            randomY = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountVertical-1;
         }
         HTTPPoster get = new HTTPPoster();
         get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
@@ -679,8 +679,8 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         PuzzlePiece randomPiece = allPuzzlePieces.get(new Random().nextInt(allPuzzlePieces.size()));
         String id = randomPiece.getPuzzleParent().id;
-        int randomX = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountHorizontal;
-        int randomY = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountVertical;
+        int randomX = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountHorizontal-1;
+        int randomY = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountVertical-1;
         HTTPPoster get = new HTTPPoster();
         get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
     }

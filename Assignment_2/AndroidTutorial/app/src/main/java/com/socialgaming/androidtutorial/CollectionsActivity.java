@@ -16,6 +16,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.gridlayout.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -46,6 +47,8 @@ public class CollectionsActivity extends AppCompatActivity {
         Bitmap returnedBitmap = ((BitmapDrawable) image).getBitmap();
         Puzzle puzzle = new Puzzle(puzzle_id, puzzleFromString.piecesCountHorizontal, puzzleFromString.piecesCountVertical, returnedBitmap,puzzleFromString.ownedPuzzlePieces);
         PuzzlePiece[][] pieces = puzzle.getAllPuzzlePieces();
+        TextView numberOfPieces = findViewById(R.id.number_of_pieces);
+        numberOfPieces.setText(puzzle.ownedPuzzlePieces.size()+"/"+puzzle.piecesCountVertical*puzzle.piecesCountHorizontal);
         GridLayout grid = (GridLayout) findViewById(R.id.gridlayout);
         CardView card = findViewById(R.id.cardView3x3);
         ColorMatrix matrix = new ColorMatrix();
