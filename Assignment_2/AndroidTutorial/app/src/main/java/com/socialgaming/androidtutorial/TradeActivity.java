@@ -39,16 +39,13 @@ import java.util.concurrent.ExecutionException;
 public class TradeActivity extends AppCompatActivity {
 
     // Database stuff
-    Inventory inventory = new Inventory();
     Trade trade = new Trade();
     Map<String, int[][]> sets = new HashMap<>();
     Gson gson = new Gson();
     Role role = Role.Unasigned;
 
     private PieceViewItem selectedPiece;
-
     private Trade lastTradeState;
-    private static String tradeAccepted = "";
 
     // Player
     private List<PieceViewItem> playerItemList = new ArrayList<>();
@@ -75,9 +72,6 @@ public class TradeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        //Toast.makeText(this, "Destroyed", Toast.LENGTH_SHORT).show();
-
         try{
             new HTTPPoster().execute("trade", trade.id, "decline");
         }
@@ -168,7 +162,6 @@ public class TradeActivity extends AppCompatActivity {
                     }
                     else {
                         // Check if last trade was successful
-                        // Datum checken, dayOfYear + year
                         HTTPGetter get = new HTTPGetter();
                         get.execute("trade", trade.getId(), "getLastTrade");
                         getUserResult = get.get();
@@ -213,6 +206,11 @@ public class TradeActivity extends AppCompatActivity {
                 try{
                     // "Trade Done!"
                     // "FAIL"
+
+                    if(playerItemList.isEmpty()){
+                        Toast.makeText(getBaseContext(), "You have to offer at least one piece before accepting!", Toast.LENGTH_LONG).show();
+                        return;
+                    }
 
                     if(selectedPiece == null){
                         Toast.makeText(getBaseContext(), "Select a piece from your partner before you accept the trade.", Toast.LENGTH_SHORT).show();
@@ -332,7 +330,7 @@ public class TradeActivity extends AppCompatActivity {
 
             /*
              *  If the partner already created the trade it can just be pulled from the database.
-             *  Otherwise it needs to be created
+             *  Otherwise the trade needs to be created first
              */
             if(!getUserResult.equals("null") && !getUserResult.equals("{ }")){
                 trade = gson.fromJson(getUserResult, Trade.class);
@@ -376,13 +374,6 @@ public class TradeActivity extends AppCompatActivity {
             if (!getUserResult.equals("null") && !getUserResult.equals("{ }")) {
                 trade = gson.fromJson(getUserResult, Trade.class);
             }
-
-            // Links Trader
-            // Trader: N0gKquyUbHOo5TMqIdvdoakqTTl1
-            // Partner: mE4YUQn9rhVYMwK7Mjll9hdXjPg1
-
-            // Trader: N0gKquyUbHOo5TMqIdvdoakqTTl1
-            // Partner: mE4YUQn9rhVYMwK7Mjll9hdXjPg1
 
             HTTPPoster poster = new HTTPPoster();
             if (role == Role.Trader) {
@@ -444,7 +435,7 @@ public class TradeActivity extends AppCompatActivity {
     private void fetchPieces(){
         this.sets = getSets(FirebaseAuth.getInstance().getUid());
         if(sets != null)
-            getSets(FirebaseAuth.getInstance().getUid()).entrySet().stream().forEach(x -> processPieces(x, popUpItemList));
+            sets.entrySet().stream().forEach(x -> processPieces(x, popUpItemList));
     }
 
     private void processPieces(Map.Entry<String, int[][]> x, List<PieceViewItem> itemList) {
@@ -519,13 +510,6 @@ public class TradeActivity extends AppCompatActivity {
         Puzzle partnerPuzzle = createPuzzleInstance(partnerOffer.setId, partnerArr.length);
         PuzzlePiece partnerPiece = partnerPuzzle.getPuzzlePiece(partnerOffer.x, partnerOffer.y);
         partnerImg.setImageBitmap(partnerPiece.getImage());
-
-//        TranslateAnimation animation = new TranslateAnimation(0, 50, 0, 100);
-//        animation.setDuration(1000);
-//        animation.setFillAfter(false);
-//        animation.setAnimationListener(new MyAnimationListener());
-//
-//        imageView.startAnimation(animation);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override

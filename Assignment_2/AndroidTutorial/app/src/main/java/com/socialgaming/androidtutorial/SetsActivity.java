@@ -207,8 +207,8 @@ public class SetsActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        if(sets.isEmpty())
-            insertDummyValues();
+//        if(sets.isEmpty())
+//            insertDummyValues();
 
         // Aus den Datenbankeinträgen werden hier ViewItems erstellt
         sets.entrySet().stream().forEach(x -> {
