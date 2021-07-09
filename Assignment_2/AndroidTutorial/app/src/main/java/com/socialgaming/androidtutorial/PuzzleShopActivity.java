@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import android.annotation.SuppressLint;
@@ -15,6 +16,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -26,7 +29,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -139,10 +144,10 @@ public class    PuzzleShopActivity extends AppCompatActivity {
             //Puzzlepreis bestimmen
             int XP;
             if (i < 3)
-                XP = 5;
+                XP = 1500;
             else if (i < 5)
-                XP = 10;
-            else XP = 15;
+                XP = 3000;
+            else XP = 5000;
             //Puzzlepiece holen
             int randomIndex = rand.nextInt(allPuzzlePieces.size());
             PuzzlePiece puzzlePiece = allPuzzlePieces.get(randomIndex);
@@ -153,6 +158,10 @@ public class    PuzzleShopActivity extends AppCompatActivity {
             int resID = getResources().getIdentifier(buttonID, "id", getPackageName());
             ImageButton imageButton = findViewById(resID);
             imageButton.setImageBitmap(puzzlePiece.getImage());
+            ViewGroup.LayoutParams params=imageButton.getLayoutParams();
+            params.height=300;
+            params.width=300;
+            imageButton.setLayoutParams(params);
             //Button funktionalität geben
             imageButton.setOnClickListener(v -> {
                 AlertDialog alertDialog = new AlertDialog.Builder(PuzzleShopActivity.this).create();
@@ -175,21 +184,21 @@ public class    PuzzleShopActivity extends AppCompatActivity {
                                     user.xp -=XP;
                                     String xpString="You have "+user.xp+" XP";
                                     xpAnzeige.setText(xpString);
-                                    user.xp-=200;
+                                    user.xp-=100;
                                     new HTTPPoster().execute(
                                             "user",
                                             Uri.encode(gson.toJson(user, User.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
                                             "update");
                                     allPuzzlePieces.remove(puzzlePiece);
                                     myPuzzlePieces.add(puzzlePiece);
-                                    HTTPGetter getAddPiece = new HTTPGetter();
-                                    getAddPiece.execute("inventory", FirebaseAuth.getInstance().getUid(), puzzlePiece.getPuzzleParent().id, "" + puzzlePiece.getPositionHorizontal(),
+                                    HTTPPoster postAddPiece = new HTTPPoster();
+                                    postAddPiece.execute("inventory", FirebaseAuth.getInstance().getUid(), puzzlePiece.getPuzzleParent().id, "" + puzzlePiece.getPositionHorizontal(),
                                             "" + puzzlePiece.getPositionVertical(), "1", "addPiece");
                                     //make button Unclickable and grayish
                                     imageButton.setEnabled(false);
                                     Drawable icon = convertDrawableToGrayScale(new BitmapDrawable(getResources(), puzzlePiece.getImage()));
                                     imageButton.setImageDrawable(icon);
-                                    Toast.makeText(PuzzleShopActivity.this, "Bought Piece for  " + XP + " XP!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(PuzzleShopActivity.this, "Bought Piece for " + XP + " XP!", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         } catch (ExecutionException | InterruptedException e) {
@@ -211,7 +220,9 @@ public class    PuzzleShopActivity extends AppCompatActivity {
 
     private Drawable convertDrawableToGrayScale(Drawable drawable) {
         Drawable res = drawable.mutate();
-        res.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
+        final ColorMatrix grayscaleMatrix = new ColorMatrix();
+        grayscaleMatrix.setSaturation(0);
+        res.setColorFilter(new ColorMatrixColorFilter(grayscaleMatrix));
         return res;
     }
 

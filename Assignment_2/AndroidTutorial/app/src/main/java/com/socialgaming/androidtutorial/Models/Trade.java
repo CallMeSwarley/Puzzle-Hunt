@@ -10,7 +10,7 @@ public class Trade {
     public String partnerId;
     public Map<String, int[][]> traderTradeItems;
     public Map<String, int[][]> partnerTradeItems;
-    public boolean playerAccepted;
+    public boolean traderAccepted;
     public boolean partnerAccepted;
     public Offer traderOffer;
     public Offer partnerOffer;

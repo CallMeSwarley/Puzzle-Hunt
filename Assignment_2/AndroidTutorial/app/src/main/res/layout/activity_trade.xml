@@ -30,9 +30,8 @@
         android:layout_height="18dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="5dp"
-        android:text="Your selected Pieces:"
+        android:text="Pieces offered by you:"
         app:layout_constraintBottom_toTopOf="@+id/player1_trade_items_recyclerView"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/trade_text" />
@@ -79,7 +78,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
-        android:text="Pieces offered by Friend:"
+        android:text="Pieces offered by %s:"
         app:layout_constraintBottom_toTopOf="@+id/player2_trade_items_recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

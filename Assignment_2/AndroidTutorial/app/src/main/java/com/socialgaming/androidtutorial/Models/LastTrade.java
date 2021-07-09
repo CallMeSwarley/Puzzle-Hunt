@@ -1,9 +1,6 @@
-package models.trade;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+package com.socialgaming.androidtutorial.Models;
 
 public class LastTrade {
-    @JsonProperty("_id")
     public String id;
     public String playerOne;
     public String playerTwo;

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="25dp">
+
+    <TextView
+        android:id="@+id/trade_successful_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="25dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Trade successful"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textSize="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"></TextView>
+
+    <ImageView
+        android:id="@+id/player_pic_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="28dp"
+        app:layout_constraintEnd_toStartOf="@id/partner_pic_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/trade_successful_title"
+        app:srcCompat="@drawable/profile_pic1"
+        tools:srcCompat="@tools:sample/avatars[0]" />
+
+    <TextView
+        android:id="@+id/player_name_text"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="You"
+        android:textSize="18dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="@id/player_pic_image"
+        app:layout_constraintRight_toRightOf="@id/player_pic_image"
+        app:layout_constraintTop_toBottomOf="@id/player_pic_image"/>
+
+    <ImageView
+        android:id="@+id/partner_pic_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/player_pic_image"
+        app:layout_constraintTop_toBottomOf="@id/trade_successful_title"
+        app:srcCompat="@drawable/profile_pic1"
+        tools:srcCompat="@tools:sample/avatars[4]" />
+
+    <TextView
+        android:id="@+id/partner_name_text"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Partner"
+        android:textSize="18dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="@id/partner_pic_image"
+        app:layout_constraintRight_toRightOf="@id/partner_pic_image"
+        app:layout_constraintTop_toBottomOf="@id/partner_pic_image"/>
+
+    <ImageView
+        android:id="@+id/trader_piece"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="75dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/player_pic_image"
+        app:srcCompat="@drawable/img_1" />
+
+    <ImageView
+        android:id="@+id/partner_piece"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="75dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/partner_pic_image"
+        app:srcCompat="@drawable/meme" />
+
+    <Button
+        android:id="@+id/close_trade_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Close"
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toBottomOf="@id/trader_piece"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

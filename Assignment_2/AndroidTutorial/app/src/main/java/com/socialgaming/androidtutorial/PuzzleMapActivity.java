@@ -1,13 +1,10 @@
 package com.socialgaming.androidtutorial;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +40,7 @@ import com.socialgaming.androidtutorial.Models.Puzzle;
 import com.socialgaming.androidtutorial.Models.PuzzleModel;
 import com.socialgaming.androidtutorial.Models.PuzzlePiece;
 import com.socialgaming.androidtutorial.Models.Shop;
+import com.socialgaming.androidtutorial.Models.Trade;
 import com.socialgaming.androidtutorial.Models.Weather;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 import com.socialgaming.androidtutorial.Util.HTTPPoster;
@@ -58,8 +56,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
@@ -78,8 +76,8 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private TextView condDescr;
     private ImageView imgView;
     private final Handler handler = new Handler();
-    private static final int DELAY_LOCATION = 6000;
-    private static final int DELAY_WEATHER = 5000;
+    private static final int DELAY_LOCATION = 5000;
+    private static final int DELAY_WEATHER = 7000;
     private LocationRequest mLocationRequest;
     private android.location.Location mLastLocation;
     private Marker mCurrLocationMarker;
@@ -88,7 +86,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private PuzzleModel[] allPuzzles = new PuzzleModel[0];
     private ArrayList<PuzzlePiece> allPuzzlePieces = new ArrayList<>();
     private String current_weather_condition = "Clear";
-
+    private boolean focused = true;
     private LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -107,13 +105,14 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private OnSuccessListener<android.location.Location> locationSuccess = new OnSuccessListener<android.location.Location>() {
         @Override
         public void onSuccess(android.location.Location location) {
-            if (location != null) {
+            if (focused && location != null) {
                 Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
                 if (mLastLocation != null) {
                     distance += distance(mLastLocation, location);
                 }
-                System.out.println(distance);
-                while(distance > DISTANCE_THRESHOLD) {
+                HTTPGetter checkForTrades = new HTTPGetter();
+                checkForTrades.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
+                while (distance > DISTANCE_THRESHOLD) {
                     distance -= DISTANCE_THRESHOLD;
                     AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
                     alertDialog.setTitle("Puzzle");
@@ -136,7 +135,8 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                             addRandomEdgePiece();
                             break;
                         case "Snow":
-                            addRandomOddPiece();;
+                            addRandomOddPiece();
+                            ;
                             break;
                         case "Thunderstorm":
                             addRandomEvenPiece();
@@ -145,7 +145,6 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                             addRandomPiece();
                             break;
                     }
-
 
 
                 }
@@ -164,7 +163,9 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 }
                 //move map camera
                 LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-                Markers markers = new Markers();
+                final Markers markers;
+                final HashMap<String, String> idLookUp = new HashMap<>();
+                Markers markers1;
                 HTTPGetter getMarkers = new HTTPGetter();
                 getMarkers.execute(
                         "markers",
@@ -175,16 +176,17 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         String.valueOf(bounds.northeast.longitude),
                         "getInBound");
                 try {
-                    markers = gson.fromJson(getMarkers.get(), Markers.class);
-                    System.out.println(gson.toJson(markers));
+                    markers1 = gson.fromJson(getMarkers.get(), Markers.class);
                 } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();
+                    markers1 = new Markers();
                 }
+                markers = markers1;
                 Shop[] activeShops = markers.activeShops;
                 Shop[] visibleShops = markers.visibleShops;
                 Dealer[] activeDealers = markers.activeDealers;
                 Dealer[] visibleDealers = markers.visibleDealers;
-                    mMap.clear();
+                mMap.clear();
                 for (Shop s : activeShops) {
                     Marker mark = mMap.addMarker(new MarkerOptions().position(new LatLng(s.lat, s.lon)).title(s.title + "\nActive").
                             icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
@@ -211,12 +213,14 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     Marker mark = mMap.addMarker(marker);
                     mark.setTag("VD");//=VisibleDealer
                 }
-                for (Map.Entry<String, Double[]> entry : markers.nearbyUsers.entrySet()) {
+                for (String id : markers.nearbyUsers.keySet()) {
                     MarkerOptions marker = new MarkerOptions();
-                    marker.position(new LatLng(entry.getValue()[0], entry.getValue()[1]));
-                    marker.title(entry.getKey());
+                    marker.position(new LatLng(markers.userLocations.get(id)[0], markers.userLocations.get(id)[1]));
+                    marker.title(markers.nearbyUsers.get(id).nickName);
                     marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
-                    mMap.addMarker(marker);
+                    Marker mark = mMap.addMarker(marker);
+                    mark.setTag("NU");//=NearbyUser
+                    idLookUp.put(mark.getId(), id);
                 }
                 mMap.setOnMarkerClickListener(marker -> {
                     System.out.println("++++++++++++++++++++++Marker click+++++++++++++++++++++++++++++++++");
@@ -234,11 +238,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
                         alertDialog.show();
                         return true;
-                    } else
-                        return false;
-                });
-                mMap.setOnMarkerClickListener(marker ->{
-                    if (marker.getTag() != null && ((String) marker.getTag()).equals("AD")) {
+                    } else if (marker.getTag() != null && ((String) marker.getTag()).equals("AD")) {
                         AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
                         alertDialog.setTitle("Dealer");
                         alertDialog.setMessage("Do you wanna play a game?");
@@ -250,9 +250,60 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
                         alertDialog.show();
                         return true;
-                    } else
-                        return false;
+                    } else if (marker.getTag() != null && ((String) marker.getTag()).equals("NU")) {
+                        AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
+                        alertDialog.setTitle("Trade");
+                        alertDialog.setMessage("Do you wanna trade with player " + marker.getTitle() + "?");
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
+                            Intent intent = new Intent(PuzzleMapActivity.this, TradeActivity.class);
+                            TradeActivity.partnerId = idLookUp.get(marker.getId());
+                            TradeActivity.partnerXp = markers.nearbyUsers.get(idLookUp.get(marker.getId())).xp;
+                            TradeActivity.partnerName = markers.nearbyUsers.get(idLookUp.get(marker.getId())).nickName;
+                            startActivity(intent);
+                            dialog.dismiss();
+                        });
+                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
+                        alertDialog.show();
+                        return true;
+                    }
+                    return false;
                 });
+                //TODO add openTrade Check
+                if (focused) {
+                    final Trade openTrade;
+                    Trade openTrade1;
+                    try {
+                        openTrade1 = gson.fromJson(checkForTrades.get(), Trade.class);
+                    } catch (ExecutionException | InterruptedException e) {
+                        e.printStackTrace();
+                        openTrade1 = null;
+                    }
+                    openTrade = openTrade1;
+                    if (openTrade != null && markers.nearbyUsers.get(openTrade.traderId) != null) {
+                        AlertDialog alertDialog = new AlertDialog.Builder(PuzzleMapActivity.this).create();
+                        alertDialog.setTitle("Trade request");
+                        alertDialog.setMessage("Do you wanna trade with player " + markers.nearbyUsers.get(openTrade.traderId).nickName + "?");
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
+                            Intent intent = new Intent(PuzzleMapActivity.this, TradeActivity.class);
+                            TradeActivity.partnerId = openTrade.traderId;
+                            TradeActivity.partnerXp = markers.nearbyUsers.get(openTrade.traderId).xp;
+                            TradeActivity.partnerName = markers.nearbyUsers.get(openTrade.traderId).nickName;
+                            startActivity(intent);
+                            dialog.dismiss();
+                        });
+
+                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", (dialog, which) -> dialog.dismiss());
+                        alertDialog.show();
+                        final Runnable autoDismiss = () -> {
+                            if (alertDialog.isShowing())
+                                alertDialog.dismiss();
+                        };
+                        alertDialog.setOnDismissListener(dialog -> {
+                            handler.removeCallbacks(autoDismiss);
+                        });
+                        handler.postDelayed(autoDismiss, DELAY_LOCATION - 1000);
+                    }
+                }
             }
         }
     };
@@ -260,7 +311,8 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     @Override
     public void onPause() {
         super.onPause();
-
+        focused = false;
+        focused = false;
         //stop location updates when Activity is no longer active
         if (fusedLocationProviderClient != null) {
             fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
@@ -404,6 +456,18 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
             e.printStackTrace();
         }
         return new Shop[0];
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(PuzzleMapActivity.this, MainMenuActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        focused = true;
     }
 
     @Override
@@ -628,38 +692,38 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     }
 
-    private void addRandomPiece(){
+    private void addRandomPiece() {
 
         PuzzlePiece randomPiece = allPuzzlePieces.get(new Random().nextInt(allPuzzlePieces.size()));
         String id = randomPiece.getPuzzleParent().id;
         int randomX = randomPiece.getPositionHorizontal();
         int randomY = randomPiece.getPositionVertical();
         HTTPPoster get = new HTTPPoster();
-        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id, Integer.toString(randomX), Integer.toString(randomY), "1", "addPiece");
     }
 
-    private void addRandomOddPiece(){
+    private void addRandomOddPiece() {
 
         PuzzlePiece randomPiece = allPuzzlePieces.get(new Random().nextInt(allPuzzlePieces.size()));
         String id = randomPiece.getPuzzleParent().id;
-        int randomX = randomPiece.getPositionHorizontal()%2==1?randomPiece.getPositionHorizontal():(randomPiece.getPositionHorizontal()+1)%randomPiece.getPuzzleParent().piecesCountHorizontal;
-        int randomY = randomPiece.getPositionVertical()%2==1?randomPiece.getPositionVertical():(randomPiece.getPositionVertical()+1)%randomPiece.getPuzzleParent().piecesCountVertical;
+        int randomX = randomPiece.getPositionHorizontal() % 2 == 1 ? randomPiece.getPositionHorizontal() : (randomPiece.getPositionHorizontal() + 1) % randomPiece.getPuzzleParent().piecesCountHorizontal;
+        int randomY = randomPiece.getPositionVertical() % 2 == 1 ? randomPiece.getPositionVertical() : (randomPiece.getPositionVertical() + 1) % randomPiece.getPuzzleParent().piecesCountVertical;
         HTTPPoster get = new HTTPPoster();
-        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id, Integer.toString(randomX), Integer.toString(randomY), "1", "addPiece");
     }
 
-    private void addRandomEvenPiece(){
+    private void addRandomEvenPiece() {
 
         PuzzlePiece randomPiece = allPuzzlePieces.get(new Random().nextInt(allPuzzlePieces.size()));
         String id = randomPiece.getPuzzleParent().id;
-        int randomX = randomPiece.getPositionHorizontal()%2==0?randomPiece.getPositionHorizontal():(randomPiece.getPositionHorizontal()+1)%randomPiece.getPuzzleParent().piecesCountHorizontal;
-        int randomY = randomPiece.getPositionVertical()%2==0?randomPiece.getPositionVertical():(randomPiece.getPositionVertical()+1)%randomPiece.getPuzzleParent().piecesCountVertical;
+        int randomX = randomPiece.getPositionHorizontal() % 2 == 0 ? randomPiece.getPositionHorizontal() : (randomPiece.getPositionHorizontal() + 1) % randomPiece.getPuzzleParent().piecesCountHorizontal;
+        int randomY = randomPiece.getPositionVertical() % 2 == 0 ? randomPiece.getPositionVertical() : (randomPiece.getPositionVertical() + 1) % randomPiece.getPuzzleParent().piecesCountVertical;
         HTTPPoster get = new HTTPPoster();
-        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id, Integer.toString(randomX), Integer.toString(randomY), "1", "addPiece");
     }
 
 
-    private void addRandomEdgePiece(){
+    private void addRandomEdgePiece() {
 
         PuzzlePiece randomPiece = allPuzzlePieces.get(new Random().nextInt(allPuzzlePieces.size()));
         String id = randomPiece.getPuzzleParent().id;
@@ -668,21 +732,21 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         int randomY = randomPiece.getPositionVertical();
         if(edgeIsX==0){
             randomX = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountHorizontal-1;
-        }else{
-            randomY = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountVertical-1;
+        }else {
+            randomY = new Random().nextInt(2) == 0 ? 0 : randomPiece.getPuzzleParent().piecesCountVertical - 1;
         }
         HTTPPoster get = new HTTPPoster();
-        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id, Integer.toString(randomX), Integer.toString(randomY), "1", "addPiece");
     }
 
-    private void addRandomCornerPiece(){
+    private void addRandomCornerPiece() {
 
         PuzzlePiece randomPiece = allPuzzlePieces.get(new Random().nextInt(allPuzzlePieces.size()));
         String id = randomPiece.getPuzzleParent().id;
         int randomX = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountHorizontal-1;
         int randomY = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountVertical-1;
         HTTPPoster get = new HTTPPoster();
-        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id,Integer.toString(randomX),Integer.toString(randomY),"1","addPiece");
+        get.execute("inventory", FirebaseAuth.getInstance().getUid(), id, Integer.toString(randomX), Integer.toString(randomY), "1", "addPiece");
     }
 
 

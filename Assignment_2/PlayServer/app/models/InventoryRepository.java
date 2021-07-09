@@ -9,7 +9,8 @@ import uk.co.panaxiom.playjongo.PlayJongo;
 
 @Singleton
 public class InventoryRepository {
-
+    @Inject
+    private PuzzleRepository puzzles;
     @Inject
     private PlayJongo jongo;
 
@@ -24,19 +25,22 @@ public class InventoryRepository {
     }
 
     public MongoCollection inventories() {
-        MongoCollection inventoryCollection = jongo.getCollection("inventories");
-        return inventoryCollection;
+        return jongo.getCollection("inventories");
     }
 
     public Inventory getInventory(String id) {
-        return inventories().findOne("{_id: #}", id).as(Inventory.class);
+        Inventory inventory = inventories().findOne("{_id: #}", id).as(Inventory.class);
+        inventory.cleanUp();
+        return inventory;
     }
 
     public void insert(Inventory inventory) {
+        inventory.cleanUp();
         inventories().save(inventory);
     }
 
     public void update(Inventory inventory) {
+        inventory.cleanUp();
         inventories().update("{_id: #}", inventory.id).with(this.copyInventory(inventory));
     }
 
@@ -45,7 +49,8 @@ public class InventoryRepository {
         copy.id = inventory.id;
         copy.sets = inventory.sets;
         copy.titles = inventory.titles;
-
+        copy.cleanUp();
+        inventory.cleanUp();
         return copy;
     }
 }

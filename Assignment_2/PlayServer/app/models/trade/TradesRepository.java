@@ -1,6 +1,10 @@
 package models.trade;
 
 import org.jongo.MongoCollection;
+import org.jongo.MongoCursor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -27,6 +31,15 @@ public class TradesRepository {
         Trade result = trades().findOne("{traderId:#}", firebaseId).as(Trade.class);
         if (result == null)
             result = trades().findOne("{partnerId:#}", firebaseId).as(Trade.class);
+        return result;
+    }
+
+    public List<Trade> getOpenTrades(String firebaseId) {
+        MongoCursor<Trade> trades = trades().find().as(Trade.class);
+        List<Trade> result = new ArrayList();
+        for (Trade t : trades) {
+            result.add(t);
+        }
         return result;
     }
 
@@ -59,5 +72,12 @@ public class TradesRepository {
         copy.traderAccepted = trade.traderAccepted;
         copy.partnerAccepted = trade.partnerAccepted;
         return copy;
+    }
+
+    public Trade getTradeWithBothIds(String firebaseId, String partnerId) {
+        Trade result = trades().findOne("{traderId:#,partnerId:#}", firebaseId, partnerId).as(Trade.class);
+        if (result == null)
+            result = trades().findOne("{partnerId:#,traderId:#}", firebaseId, partnerId).as(Trade.class);
+        return result;
     }
 }

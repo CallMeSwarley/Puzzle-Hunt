@@ -21,6 +21,7 @@ public class LastTradesRepository {
         return instance;
     }
 
+
     public MongoCollection lastTrades() {
         return jongo.getCollection("lastTrades");
     }
@@ -32,11 +33,18 @@ public class LastTradesRepository {
         return result;
     }
 
+    public LastTrade getLastTrade(String tradeId) {
+        LastTrade result = lastTrades().findOne("{_id:#}", tradeId).as(LastTrade.class);
+        return result;
+    }
+
     public void insert(Trade trade) {
         LastTrade lastTrade = new LastTrade();
         lastTrade.id = trade.id;
         lastTrade.playerOne = trade.traderId;
         lastTrade.playerTwo = trade.partnerId;
+        lastTrade.playerAccepted = trade.traderOffer;
+        lastTrade.traderAccepted = trade.partnerOffer;
         LocalDate now = LocalDate.now();
         lastTrade.dayOfYear = now.getDayOfYear();
         lastTrade.year = now.getYear();
@@ -50,10 +58,14 @@ public class LastTradesRepository {
     public LastTrade copy(LastTrade lastTrade) {
         LastTrade copy = new LastTrade();
         copy.id = lastTrade.id;
+        copy.playerOne = lastTrade.playerOne;
+        copy.playerTwo = lastTrade.playerTwo;
         copy.dayOfYear = lastTrade.dayOfYear;
         copy.year = lastTrade.year;
         copy.playerTwo = lastTrade.playerTwo;
         copy.playerOne = lastTrade.playerOne;
+        copy.traderAccepted = lastTrade.traderAccepted;
+        copy.playerAccepted = lastTrade.playerAccepted;
         return copy;
     }
 
@@ -63,6 +75,8 @@ public class LastTradesRepository {
             insert(trade);
         } else {
             LocalDate now = LocalDate.now();
+            lastTrade.playerOne = trade.traderId;
+            lastTrade.playerTwo = trade.partnerId;
             lastTrade.year = now.getYear();
             lastTrade.dayOfYear = now.getDayOfYear();
             update(lastTrade);

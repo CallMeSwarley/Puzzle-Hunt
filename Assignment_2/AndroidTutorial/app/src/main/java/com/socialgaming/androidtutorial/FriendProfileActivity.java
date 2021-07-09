@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -67,6 +68,11 @@ public class FriendProfileActivity extends AppCompatActivity {
         final TextInputLayout descriptionView = findViewById(R.id.description_textView);
         final EditText description = descriptionView.getEditText();
 
+        final TextView title = findViewById(R.id.main_text);
+        String titleString = FriendProfileActivity.name + "'s Profile";
+        if (!FriendProfileActivity.name.equals("")) {
+            title.setText(titleString);
+        }
 
         name.setText(FriendProfileActivity.name);
         xp.setText("" + FriendProfileActivity.xp);
@@ -125,7 +131,7 @@ public class FriendProfileActivity extends AppCompatActivity {
                                         String getUserResult = get.get();
                                         if (!getUserResult.equals("{ }")) {
                                             User user = gson.fromJson(getUserResult, User.class);
-                                            user.xp += 3;
+                                            user.xp += 50;
                                             new HTTPPoster().execute(
                                                     "user",
                                                     Uri.encode(gson.toJson(user, User.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
@@ -134,7 +140,7 @@ public class FriendProfileActivity extends AppCompatActivity {
                                     } catch (ExecutionException | InterruptedException e) {
                                         e.printStackTrace();
                                     }
-                                    Toast.makeText(FriendProfileActivity.this, "Gift was sent successfully! Earned +3XP", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(FriendProfileActivity.this, "Gift was sent successfully! Earned +50 XP", Toast.LENGTH_SHORT).show();
                                 }
                             } catch (ExecutionException | InterruptedException e) {
                                 e.printStackTrace();

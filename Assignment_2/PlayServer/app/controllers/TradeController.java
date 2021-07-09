@@ -47,6 +47,16 @@ public class TradeController extends Controller {
         return ok(gson.toJson(openTrade));
     }
 
+    public Result getLastTrade(String tradeId) {
+        LastTrade lastTrade = lastTrades.getLastTrade(tradeId);
+        return ok(gson.toJson(lastTrade));
+    }
+
+    public Result getOpenTradeTwoIds(String firebaseId, String partnerId) {
+        Trade openTrade = trades.getTradeWithBothIds(firebaseId, partnerId);
+        return ok(gson.toJson(openTrade));
+    }
+
     /**
      * @return "Fail" wenn ein Trade nicht möglich ist
      * Trade-Objekt wenn der Trade begonnen hat, egal ob neu oder erneut
@@ -58,8 +68,13 @@ public class TradeController extends Controller {
         if (lastTrade != null) {
             if ((lastTrade.year < now.getYear() || lastTrade.dayOfYear != now.getDayOfYear())) {
                 trade.id = lastTrade.id;
-                trade.traderId = lastTrade.playerOne;
-                trade.partnerId = lastTrade.playerTwo;
+                if (lastTrade.playerOne.equals(firebaseId)) {
+                    trade.traderId = lastTrade.playerOne;
+                    trade.partnerId = lastTrade.playerTwo;
+                } else {
+                    trade.partnerId = lastTrade.playerOne;
+                    trade.traderId = lastTrade.playerTwo;
+                }
             } else {
                 return ok("FAIL");
             }
@@ -89,6 +104,10 @@ public class TradeController extends Controller {
         } else {
             open.partnerTradeItems = gson.fromJson(offers, Offers.class);
         }
+        open.traderAccepted = false;
+        open.partnerAccepted = false;
+        open.traderOffer = new Offer();
+        open.partnerOffer = new Offer();
         trades.update(open);
         return ok(gson.toJson(open));
     }
@@ -118,6 +137,7 @@ public class TradeController extends Controller {
                 inventory[acceptedByOne.x][acceptedByOne.y] = 1;
                 inventoryOne.sets.put(acceptedByOne.setId, inventory);
             }
+            inventoryOne.cleanUp();
             inventories.update(inventoryOne);
             //Adjust inventory of playerTwo
             inventoryTwo.sets.get(acceptedByOne.setId)[acceptedByOne.x][acceptedByOne.y] -= 1;
@@ -128,7 +148,9 @@ public class TradeController extends Controller {
                 int[][] inventory = new int[puzzle.piecesCountHorizontal][puzzle.piecesCountVertical];
                 inventory[acceptedByTwo.x][acceptedByTwo.y] = 1;
                 inventoryTwo.sets.put(acceptedByTwo.setId, inventory);
+
             }
+            inventoryTwo.cleanUp();
             inventories.update(inventoryTwo);
             //Update users
             User userOne = users.getUser(open.traderId);
