@@ -125,7 +125,7 @@ public class FriendProfileActivity extends AppCompatActivity {
                                         String getUserResult = get.get();
                                         if (!getUserResult.equals("{ }")) {
                                             User user = gson.fromJson(getUserResult, User.class);
-                                            user.xp += 3;
+                                            user.xp += 50;
                                             new HTTPPoster().execute(
                                                     "user",
                                                     Uri.encode(gson.toJson(user, User.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
@@ -134,7 +134,7 @@ public class FriendProfileActivity extends AppCompatActivity {
                                     } catch (ExecutionException | InterruptedException e) {
                                         e.printStackTrace();
                                     }
-                                    Toast.makeText(FriendProfileActivity.this, "Gift was sent successfully! Earned +3XP", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(FriendProfileActivity.this, "Gift was sent successfully! Earned +50 XP", Toast.LENGTH_SHORT).show();
                                 }
                             } catch (ExecutionException | InterruptedException e) {
                                 e.printStackTrace();
