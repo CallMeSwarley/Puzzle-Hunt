@@ -65,7 +65,7 @@ import java.util.concurrent.ExecutionException;
 //wurde angepasst
 
 public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private static final double DISTANCE_THRESHOLD = 1000;
+    private static final double DISTANCE_THRESHOLD = 100;
     private GoogleMap mMap;
     int MY_RESULT_FINE_LOCATION;
     private static String url = "http://api.openweathermap.org/data/2.5/weather?";
@@ -109,6 +109,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
                 if (mLastLocation != null) {
                     distance += distance(mLastLocation, location);
+                    System.out.println(distance);
                 }
                 HTTPGetter checkForTrades = new HTTPGetter();
                 checkForTrades.execute("trade", FirebaseAuth.getInstance().getUid(), "getOpenTrade");
@@ -145,8 +146,6 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                             addRandomPiece();
                             break;
                     }
-
-
                 }
                 mLastLocation = location;
 
