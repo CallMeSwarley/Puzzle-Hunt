@@ -67,6 +67,7 @@ import java.util.concurrent.ExecutionException;
 public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final double DISTANCE_THRESHOLD = 100;
     private GoogleMap mMap;
+    
     int MY_RESULT_FINE_LOCATION;
     private static String url = "http://api.openweathermap.org/data/2.5/weather?";
     private static String imgUrl = "http://openweathermap.org/img/wn/";
