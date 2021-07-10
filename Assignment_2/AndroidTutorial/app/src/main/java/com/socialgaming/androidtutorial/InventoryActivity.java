@@ -24,6 +24,7 @@ public class InventoryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.println("Inventory Activity");
         setContentView(R.layout.activity_inventory);
 
 
@@ -97,7 +98,7 @@ public class InventoryActivity extends AppCompatActivity {
                 for(int i=0;i<v.length;i++){
                     for(int j=0;j<v[i].length;j++){
                         if(v[i][j]>0){
-                            HTTPGetter getAddPiece = new HTTPGetter();
+                            HTTPPoster getAddPiece = new HTTPPoster();
                             getAddPiece.execute("inventory", FirebaseAuth.getInstance().getUid(), k, "" + i,
                                     "" + j, ""+v[i][j], "addPiece");
                         }

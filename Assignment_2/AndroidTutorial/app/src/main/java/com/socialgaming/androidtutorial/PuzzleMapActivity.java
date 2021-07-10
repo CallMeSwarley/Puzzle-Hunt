@@ -312,7 +312,6 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     public void onPause() {
         super.onPause();
         focused = false;
-        focused = false;
         //stop location updates when Activity is no longer active
         if (fusedLocationProviderClient != null) {
             fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
@@ -328,7 +327,9 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 .findFragmentById(R.id.map2);
         mapFragment.getMapAsync(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
+        if (ContextCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(PuzzleMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_RESULT_FINE_LOCATION);
+        }
         //kann mit city oder lat,lon aufgerufen werden (LIMIT 60 mal/h
         //String city = "Munich,DE";
         HTTPGetter getAll = new HTTPGetter();
@@ -355,9 +356,6 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         condDescr = findViewById(R.id.condDescr);
         imgView = findViewById(R.id.condIcon);
         //task.execute(new String[]{city})
-        if (ContextCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(PuzzleMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_RESULT_FINE_LOCATION);
-        }
         handler.postDelayed(new Runnable() {
             public void run() {
                 System.out.println("Location Handler"); // Do your work here
@@ -368,94 +366,6 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 handler.postDelayed(this, PuzzleMapActivity.DELAY_LOCATION);
             }
         }, PuzzleMapActivity.DELAY_LOCATION);
-    }
-
-    private Dealer[] getActiveDealers(LatLngBounds bounds) {
-        HTTPGetter getActiveDealers = new HTTPGetter();
-        getActiveDealers.execute(
-                "dealer",
-                FirebaseAuth.getInstance().getUid(),
-                String.valueOf(bounds.southwest.latitude),
-                String.valueOf(bounds.southwest.longitude),
-                String.valueOf(bounds.northeast.latitude),
-                String.valueOf(bounds.northeast.longitude),
-                "getActive"
-        );
-
-        String activeDealers;
-        try {
-            activeDealers = getActiveDealers.get();
-            System.out.println("activeDealers:\t" + activeDealers);
-            return gson.fromJson(activeDealers, Dealer[].class);
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-        return new Dealer[0];
-    }
-
-    private Dealer[] getVisibleDealers(LatLngBounds bounds) {
-        HTTPGetter getVisibleDealers = new HTTPGetter();
-        getVisibleDealers.execute(
-                "dealer",
-                FirebaseAuth.getInstance().getUid(),
-                String.valueOf(bounds.southwest.latitude),
-                String.valueOf(bounds.southwest.longitude),
-                String.valueOf(bounds.northeast.latitude),
-                String.valueOf(bounds.northeast.longitude),
-                "getVisible"
-        );
-        try {
-            String visibleDealers = getVisibleDealers.get();
-            System.out.println("visibleDealers:\t" + visibleDealers);
-            return gson.fromJson(visibleDealers, Dealer[].class);
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return new Dealer[0];
-    }
-
-    private Shop[] getActiveShops(LatLngBounds bounds) {
-        HTTPGetter getActiveShops = new HTTPGetter();
-        getActiveShops.execute(
-                "shop",
-                FirebaseAuth.getInstance().getUid(),
-                String.valueOf(bounds.southwest.latitude),
-                String.valueOf(bounds.southwest.longitude),
-                String.valueOf(bounds.northeast.latitude),
-                String.valueOf(bounds.northeast.longitude),
-                "getActive"
-        );
-        try {
-            String activeShops = getActiveShops.get();
-            System.out.println("activeShops:\t" + activeShops);
-            return gson.fromJson(activeShops, Shop[].class);
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return new Shop[0];
-    }
-
-    private Shop[] getVisibleShops(LatLngBounds bounds) {
-        HTTPGetter getVisibleShops = new HTTPGetter();
-        getVisibleShops.execute(
-                "shop",
-                FirebaseAuth.getInstance().getUid(),
-                String.valueOf(bounds.southwest.latitude),
-                String.valueOf(bounds.southwest.longitude),
-                String.valueOf(bounds.northeast.latitude),
-                String.valueOf(bounds.northeast.longitude),
-                "getVisible"
-        );
-        try {
-            String visibleShops = getVisibleShops.get();
-            System.out.println("visibleShops:\t" + visibleShops);
-            return gson.fromJson(visibleShops, Shop[].class);
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return new Shop[0];
     }
 
     @Override
@@ -730,9 +640,9 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         int edgeIsX = new Random().nextInt(2);
         int randomX = randomPiece.getPositionHorizontal();
         int randomY = randomPiece.getPositionVertical();
-        if(edgeIsX==0){
-            randomX = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountHorizontal-1;
-        }else {
+        if (edgeIsX == 0) {
+            randomX = new Random().nextInt(2) == 0 ? 0 : randomPiece.getPuzzleParent().piecesCountHorizontal - 1;
+        } else {
             randomY = new Random().nextInt(2) == 0 ? 0 : randomPiece.getPuzzleParent().piecesCountVertical - 1;
         }
         HTTPPoster get = new HTTPPoster();
@@ -743,8 +653,8 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         PuzzlePiece randomPiece = allPuzzlePieces.get(new Random().nextInt(allPuzzlePieces.size()));
         String id = randomPiece.getPuzzleParent().id;
-        int randomX = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountHorizontal-1;
-        int randomY = new Random().nextInt(2)==0?0:randomPiece.getPuzzleParent().piecesCountVertical-1;
+        int randomX = new Random().nextInt(2) == 0 ? 0 : randomPiece.getPuzzleParent().piecesCountHorizontal - 1;
+        int randomY = new Random().nextInt(2) == 0 ? 0 : randomPiece.getPuzzleParent().piecesCountVertical - 1;
         HTTPPoster get = new HTTPPoster();
         get.execute("inventory", FirebaseAuth.getInstance().getUid(), id, Integer.toString(randomX), Integer.toString(randomY), "1", "addPiece");
     }

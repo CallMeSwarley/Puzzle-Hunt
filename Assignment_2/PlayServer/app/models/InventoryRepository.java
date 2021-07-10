@@ -30,6 +30,10 @@ public class InventoryRepository {
 
     public Inventory getInventory(String id) {
         Inventory inventory = inventories().findOne("{_id: #}", id).as(Inventory.class);
+        if (inventory == null) {
+            inventory = new Inventory();
+            this.insert(inventory);
+        }
         inventory.cleanUp();
         return inventory;
     }
