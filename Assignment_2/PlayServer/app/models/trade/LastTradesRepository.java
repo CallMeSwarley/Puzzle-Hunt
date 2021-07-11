@@ -34,8 +34,7 @@ public class LastTradesRepository {
     }
 
     public LastTrade getLastTrade(String tradeId) {
-        LastTrade result = lastTrades().findOne("{_id:#}", tradeId).as(LastTrade.class);
-        return result;
+        return lastTrades().findOne("{_id:#}", tradeId).as(LastTrade.class);
     }
 
     public void insert(Trade trade) {
@@ -79,6 +78,8 @@ public class LastTradesRepository {
             lastTrade.playerTwo = trade.partnerId;
             lastTrade.year = now.getYear();
             lastTrade.dayOfYear = now.getDayOfYear();
+            lastTrade.playerAccepted = trade.traderOffer;
+            lastTrade.traderAccepted = trade.partnerOffer;
             update(lastTrade);
         }
     }
