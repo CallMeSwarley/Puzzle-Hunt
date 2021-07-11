@@ -155,6 +155,7 @@ public class TradeActivity extends AppCompatActivity {
                                 (role == Role.Partner && lastTradeState.partnerAccepted && !trade.partnerAccepted)) {
 
                             addPieces.setEnabled(true);
+                            acceptTrade.setEnabled(true);
                             selectedPiece = null;
 
                             Toast.makeText(getBaseContext(), String.format("%s has changed his offered pieces, your Accept state has been reversed.", partnerName), Toast.LENGTH_LONG).show();
@@ -175,10 +176,8 @@ public class TradeActivity extends AppCompatActivity {
                             int year = calendar.get(Calendar.YEAR);
 
                             if(lastTrade.dayOfYear == dayOfYear && lastTrade.year == year){
-                                if(lastTrade.playerOne.equals(FirebaseAuth.getInstance().getUid()))
+                                if(lastTrade.playerOne.equals(FirebaseAuth.getInstance().getUid()) || lastTrade.playerTwo.equals(FirebaseAuth.getInstance().getUid()))
                                     createTradeSuccessfulPopup(lastTrade.traderAccepted, lastTrade.playerAccepted);
-                                else
-                                    createTradeSuccessfulPopup(lastTrade.playerAccepted, lastTrade.traderAccepted);
 
                             }
                             else{
@@ -229,6 +228,7 @@ public class TradeActivity extends AppCompatActivity {
 
                     // Disable button to select pieces
                     addPieces.setEnabled(false);
+                    acceptTrade.setEnabled(false);
 
                     HTTPPoster poster = new HTTPPoster();
                     if(role == Role.Trader){
@@ -262,12 +262,8 @@ public class TradeActivity extends AppCompatActivity {
 
                     String result = poster.get();
 
-                    if(result.equals("Trade Done!")){
-                        if(role == Role.Trader)
+                    if(result.equals("Trade Done!"))
                             createTradeSuccessfulPopup(trade.partnerOffer, trade.traderOffer);
-                        else if(role == Role.Partner)
-                            createTradeSuccessfulPopup(trade.traderOffer, trade.partnerOffer);
-                    }
                     else
                         trade = gson.fromJson(result, Trade.class);
 
@@ -503,13 +499,20 @@ public class TradeActivity extends AppCompatActivity {
         int traderArr[][] = sets.get(traderOffer.setId);
         Puzzle traderPuzzle = createPuzzleInstance(traderOffer.setId, traderArr.length);
         PuzzlePiece traderPiece = traderPuzzle.getPuzzlePiece(traderOffer.x, traderOffer.y);
-        traderImg.setImageBitmap(traderPiece.getImage());
 
         // Partner
         int partnerArr[][] = sets.get(partnerOffer.setId);
         Puzzle partnerPuzzle = createPuzzleInstance(partnerOffer.setId, partnerArr.length);
         PuzzlePiece partnerPiece = partnerPuzzle.getPuzzlePiece(partnerOffer.x, partnerOffer.y);
-        partnerImg.setImageBitmap(partnerPiece.getImage());
+
+        if(role == Role.Trader){
+            traderImg.setImageBitmap(traderPiece.getImage());
+            partnerImg.setImageBitmap(partnerPiece.getImage());
+        }
+        else if(role == Role.Partner){
+            traderImg.setImageBitmap(partnerPiece.getImage());
+            partnerImg.setImageBitmap(traderPiece.getImage());
+        }
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override

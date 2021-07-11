@@ -26,7 +26,7 @@
         android:id="@+id/player_pic_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="30dp"
         app:layout_constraintEnd_toStartOf="@id/partner_pic_image"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/trade_successful_title"
@@ -37,13 +37,13 @@
         android:id="@+id/player_name_text"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="You"
         android:textSize="18dp"
-        android:gravity="center"
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="@id/player_pic_image"
         app:layout_constraintRight_toRightOf="@id/player_pic_image"
-        app:layout_constraintTop_toBottomOf="@id/player_pic_image"/>
+        app:layout_constraintTop_toBottomOf="@id/player_pic_image" />
 
     <ImageView
         android:id="@+id/partner_pic_image"
@@ -60,13 +60,13 @@
         android:id="@+id/partner_name_text"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="Partner"
         android:textSize="18dp"
-        android:gravity="center"
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="@id/partner_pic_image"
         app:layout_constraintRight_toRightOf="@id/partner_pic_image"
-        app:layout_constraintTop_toBottomOf="@id/partner_pic_image"/>
+        app:layout_constraintTop_toBottomOf="@id/partner_pic_image" />
 
     <ImageView
         android:id="@+id/trader_piece"
@@ -82,8 +82,8 @@
         android:id="@+id/partner_piece"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginRight="15dp"
         android:layout_marginTop="75dp"
+        android:layout_marginRight="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/partner_pic_image"
         app:srcCompat="@drawable/meme" />
@@ -92,11 +92,22 @@
         android:id="@+id/close_trade_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Close"
         android:layout_marginTop="50dp"
-        app:layout_constraintTop_toBottomOf="@id/trader_piece"
+        android:text="Close"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/trader_piece" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="115dp"
+        android:rotation="90"
+        app:layout_constraintEnd_toStartOf="@+id/partner_piece"
+        app:layout_constraintStart_toEndOf="@+id/trader_piece"
+        app:layout_constraintTop_toBottomOf="@+id/player_pic_image"
+        app:srcCompat="@drawable/ic_trade" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
