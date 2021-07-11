@@ -1,63 +1,42 @@
 package com.socialgaming.androidtutorial;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.socialgaming.androidtutorial.Models.Inventory;
-import com.socialgaming.androidtutorial.Models.PieceViewItem;
 import com.socialgaming.androidtutorial.Models.Puzzle;
 import com.socialgaming.androidtutorial.Models.PuzzleModel;
 import com.socialgaming.androidtutorial.Models.PuzzlePiece;
-import com.socialgaming.androidtutorial.Models.Shop;
 import com.socialgaming.androidtutorial.Models.User;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
-public class    PuzzleShopActivity extends AppCompatActivity {
+public class PuzzleShopActivity extends AppCompatActivity {
     private User user;
     private final Gson gson = new Gson();
 
@@ -67,14 +46,14 @@ public class    PuzzleShopActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_puzzle_shop);
 
-        TextView xpAnzeige=findViewById(R.id.xpDisplayShop);
-        HTTPGetter getMe=new HTTPGetter();
+        TextView xpAnzeige = findViewById(R.id.xpDisplayShop);
+        HTTPGetter getMe = new HTTPGetter();
         getMe.execute("user", FirebaseAuth.getInstance().getUid(), "getUser");
         try {
             String getUserResult = getMe.get();
             if (!getUserResult.equals("{ }")) {
                 User user = gson.fromJson(getUserResult, User.class);
-                String xpString="You have "+user.xp+" XP";
+                String xpString = "You have " + user.xp + " XP";
                 xpAnzeige.setText(xpString);
             }
         } catch (ExecutionException | InterruptedException e) {
@@ -158,9 +137,9 @@ public class    PuzzleShopActivity extends AppCompatActivity {
             int resID = getResources().getIdentifier(buttonID, "id", getPackageName());
             ImageButton imageButton = findViewById(resID);
             imageButton.setImageBitmap(puzzlePiece.getImage());
-            ViewGroup.LayoutParams params=imageButton.getLayoutParams();
-            params.height=300;
-            params.width=300;
+            ViewGroup.LayoutParams params = imageButton.getLayoutParams();
+            params.height = 300;
+            params.width = 300;
             imageButton.setLayoutParams(params);
             //Button funktionalität geben
             imageButton.setOnClickListener(v -> {
@@ -181,19 +160,24 @@ public class    PuzzleShopActivity extends AppCompatActivity {
                                     Toast.makeText(PuzzleShopActivity.this, "You don't have enough XP for that piece!", Toast.LENGTH_SHORT).show();
                                     dialog.dismiss();
                                 } else {
-                                    user.xp -=XP;
-                                    String xpString="You have "+user.xp+" XP";
+                                    user.xp -= XP;
+                                    String xpString = "You have " + user.xp + " XP";
                                     xpAnzeige.setText(xpString);
-                                    user.xp-=100;
+                                    user.xp -= 100;
                                     new HTTPPoster().execute(
                                             "user",
-                                            Uri.encode(gson.toJson(user, User.class)),//necessary to escape "unsafe" characters, otherwise error in play framework
+                                            Uri.encode(gson.toJson(user)),//necessary to escape "unsafe" characters, otherwise error in play framework
                                             "update");
                                     allPuzzlePieces.remove(puzzlePiece);
                                     myPuzzlePieces.add(puzzlePiece);
                                     HTTPPoster postAddPiece = new HTTPPoster();
-                                    postAddPiece.execute("inventory", FirebaseAuth.getInstance().getUid(), puzzlePiece.getPuzzleParent().id, "" + puzzlePiece.getPositionHorizontal(),
-                                            "" + puzzlePiece.getPositionVertical(), "1", "addPiece");
+                                    postAddPiece.execute("inventory",
+                                            FirebaseAuth.getInstance().getUid(),
+                                            puzzlePiece.getPuzzleParent().id,
+                                            "" + puzzlePiece.getPositionHorizontal(),
+                                            "" + puzzlePiece.getPositionVertical(),
+                                            "1",
+                                            "addPiece");
                                     //make button Unclickable and grayish
                                     imageButton.setEnabled(false);
                                     Drawable icon = convertDrawableToGrayScale(new BitmapDrawable(getResources(), puzzlePiece.getImage()));

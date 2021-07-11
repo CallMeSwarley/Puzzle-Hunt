@@ -11,7 +11,9 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -45,6 +47,7 @@ import com.socialgaming.androidtutorial.Models.Weather;
 import com.socialgaming.androidtutorial.Util.HTTPGetter;
 import com.socialgaming.androidtutorial.Util.HTTPPoster;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,7 +70,7 @@ import java.util.concurrent.ExecutionException;
 public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final double DISTANCE_THRESHOLD = 100;
     private GoogleMap mMap;
-    
+
     int MY_RESULT_FINE_LOCATION;
     private static String url = "http://api.openweathermap.org/data/2.5/weather?";
     private static String imgUrl = "http://openweathermap.org/img/wn/";
@@ -76,6 +79,13 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private TextView infoText;
     private TextView condDescr;
     private ImageView imgView;
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        this.handler.removeCallbacksAndMessages(null);
+    }
+
     private final Handler handler = new Handler();
     private static final int DELAY_LOCATION = 5000;
     private static final int DELAY_WEATHER = 7000;
@@ -327,9 +337,6 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 .findFragmentById(R.id.map2);
         mapFragment.getMapAsync(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ContextCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(PuzzleMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_RESULT_FINE_LOCATION);
-        }
         //kann mit city oder lat,lon aufgerufen werden (LIMIT 60 mal/h
         //String city = "Munich,DE";
         HTTPGetter getAll = new HTTPGetter();
@@ -356,16 +363,7 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
         condDescr = findViewById(R.id.condDescr);
         imgView = findViewById(R.id.condIcon);
         //task.execute(new String[]{city})
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                System.out.println("Location Handler"); // Do your work here
-                if (ContextCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(PuzzleMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_RESULT_FINE_LOCATION);
-                }
-                fusedLocationProviderClient.getLastLocation().addOnSuccessListener(PuzzleMapActivity.this, locationSuccess);
-                handler.postDelayed(this, PuzzleMapActivity.DELAY_LOCATION);
-            }
-        }, PuzzleMapActivity.DELAY_LOCATION);
+
     }
 
     @Override
@@ -403,8 +401,35 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
             ActivityCompat.requestPermissions(PuzzleMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_RESULT_FINE_LOCATION);
         } else {
             mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setCompassEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(PuzzleMapActivity.this, locationSuccess);
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    System.out.println("Location Handler"); // Do your work here
+                    if (ContextCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(PuzzleMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_RESULT_FINE_LOCATION);
+                    }
+                    fusedLocationProviderClient.getLastLocation().addOnSuccessListener(PuzzleMapActivity.this, locationSuccess);
+                    handler.postDelayed(this, PuzzleMapActivity.DELAY_LOCATION);
+                }
+            }, PuzzleMapActivity.DELAY_LOCATION);
         }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull @NotNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (ContextCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(PuzzleMapActivity.this, "Permission has been granted! Map will work on next try", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(PuzzleMapActivity.this, "Permission has been denied! Without it the map will not work", Toast.LENGTH_SHORT).show();
+        }
+        Intent intent = new Intent(PuzzleMapActivity.this, MainMenuActivity.class);
+        startActivity(intent);
+
     }
 
     public String getWeatherDataWithCity(String location) {

@@ -16,11 +16,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
+import com.socialgaming.androidtutorial.Util.HTTPGetter;
 import com.socialgaming.androidtutorial.Util.HTTPPoster;
+
+import java.util.concurrent.ExecutionException;
 
 public class RegisterActivity extends AppCompatActivity {
     FirebaseAuth myAuth;
     private static final String TAG = "RegisterActivity";
+    private Gson gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +52,23 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void register(String email, String password) {
+        final TextInputLayout nickNameView = findViewById(R.id.nickNameText);
+        final EditText nicknameText = nickNameView.getEditText();
+        String preferred = nicknameText.getText().toString();
+        HTTPGetter check = new HTTPGetter();
+        check.execute("check", preferred, "checkNickname");
+        try {
+            if (!gson.fromJson(check.get(), Boolean.class)) {
+                Toast.makeText(RegisterActivity.this, "Nickname is already taken, please choose another one", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
         myAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    final TextInputLayout nickNameView = findViewById(R.id.nickNameText);
-                    final EditText nicknameText = nickNameView.getEditText();
                     new HTTPPoster().execute(
                             "user",
                             FirebaseAuth.getInstance().getUid(),

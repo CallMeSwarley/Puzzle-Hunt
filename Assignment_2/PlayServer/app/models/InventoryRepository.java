@@ -32,6 +32,7 @@ public class InventoryRepository {
         Inventory inventory = inventories().findOne("{_id: #}", id).as(Inventory.class);
         if (inventory == null) {
             inventory = new Inventory();
+            inventory.id = id;
             this.insert(inventory);
         }
         inventory.cleanUp();
