@@ -373,9 +373,25 @@ public class PuzzleMapActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                System.out.println("Location Handler"); // Do your work here
+                if (ContextCompat.checkSelfPermission(PuzzleMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(PuzzleMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_RESULT_FINE_LOCATION);
+                }
+                fusedLocationProviderClient.getLastLocation().addOnSuccessListener(PuzzleMapActivity.this, locationSuccess);
+                handler.postDelayed(this, PuzzleMapActivity.DELAY_LOCATION);
+            }
+        }, PuzzleMapActivity.DELAY_LOCATION);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         focused = true;
+
     }
 
     @Override
