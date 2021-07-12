@@ -29,7 +29,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter User ID"
+        android:hint="Enter Nickname or ID"
         app:endIconMode="clear_text"
         app:layout_constraintBottom_toTopOf="@+id/saveChanges"
         app:layout_constraintEnd_toEndOf="parent"
