@@ -113,18 +113,6 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="485dp" />
 
-    <TextView
-        android:id="@+id/textView7"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="You Won:"
-        app:layout_constraintBottom_toTopOf="@+id/guideline37"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline36" />
-
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="0dp"
