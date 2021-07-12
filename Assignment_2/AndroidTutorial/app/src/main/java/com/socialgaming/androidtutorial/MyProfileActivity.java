@@ -1,7 +1,9 @@
 package com.socialgaming.androidtutorial;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -69,5 +71,18 @@ public class MyProfileActivity extends AppCompatActivity {
             Intent intent = new Intent(MyProfileActivity.this, EditProfileActivity.class);
             startActivity(intent);
         });
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (Integer.parseInt(Build.VERSION.SDK) > 5 && keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            onBackPressed();
+            return true;
+        } else return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(MyProfileActivity.this, MainMenuActivity.class);
+        startActivity(intent);
     }
 }

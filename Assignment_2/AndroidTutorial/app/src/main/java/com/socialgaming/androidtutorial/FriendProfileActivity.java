@@ -179,6 +179,7 @@ public class FriendProfileActivity extends AppCompatActivity {
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        new HTTPPoster().execute("friendship", FriendProfileActivity.friendshipID, "removeFriendship");
                         HTTPGetter get = new HTTPGetter();
                         get.execute("user", FriendProfileActivity.id, "getUser");
                         try {
@@ -209,7 +210,6 @@ public class FriendProfileActivity extends AppCompatActivity {
                         } catch (ExecutionException | InterruptedException e) {
                             e.printStackTrace();
                         }
-                        new HTTPPoster().execute("friendship", FriendProfileActivity.friendshipID, "removeFriendship");
                         Intent intent = new Intent(FriendProfileActivity.this, FriendsActivity.class);
                         startActivity(intent);
                     }

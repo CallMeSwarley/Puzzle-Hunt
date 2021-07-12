@@ -2,7 +2,9 @@ package com.socialgaming.androidtutorial;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -56,7 +58,7 @@ public class EditProfileActivity extends AppCompatActivity {
             HTTPGetter check = new HTTPGetter();
             check.execute("check", preferred, "checkNickname");
             try {
-                if (!gson.fromJson(check.get(), Boolean.class)) {
+                if (!gson.fromJson(check.get(), Boolean.class) && !user.nickName.equals(nickNameEdit.getText().toString())) {
                     Toast.makeText(EditProfileActivity.this, "Nickname is already taken, please choose another one", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -72,5 +74,18 @@ public class EditProfileActivity extends AppCompatActivity {
             Intent returnIntent = new Intent(EditProfileActivity.this, MyProfileActivity.class);
             startActivity(returnIntent);
         });
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (Integer.parseInt(Build.VERSION.SDK) > 5 && keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            onBackPressed();
+            return true;
+        } else return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(EditProfileActivity.this, MyProfileActivity.class);
+        startActivity(intent);
     }
 }

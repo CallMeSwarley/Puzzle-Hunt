@@ -45,7 +45,8 @@ public class FriendshipRepository {
     }
 
     public void delete(String generatedFsID) {
-        friendships().remove(generatedFsID);
+        friendships().remove("{_id:#}", generatedFsID);
+
     }
 
     public void update(Friendship fs) {
