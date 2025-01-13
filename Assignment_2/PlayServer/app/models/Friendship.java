@@ -28,7 +28,6 @@ public class Friendship {
     public void updateRank(){
         LocalDate today=java.time.LocalDate.now();
         long daysOfFriendship= ChronoUnit.DAYS.between(LocalDate.ofYearDay(year,dayOfYear),today);
-        //TODO Tage-Rang Verhältnis anpassen
         if(daysOfFriendship<=2)
             rank=0;
         if (2<daysOfFriendship&&daysOfFriendship<=4)
